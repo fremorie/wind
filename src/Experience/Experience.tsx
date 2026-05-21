@@ -1,6 +1,7 @@
+import { Suspense } from "react";
 import { OrbitControls } from '@react-three/drei'
 import { Perf } from 'r3f-perf'
-import { Models } from "./Models";
+import { WindTurbine } from "./WindTurbine";
 
 export function Experience() {
     return (
@@ -8,7 +9,6 @@ export function Experience() {
             <Perf position="top-left" />
 
             <OrbitControls makeDefault />
-
 
             <directionalLight castShadow position={ [ 1, 2, 3 ] } intensity={ 4.5 } shadow-normalBias={0.04}/>
             <ambientLight intensity={ 1.5 } />
@@ -18,15 +18,16 @@ export function Experience() {
                 <meshStandardMaterial color="greenyellow" />
             </mesh>
 
-            {/*<Suspense fallback={*/}
-            {/*    <mesh position-y={0.5} scale={[2, 3, 2]}>*/}
-            {/*        <boxGeometry args={[1, 1, 1, 2, 2, 2]}/>*/}
-            {/*        <meshBasicMaterial wireframe color="red"/>*/}
-            {/*    </mesh>*/}
-            {/*}>*/}
-            {/*        <WindTurbine rotation={[0, Math.PI, 0]} position={[-5, 0, 3]} />*/}
-            {/*</Suspense>*/}
-            <Models />
+            <Suspense fallback={
+                <mesh position-y={0.5} scale={[2, 3, 2]}>
+                    <boxGeometry args={[1, 1, 1, 2, 2, 2]}/>
+                    <meshBasicMaterial wireframe color="red"/>
+                </mesh>
+            }>
+                <WindTurbine rotation={[0, Math.PI, 0]} position={[-5, 0, 3]} />
+                <WindTurbine rotation={[0, Math.PI, 0]} position={[1, 0, -1]} />
+                <WindTurbine rotation={[0, Math.PI, 0]} position={[5, 0, 3]} />
+            </Suspense>
         </>
     )
 }
