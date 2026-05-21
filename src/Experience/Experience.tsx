@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { OrbitControls } from '@react-three/drei'
 import { Perf } from 'r3f-perf'
 import { WindTurbine } from "./WindTurbine";
+import { Grass } from "./Grass";
 
 export function Experience() {
     return (
@@ -26,10 +27,7 @@ export function Experience() {
             />
             <ambientLight intensity={ 1.5 } />
 
-            <mesh receiveShadow position-y={ 0} rotation-x={ - Math.PI * 0.5 } scale={ 20 }>
-                <planeGeometry />
-                <meshStandardMaterial color="greenyellow" />
-            </mesh>
+            <Grass />
 
             <Suspense fallback={
                 <mesh position-y={0.5} scale={[2, 3, 2]}>
