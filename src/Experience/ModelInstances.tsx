@@ -29,7 +29,7 @@ type GLTFResult = GLTF & {
 
 export const context = createContext<any>(null!)
 
-export function ModelInstances({ children, ...props }: GroupProps & { children: ReactNode }) {
+export function ModelInstances({ children, ...props }: Omit<GroupProps, 'ref'> & { children: ReactNode }) {
     const { nodes } = useGLTF('/windTurbine.glb') as unknown as GLTFResult
     const instances = useMemo(
         () => ({
