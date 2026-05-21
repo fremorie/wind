@@ -11,15 +11,22 @@ export function Experience() {
 
             <OrbitControls makeDefault />
 
+
+            <directionalLight castShadow position={ [ 1, 2, 3 ] } intensity={ 4.5 } shadow-normalBias={0.04}/>
+            <ambientLight intensity={ 1.5 } />
+
+            <mesh receiveShadow position-y={ 0} rotation-x={ - Math.PI * 0.5 } scale={ 20 }>
+                <planeGeometry />
+                <meshStandardMaterial color="greenyellow" />
+            </mesh>
+
             <Suspense fallback={
                 <mesh position-y={0.5} scale={[2, 3, 2]}>
                     <boxGeometry args={[1, 1, 1, 2, 2, 2]}/>
                     <meshBasicMaterial wireframe color="red"/>
                 </mesh>
             }>
-                <Stage adjustCamera environment="city" shadows="contact">
-                    <WindTurbine rotation={[0, Math.PI, 0]} />
-                </Stage>
+                    <WindTurbine rotation={[0, Math.PI, 0]} position={[-5, 0, 3]} />
             </Suspense>
         </>
     )
