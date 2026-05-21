@@ -41,7 +41,7 @@ export function WindTurbine(props: ThreeElements['group']) {
     const propellerRef = useRef<THREE.Mesh>(null!)
     const rotatorRef = useRef<THREE.Mesh>(null!)
 
-    useFrame((state, delta) => {
+    useFrame((state) => {
         const elapsedTime = state.clock.elapsedTime
 
         if (propellerRef.current) {
