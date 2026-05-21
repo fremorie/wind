@@ -18,7 +18,7 @@ export function Experience() {
                 </mesh>
             }>
                 <Stage adjustCamera environment="city" shadows="contact">
-                    <WindTurbine />
+                    <WindTurbine rotation={[0, Math.PI, 0]} />
                 </Stage>
             </Suspense>
         </>

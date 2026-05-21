@@ -45,11 +45,11 @@ export function WindTurbine(props: ThreeElements['group']) {
         const elapsedTime = state.clock.elapsedTime
 
         if (propellerRef.current) {
-            propellerRef.current.rotation.z += delta * controls.speed
+            propellerRef.current.rotation.z = elapsedTime * controls.speed
         }
 
         if (rotatorRef.current) {
-            rotatorRef.current.rotation.y = Math.sin(elapsedTime)
+            rotatorRef.current.rotation.y = Math.sin(elapsedTime) * controls.speed / 2
         }
     })
 
