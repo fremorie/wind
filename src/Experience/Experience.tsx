@@ -1,16 +1,23 @@
-import { Suspense } from "react";
-import { OrbitControls, Sky } from '@react-three/drei'
+import { Suspense, useEffect } from "react";
+import { OrbitControls } from '@react-three/drei'
 import { Perf } from 'r3f-perf'
 import { WindTurbine } from "./WindTurbine";
 import { Box } from './Box';
 import { Grass } from "./Grass";
+import { useControls } from 'leva'
+import { useThree } from '@react-three/fiber'
+import * as THREE from 'three'
 
 export function Experience() {
+    const { clearColor } = useControls({ clearColor: '#e1f6ff' })
+    const { scene } = useThree()
+    useEffect(() => {
+        scene.background = new THREE.Color(clearColor)
+    }, [clearColor])
+
     return (
         <>
             <Perf position="top-left" />
-
-            {/*<Sky azimuth={1} inclination={0.6} distance={1000} />*/}
 
             <OrbitControls makeDefault />
 

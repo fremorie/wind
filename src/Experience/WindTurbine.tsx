@@ -27,6 +27,8 @@ type GLTFResult = GLTF & {
 }
 
 export function WindTurbine(props: ThreeElements['group']) {
+    const offsetRef = useRef(Math.random());
+
     const controls = useControls({
         speed: {
             value: 2,
@@ -45,11 +47,11 @@ export function WindTurbine(props: ThreeElements['group']) {
         const elapsedTime = state.clock.elapsedTime
 
         if (propellerRef.current) {
-            propellerRef.current.rotation.z = elapsedTime * controls.speed
+            propellerRef.current.rotation.z = offsetRef.current + elapsedTime * controls.speed
         }
 
         if (rotatorRef.current) {
-            rotatorRef.current.rotation.y = Math.sin(elapsedTime) * controls.speed / 2
+            rotatorRef.current.rotation.y = offsetRef.current + Math.sin(elapsedTime) * controls.speed * 0.2
         }
     })
 
