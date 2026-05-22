@@ -18,8 +18,8 @@ export function Grass() {
 
     return (
         <>
-            <mesh receiveShadow position-y={ 0 } rotation-x={ - Math.PI * 0.5 } scale={ 20 }>
-                <planeGeometry />
+            <mesh receiveShadow position-y={ 0 }>
+                <cylinderGeometry args={[10, 10, 0.1, 128, 10]}/>
                 <meshStandardMaterial color="#A1DF50" />
             </mesh>
             <mesh receiveShadow castShadow position-y={0.35} scale={ [0.2, 0.7, 1] }>
