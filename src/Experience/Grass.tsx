@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { GrassBlades } from './GrassBlade'
+import { Ground } from "./Ground";
 
 const COUNT = 10000
 const RADIUS = 9.8
@@ -16,12 +17,9 @@ export function Grass() {
         }), [])
 
     return (
-        <group position-y={-0.05}>
-            <mesh receiveShadow position-y={0}>
-                <cylinderGeometry args={[10, 10, 0.1, 128, 10]} />
-                <meshStandardMaterial color="#A1DF50" />
-            </mesh>
-            <GrassBlades blades={blades} />
+        <group>
+            <Ground />
+            {/*<GrassBlades blades={blades} />*/}
         </group>
     )
 }

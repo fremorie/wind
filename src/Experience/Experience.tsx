@@ -35,9 +35,9 @@ export function Experience() {
 
 
             <Suspense fallback={null}>
-                <WindTurbine rotation={[0, Math.PI, 0]} position={[-5, 0, -5]} />
-                <WindTurbine rotation={[0, Math.PI, 0]} position={[5, 0, -4]} />
-                <WindTurbine rotation={[0, Math.PI, 0]} position={[6, 0, 3]} />
+                <WindTurbine rotation={[0, Math.PI, 0]} position={[-7, 0, -5]} />
+                <WindTurbine rotation={[0, Math.PI, 0]} position={[7, 0, -3]} />
+                <WindTurbine rotation={[0, Math.PI, 0]} position={[0, 0, -8]} />
             </Suspense>
         </>
     )
