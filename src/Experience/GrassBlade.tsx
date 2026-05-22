@@ -1,21 +1,20 @@
-import { useMemo, useRef } from 'react'
-import { Instance, Instances, useTexture } from '@react-three/drei'
+import { useEffect, useMemo, useRef } from 'react'
+import { useTexture } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
 import grassVertexShader from '../shaders/grass/vertex.glsl'
 import grassFragmentShader from '../shaders/grass/fragment.glsl'
-import * as React from 'react'
 
-export function GrassBlades({ children }: { children: React.ReactNode }) {
-    const bladeAlphaMap = useTexture('./blade_alpha.jpg');
+type BladeData = { position: [number, number, number]; rotationY: number }
+
+export function GrassBlades({ blades }: { blades: BladeData[] }) {
+    const meshRef = useRef<THREE.InstancedMesh>(null)
+    const bladeAlphaMap = useTexture('./blade_alpha.jpg')
+
     const uniforms = useRef({
         uTime: new THREE.Uniform(0),
         alphaMap: new THREE.Uniform(bladeAlphaMap),
-    })
-
-    useFrame((state) => {
-        uniforms.current.uTime.value = state.clock.elapsedTime
     })
 
     const { geo, mat } = useMemo(() => {
@@ -31,13 +30,28 @@ export function GrassBlades({ children }: { children: React.ReactNode }) {
         return { geo, mat }
     }, [])
 
-    return (
-        <Instances geometry={geo} material={mat} limit={10000}>
-            {children}
-        </Instances>
-    )
-}
+    useEffect(() => {
+        if (!meshRef.current) return
+        const dummy = new THREE.Object3D()
+        blades.forEach(({ position, rotationY }, i) => {
+            dummy.position.set(...position)
+            dummy.rotation.y = rotationY
+            dummy.updateMatrix()
+            meshRef.current!.setMatrixAt(i, dummy.matrix)
+        })
+        meshRef.current.instanceMatrix.needsUpdate = true
+    }, [blades])
 
-export function GrassBlade(props: React.ComponentProps<typeof Instance>) {
-    return <Instance {...props} />
+    useFrame((state) => {
+        uniforms.current.uTime.value = state.clock.elapsedTime
+    })
+
+    return (
+        <instancedMesh
+            ref={meshRef}
+            args={[geo, mat, blades.length]}
+            receiveShadow
+            castShadow
+        />
+    )
 }

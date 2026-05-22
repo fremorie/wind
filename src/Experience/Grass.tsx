@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { GrassBlades, GrassBlade } from './GrassBlade'
+import { GrassBlades } from './GrassBlade'
 
 const COUNT = 10000
 const RADIUS = 9.8
@@ -21,15 +21,7 @@ export function Grass() {
                 <cylinderGeometry args={[10, 10, 0.1, 128, 10]} />
                 <meshStandardMaterial color="#A1DF50" />
             </mesh>
-            <GrassBlades>
-                {blades.map((blade, i) => (
-                    <GrassBlade
-                        key={i}
-                        position={blade.position}
-                        rotation-y={blade.rotationY}
-                    />
-                ))}
-            </GrassBlades>
+            <GrassBlades blades={blades} />
         </group>
     )
 }
