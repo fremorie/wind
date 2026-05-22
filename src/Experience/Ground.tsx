@@ -42,7 +42,7 @@ export function Ground() {
                     alphaTest={0.01}
                 />
             </mesh>
-            <mesh position={[1, -0.2, 2]} rotation-x={-Math.PI / 2}>
+            <mesh position={[1, -0.3, 2]} rotation-x={-Math.PI / 2}>
                 <planeGeometry args={[12, 12]}/>
                 <meshPhysicalMaterial
                     transmission={1}
