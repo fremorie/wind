@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { OrbitControls, Sky } from '@react-three/drei'
 import { Perf } from 'r3f-perf'
 import { WindTurbine } from "./WindTurbine";
+import { Box } from './Box';
 import { Grass } from "./Grass";
 
 export function Experience() {
@@ -9,7 +10,7 @@ export function Experience() {
         <>
             <Perf position="top-left" />
 
-            <Sky azimuth={1} inclination={0.6} distance={1000} />
+            {/*<Sky azimuth={1} inclination={0.6} distance={1000} />*/}
 
             <OrbitControls makeDefault />
 
@@ -28,6 +29,8 @@ export function Experience() {
                 shadow-mapSize={[2048, 2048]}
             />
             <ambientLight intensity={ 1.5 } />
+
+            <Box position-y={-0.3}/>
 
             <Suspense fallback={null}>
                 <Grass />
