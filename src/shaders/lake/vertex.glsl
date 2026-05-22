@@ -1,6 +1,8 @@
 uniform sampler2D uAlphaMap;
 uniform float uPlaneSize;
 
+varying vec3 vPosition;
+
 void main() {
     float shift = 0.01;
 
@@ -33,4 +35,6 @@ void main() {
 
     csm_Normal = normalize(cross(normalize(posA - newPosition), normalize(posB - newPosition)));
     csm_Position.z -= alpha * 2.0;
+
+    vPosition = csm_Position;
 }

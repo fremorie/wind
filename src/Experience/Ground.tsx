@@ -13,6 +13,10 @@ export function Ground() {
     const uniforms = useRef({
         uAlphaMap: new THREE.Uniform(lakeAlphaMap),
         uPlaneSize: new THREE.Uniform(PLANE_SIZE),
+
+        uColorWaterDeep: new THREE.Uniform(new THREE.Color('#002b3d')),
+        uColorWaterSurface: new THREE.Uniform(new THREE.Color('#66a8ff')),
+        uColorGrass: new THREE.Uniform(new THREE.Color('#A1DF50')),
     })
 
     return (
