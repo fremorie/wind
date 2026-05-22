@@ -19,7 +19,7 @@ export function Grass() {
     return (
         <group>
             <Ground />
-            {/*<GrassBlades blades={blades} />*/}
+            <GrassBlades blades={blades} />
         </group>
     )
 }

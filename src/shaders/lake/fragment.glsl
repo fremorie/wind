@@ -9,7 +9,7 @@ void main() {
     vec3 color = vec3(1.0);
 
     // Water
-    float surfaceWaterMix = smoothstep(-1.0, -0.1, vPosition.z);
+    float surfaceWaterMix = smoothstep(-2.0, -0.1, vPosition.z);
     color = mix(uColorWaterDeep, uColorWaterSurface, surfaceWaterMix);
 
     // Grass

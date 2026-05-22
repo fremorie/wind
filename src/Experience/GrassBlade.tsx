@@ -10,11 +10,13 @@ type BladeData = { position: [number, number, number]; rotationY: number }
 
 export function GrassBlades({ blades }: { blades: BladeData[] }) {
     const meshRef = useRef<THREE.InstancedMesh>(null)
-    const bladeAlphaMap = useTexture('./blade_alpha.jpg')
+    const [bladeAlphaMap, lakeAlphaMap] = useTexture(['./blade_alpha.jpg', './lake_alpha.png'])
 
     const uniforms = useRef({
         uTime: new THREE.Uniform(0),
         alphaMap: new THREE.Uniform(bladeAlphaMap),
+        uLakeAlphaMap: new THREE.Uniform(lakeAlphaMap),
+        uPlaneSize: new THREE.Uniform(20),
     })
 
     const { geo, mat } = useMemo(() => {
@@ -50,8 +52,8 @@ export function GrassBlades({ blades }: { blades: BladeData[] }) {
         <instancedMesh
             ref={meshRef}
             args={[geo, mat, blades.length]}
-            receiveShadow
-            castShadow
+            //receiveShadow
+            //castShadow
         />
     )
 }
