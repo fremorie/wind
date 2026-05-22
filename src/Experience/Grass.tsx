@@ -3,18 +3,22 @@ import { GrassBlades } from './GrassBlade'
 import { Ground } from "./Ground";
 
 const COUNT = 10000
-const RADIUS = 9.8
+const PLANE_SIZE = 20
+const TURBINE_POSITIONS: [number, number][] = [[-7, -5], [7, -3], [0, -8]]
+const TURBINE_CLEAR_RADIUS = 0.7
 
 export function Grass() {
-    const blades = useMemo(() =>
-        Array.from({ length: COUNT }, () => {
-            const angle = Math.random() * Math.PI * 2
-            const r = Math.sqrt(Math.random()) * RADIUS
-            return {
-                position: [Math.cos(angle) * r, 0.25, Math.sin(angle) * r] as [number, number, number],
-                rotationY: Math.random() * Math.PI,
-            }
-        }), [])
+    const blades = useMemo(() => {
+        const result: { position: [number, number, number]; rotationY: number }[] = []
+        while (result.length < COUNT) {
+            const x = (Math.random() - 0.5) * (PLANE_SIZE - 0.5)
+            const z = (Math.random() - 0.5) * (PLANE_SIZE - 0.5)
+            if (TURBINE_POSITIONS.some(([tx, tz]) => Math.hypot(x - tx, z - tz) < TURBINE_CLEAR_RADIUS))
+                continue
+            result.push({ position: [x, 0.25, z], rotationY: Math.random() * Math.PI })
+        }
+        return result
+    }, [])
 
     return (
         <group>

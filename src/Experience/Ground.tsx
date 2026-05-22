@@ -11,13 +11,15 @@ const PLANE_SIZE = 20;
 
 export function Ground() {
     const lakeAlphaMap = useTexture('./lake_alpha.png')
+
     const uniforms = useRef({
-        uAlphaMap: new THREE.Uniform(lakeAlphaMap),
+        uLakeAlphaMap: new THREE.Uniform(lakeAlphaMap),
         uPlaneSize: new THREE.Uniform(PLANE_SIZE),
 
         uColorWaterDeep: new THREE.Uniform(new THREE.Color('#002b3d')),
         uColorWaterSurface: new THREE.Uniform(new THREE.Color('#66a8ff')),
         uColorGrass: new THREE.Uniform(new THREE.Color('#A1DF50')),
+        uColorSand: new THREE.Uniform(new THREE.Color('#ffe894')),
     })
 
     const depthMaterial = useMemo(() => new CustomShaderMaterialVanilla({
@@ -37,10 +39,11 @@ export function Ground() {
                     vertexShader={vertexShader}
                     fragmentShader={fragmentShader}
                     uniforms={uniforms.current}
+                    alphaTest={0.01}
                 />
             </mesh>
-            <mesh position-y={-0.06} rotation-x={-Math.PI / 2}>
-                <planeGeometry args={[PLANE_SIZE, PLANE_SIZE]}/>
+            <mesh position={[1, -0.2, 2]} rotation-x={-Math.PI / 2}>
+                <planeGeometry args={[12, 12]}/>
                 <meshPhysicalMaterial
                     transmission={1}
                     roughness={0.3}

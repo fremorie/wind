@@ -1,8 +1,10 @@
 uniform vec3 uColorWaterDeep;
 uniform vec3 uColorWaterSurface;
 uniform vec3 uColorGrass;
+uniform vec3 uColorSand;
 
 varying vec3 vPosition;
+varying vec2 vUv;
 
 void main() {
     // Color
@@ -12,8 +14,12 @@ void main() {
     float surfaceWaterMix = smoothstep(-2.0, -0.1, vPosition.z);
     color = mix(uColorWaterDeep, uColorWaterSurface, surfaceWaterMix);
 
+    // Sand
+    float sandMix = step(-0.3, vPosition.z);
+    color = mix(color, uColorSand, sandMix);
+
     // Grass
-    float grassMix = step(-0.06, vPosition.z);
+    float grassMix = step(-0.1, vPosition.z);
     color = mix(color, uColorGrass, grassMix);
 
     // Final color
