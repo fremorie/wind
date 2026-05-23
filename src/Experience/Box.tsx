@@ -19,7 +19,7 @@ type GLTFResult = GLTF & {
 }
 
 export function Box(props: JSX.IntrinsicElements['group']) {
-    const { nodes, materials } = useGLTF('/box.glb') as unknown as GLTFResult
+    const { nodes, materials } = useGLTF('./box.glb') as unknown as GLTFResult
     return (
         <group {...props} dispose={null}>
             <group scale={[1, 0.108, 1]}>
@@ -40,4 +40,4 @@ export function Box(props: JSX.IntrinsicElements['group']) {
     )
 }
 
-useGLTF.preload('/box.glb')
+useGLTF.preload('./box.glb')
