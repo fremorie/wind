@@ -30,7 +30,6 @@ export function Experience() {
             />
             <ambientLight intensity={ 1.5 } />
 
-
             <Box position-y={-0.3}/>
 
             <Suspense fallback={null}>
