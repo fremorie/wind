@@ -27,6 +27,7 @@ type GLTFResult = GLTF & {
 }
 
 export function WindTurbine(props: ThreeElements['group']) {
+    // eslint-disable-next-line
     const offsetRef = useRef(Math.random());
 
     // const controls = useControls({

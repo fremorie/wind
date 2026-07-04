@@ -31,7 +31,13 @@ export function Ground() {
 
     return (
         <group>
-            <mesh receiveShadow castShadow position-y={0} rotation-x={-Math.PI / 2} customDepthMaterial={depthMaterial}>
+            <mesh
+                receiveShadow
+                castShadow
+                position-y={0}
+                rotation-x={-Math.PI / 2}
+                customDepthMaterial={depthMaterial}
+            >
                 <planeGeometry args={[PLANE_SIZE, PLANE_SIZE, 256, 256]}/>
                 <CustomShaderMaterial
                     baseMaterial={THREE.MeshStandardMaterial}
