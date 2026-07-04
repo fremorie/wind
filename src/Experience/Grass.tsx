@@ -42,7 +42,7 @@ export function Grass() {
     const lakeAlphaMap = useTexture('./lake_alpha.png')
 
     const sampleLakeAlpha = useMemo(
-        () => makeLakeAlphaSampler(lakeAlphaMap.image),
+        () => makeLakeAlphaSampler(lakeAlphaMap.image as CanvasImageSource & {width: number; height: number}),
         [lakeAlphaMap]
     )
 
@@ -50,7 +50,9 @@ export function Grass() {
         () => {
             const result: Array<[number, number, number]> = []
             while (result.length < COUNT) {
+                // eslint-disable-next-line
                 const x = (Math.random() - 0.5) * (PLANE_SIZE - 0.5)
+                // eslint-disable-next-line
                 const z = (Math.random() - 0.5) * (PLANE_SIZE - 0.5)
                 if (TURBINE_POSITIONS.some(([tx, tz]) => Math.hypot(x - tx, z - tz) < TURBINE_CLEAR_RADIUS))
                     continue

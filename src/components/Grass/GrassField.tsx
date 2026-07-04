@@ -1,7 +1,7 @@
 import { shaderMaterial, useTexture } from '@react-three/drei'
 import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
-import { extend, useFrame } from '@react-three/fiber'
+import { extend, useFrame, type ThreeElement } from '@react-three/fiber'
 // import { useControls } from 'leva'
 
 import vertexShader from './shaders/grass/vertex.glsl'
@@ -12,11 +12,12 @@ const GrassBladeMaterial = shaderMaterial(
         uTime: 0,
         uCenterColor: new THREE.Color('#6f8f46'),
         uShadowColor: new THREE.Color('#d3d9de'),
-        uAlphaMap: null,
+        uAlphaMap: null as THREE.Texture | null,
     },
     vertexShader,
     fragmentShader,
     (material) => {
+        if (!material) return
         // Real-time directional light shadows
         material.lights = true
         material.uniforms = THREE.UniformsUtils.merge([
@@ -27,6 +28,14 @@ const GrassBladeMaterial = shaderMaterial(
 )
 
 extend({ GrassBladeMaterial })
+
+type GrassBladeMaterialImpl = InstanceType<typeof GrassBladeMaterial>
+
+declare module '@react-three/fiber' {
+    interface ThreeElements {
+        grassBladeMaterial: ThreeElement<typeof GrassBladeMaterial>
+    }
+}
 
 const MIN_BLADE_SCALE = 3
 const MAX_BLADE_SCALE = 5
@@ -43,8 +52,8 @@ type Props = {
 }
 
 export function GrassField({ positions, ...props }: Props) {
-    const meshRef = useRef(null)
-    const materialRef = useRef(null)
+    const meshRef = useRef<THREE.InstancedMesh>(null)
+    const materialRef = useRef<GrassBladeMaterialImpl>(null)
     const bladeAlphaMap = useTexture('./textures/grassBladeSimplified.jpg')
 
     // const { shadowColor } = useControls('Grass Shadow', {
@@ -126,7 +135,7 @@ export function GrassField({ positions, ...props }: Props) {
     return (
         <instancedMesh
             ref={meshRef}
-            args={[bladeGeometry, null, count]}
+            args={[bladeGeometry, undefined, count]}
             frustumCulled={false}
             receiveShadow
         >

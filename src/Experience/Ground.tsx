@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import CustomShaderMaterial from 'three-custom-shader-material'
 import CustomShaderMaterialVanilla from 'three-custom-shader-material/vanilla'
 import {useTexture} from "@react-three/drei";
-import {useMemo, useRef} from "react";
+import {useMemo} from "react";
 
 import vertexShader from '../shaders/lake/vertex.glsl'
 import fragmentShader from '../shaders/lake/fragment.glsl'
@@ -12,7 +12,7 @@ const PLANE_SIZE = 20;
 export function Ground() {
     const lakeAlphaMap = useTexture('./lake_alpha.png')
 
-    const uniforms = useRef({
+    const uniforms = useMemo(() => ({
         uLakeAlphaMap: new THREE.Uniform(lakeAlphaMap),
         uPlaneSize: new THREE.Uniform(PLANE_SIZE),
 
@@ -20,14 +20,14 @@ export function Ground() {
         uColorWaterSurface: new THREE.Uniform(new THREE.Color('#66a8ff')),
         uColorGrass: new THREE.Uniform(new THREE.Color('#A1DF50')),
         uColorSand: new THREE.Uniform(new THREE.Color('#ffe894')),
-    })
+    }), [lakeAlphaMap])
 
     const depthMaterial = useMemo(() => new CustomShaderMaterialVanilla({
         baseMaterial: THREE.MeshDepthMaterial,
         vertexShader,
-        uniforms: uniforms.current,
+        uniforms: uniforms,
         depthPacking: THREE.RGBADepthPacking,
-    }), [])
+    }), [uniforms])
 
     return (
         <group>
@@ -44,7 +44,7 @@ export function Ground() {
                     color="#A1DF50"
                     vertexShader={vertexShader}
                     fragmentShader={fragmentShader}
-                    uniforms={uniforms.current}
+                    uniforms={uniforms}
                     alphaTest={0.01}
                 />
             </mesh>
