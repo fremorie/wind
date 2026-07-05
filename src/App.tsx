@@ -1,4 +1,5 @@
 import { Canvas } from '@react-three/fiber';
+import { Perf } from 'r3f-perf';
 
 import { Experience } from './Experience/Experience';
 import './App.css';
@@ -15,6 +16,7 @@ function App() {
             }}
         >
             <Experience />
+            <Perf position="top-left" />
         </Canvas>
     );
 }

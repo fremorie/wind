@@ -1,14 +1,10 @@
-import { Suspense } from 'react';
 import { OrbitControls, Sky } from '@react-three/drei';
-// import { Perf } from 'r3f-perf'
-import { WindTurbine } from './WindTurbine';
-import { Grass } from './Grass';
+
+import { Terrain } from '../components/Terrain';
 
 export function Experience() {
     return (
         <>
-            {/*<Perf position="top-left" />*/}
-
             <Sky />
 
             <OrbitControls makeDefault />
@@ -29,18 +25,9 @@ export function Experience() {
             />
             <ambientLight intensity={1.5} />
 
-            <Suspense fallback={null}>
-                <Grass />
-            </Suspense>
+            <axesHelper />
 
-            <Suspense fallback={null}>
-                <WindTurbine
-                    rotation={[0, Math.PI, 0]}
-                    position={[-7, 0, -5]}
-                />
-                <WindTurbine rotation={[0, Math.PI, 0]} position={[7, 0, -3]} />
-                <WindTurbine rotation={[0, Math.PI, 0]} position={[0, 0, -8]} />
-            </Suspense>
+            <Terrain />
         </>
     );
 }
