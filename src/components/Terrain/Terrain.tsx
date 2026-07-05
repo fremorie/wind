@@ -9,10 +9,7 @@ import {
 import { TerrainChunk } from './TerrainChunk';
 import { useTerrainControls } from './useTerrainControls';
 import useGame from '../../store/useGame';
-import { CHUNK_SIZE, GRID_SIZE } from '../../utils/constants';
-
-const BACK_BUFFER = 40;
-const TOTAL_WIDTH = GRID_SIZE * CHUNK_SIZE;
+import { BACK_BUFFER, GRID_TOTAL_WIDTH } from '../../utils/constants';
 
 export function Terrain() {
     useTerrainControls();
@@ -30,7 +27,11 @@ export function Terrain() {
             if (chunk.position[0] < playerX - BACK_BUFFER) {
                 movedToNextChunk = true;
                 const [x, y, z] = chunk.position;
-                const nextPosition: GridChunkPosition = [x + TOTAL_WIDTH, y, z];
+                const nextPosition: GridChunkPosition = [
+                    x + GRID_TOTAL_WIDTH,
+                    y,
+                    z,
+                ];
                 return {
                     ...chunk,
                     position: nextPosition,

@@ -43,7 +43,11 @@ export function Player() {
             playerMeshRef.current.position.copy(playerPosition);
         }
 
-        state.camera.position.x = playerPosition.x - 20;
+        state.camera.position.set(
+            playerPosition.x - 20,
+            playerPosition.y + 5,
+            playerPosition.z - 1,
+        );
         state.camera.lookAt(playerPosition);
     });
 
