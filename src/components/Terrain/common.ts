@@ -8,3 +8,5 @@ export const terrainGeometry = new THREE.PlaneGeometry(
     128,
     128,
 );
+
+terrainGeometry.rotateX(-Math.PI / 2);
