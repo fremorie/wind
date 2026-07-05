@@ -1,32 +1,15 @@
 import { useMemo } from 'react';
-import { useTexture } from '@react-three/drei';
 
-import { Ground } from './Ground';
 import { GrassField } from '../components/Grass/GrassField';
-import { getGrassBladesPositions, makeLakeAlphaSampler } from '../utils/grass';
+import { getGrassBladesPositions } from '../utils/grass';
+import { Terrain } from './Terrain';
 
 export function Grass() {
-    const lakeAlphaMap = useTexture('./lake_alpha.png');
-
-    const sampleLakeAlpha = useMemo(
-        () =>
-            makeLakeAlphaSampler(
-                lakeAlphaMap.image as CanvasImageSource & {
-                    width: number;
-                    height: number;
-                },
-            ),
-        [lakeAlphaMap],
-    );
-
-    const clamps = useMemo(
-        () => getGrassBladesPositions(sampleLakeAlpha),
-        [sampleLakeAlpha],
-    );
+    const clamps = useMemo(() => getGrassBladesPositions(), []);
 
     return (
         <group>
-            <Ground />
+            <Terrain />
             <GrassField positions={clamps} />
         </group>
     );

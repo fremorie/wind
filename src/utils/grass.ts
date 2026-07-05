@@ -1,5 +1,5 @@
-const COUNT = 30000;
-const PLANE_SIZE = 20;
+const COUNT = 10000;
+const PLANE_SIZE = 100;
 const TURBINE_POSITIONS: [number, number][] = [
     [-7, -5],
     [7, -3],
@@ -10,9 +10,6 @@ const TURBINE_CLEAR_RADIUS = 0.6;
 // Terrain height is displaced in the vertex shader (GPU), so the CPU-side
 // geometry is a flat plane at y = 0. Grass just sits slightly below that.
 const GRASS_Y = -0.01;
-
-// Skip grass where the lake alpha map is brighter than this (0 = land, 1 = lake).
-const LAKE_ALPHA_THRESHOLD = 0.1;
 
 // Reads the red channel of the lake alpha map at world (x, z), using the same
 // UV mapping the ground shader uses: the plane is centered at the origin and
@@ -50,12 +47,10 @@ export function makeLakeAlphaSampler(
 }
 
 export function getGrassBladesPositions(
-    sampleLakeAlpha: (x: number, z: number) => number,
     count: number = COUNT,
     planeSize: number = PLANE_SIZE,
     turbinePositions: Array<number[]> = TURBINE_POSITIONS,
     turbineClearRadius: number = TURBINE_CLEAR_RADIUS,
-    lakeAlphaThreshold: number = LAKE_ALPHA_THRESHOLD,
     grassY: number = GRASS_Y,
 ) {
     const result: Array<[number, number, number]> = [];
@@ -68,7 +63,6 @@ export function getGrassBladesPositions(
             )
         )
             continue;
-        if (sampleLakeAlpha(x, z) > lakeAlphaThreshold) continue;
 
         result.push([x, grassY, z]);
     }
