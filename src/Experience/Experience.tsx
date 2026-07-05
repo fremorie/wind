@@ -1,9 +1,9 @@
-import { Suspense } from "react";
-import { OrbitControls, Sky } from '@react-three/drei'
+import { Suspense } from 'react';
+import { OrbitControls, Sky } from '@react-three/drei';
 // import { Perf } from 'r3f-perf'
-import { WindTurbine } from "./WindTurbine";
+import { WindTurbine } from './WindTurbine';
 import { Box } from './Box';
-import { Grass } from "./Grass";
+import { Grass } from './Grass';
 
 export function Experience() {
     return (
@@ -16,8 +16,8 @@ export function Experience() {
 
             <directionalLight
                 castShadow
-                position={ [ 1, 2, 3 ] }
-                intensity={ 4.5 }
+                position={[1, 2, 3]}
+                intensity={4.5}
                 shadow-normalBias={0.04}
                 shadow-camera-left={-15}
                 shadow-camera-right={15}
@@ -28,19 +28,22 @@ export function Experience() {
                 shadow-radius={10}
                 shadow-mapSize={[2048, 2048]}
             />
-            <ambientLight intensity={ 1.5 } />
+            <ambientLight intensity={1.5} />
 
-            <Box position-y={-0.3}/>
+            <Box position-y={-0.3} />
 
             <Suspense fallback={null}>
                 <Grass />
             </Suspense>
 
             <Suspense fallback={null}>
-                <WindTurbine rotation={[0, Math.PI, 0]} position={[-7, 0, -5]} />
+                <WindTurbine
+                    rotation={[0, Math.PI, 0]}
+                    position={[-7, 0, -5]}
+                />
                 <WindTurbine rotation={[0, Math.PI, 0]} position={[7, 0, -3]} />
                 <WindTurbine rotation={[0, Math.PI, 0]} position={[0, 0, -8]} />
             </Suspense>
         </>
-    )
+    );
 }
