@@ -1,8 +1,6 @@
 uniform float uTime;
 uniform float uPositionFrequency;
 uniform float uStrength;
-uniform float uWarpFrequency;
-uniform float uWarpStrength;
 
 varying vec3 vPosition;
 varying float vUpDot;
@@ -10,14 +8,8 @@ varying float vUpDot;
 #include "../includes/simplexNoise2d.glsl"
 
 float getElevation(vec2 position) {
-    vec2 warpedPosition = position;
-    warpedPosition += uTime * 0.2;
-    warpedPosition += simplexNoise2d(warpedPosition * uWarpFrequency * uPositionFrequency) * uWarpStrength;
-
     float elevation = 0.0;
-    elevation += simplexNoise2d(warpedPosition * uPositionFrequency) / 2.0;
-    elevation += simplexNoise2d(warpedPosition * uPositionFrequency * 2.0) / 4.0;
-    elevation += simplexNoise2d(warpedPosition * uPositionFrequency * 4.0) / 8.0;
+    elevation += simplexNoise2d(position * uPositionFrequency) / 2.0;
 
     float elevationSign = sign(elevation);
     elevation = elevationSign * pow(abs(elevation), 2.0);
