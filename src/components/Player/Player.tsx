@@ -4,8 +4,10 @@ import { type Mesh } from 'three';
 import { useFrame } from '@react-three/fiber';
 
 import useGame from '../../store/useGame';
+import { getElevation } from '../../utils/elevation';
 
 const SPEED = 5;
+const SPHERE_RADIUS = 1;
 
 export function Player() {
     const playerMeshRef = useRef<Mesh>(null);
@@ -40,6 +42,9 @@ export function Player() {
         if (isMovingForward) {
             // eslint-disable-next-line react-hooks/immutability
             playerPosition.x += SPEED * delta;
+            playerPosition.y =
+                getElevation(playerPosition.x, playerPosition.z) +
+                SPHERE_RADIUS;
             playerMeshRef.current.position.copy(playerPosition);
         }
 
