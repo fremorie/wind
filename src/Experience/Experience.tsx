@@ -1,6 +1,7 @@
 import { OrbitControls, Sky } from '@react-three/drei';
 
 import { Terrain } from '../components/Terrain';
+import { Player } from '../components/Player';
 
 export function Experience() {
     return (
@@ -28,6 +29,7 @@ export function Experience() {
             <axesHelper />
 
             <Terrain />
+            <Player />
         </>
     );
 }

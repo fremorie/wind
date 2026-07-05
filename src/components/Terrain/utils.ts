@@ -12,6 +12,9 @@ export function generateTerrainChunkPositions(gridSize: number = GRID_SIZE) {
     return positions;
 }
 
-export function getPlayerPosition() {
-    return [0, 0, 0];
+export function getPlayerPosition(
+    gridSize = GRID_SIZE,
+    chunkSize = CHUNK_SIZE,
+) {
+    return [0, 0, ((gridSize - 1) * chunkSize) / 2];
 }
