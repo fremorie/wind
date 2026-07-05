@@ -4,8 +4,8 @@ import * as THREE from 'three'
 import { extend, useFrame, type ThreeElement } from '@react-three/fiber'
 // import { useControls } from 'leva'
 
-import vertexShader from './shaders/grass/vertex.glsl'
-import fragmentShader from './shaders/grass/fragment.glsl'
+import vertexShader from '../../shaders/grass/vertex.glsl'
+import fragmentShader from '../../shaders/grass/fragment.glsl'
 
 const GrassBladeMaterial = shaderMaterial(
     {

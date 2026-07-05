@@ -1,25 +1,61 @@
+#include <common>
+#include <shadowmap_pars_vertex>
+
 uniform float uTime;
-uniform sampler2D uLakeAlphaMap;
-uniform float uPlaneSize;
+
+attribute float aBladeRandom;
 
 varying vec2 vUv;
 
-void main() {
-    // Wind animation
-    vec3 newPosition = position;
-    float wind = sin(uTime) * uv.y * 0.2;
-    newPosition.x += wind;
-    newPosition.z += wind * 0.01;
-    csm_Position = newPosition;
+#include "../includes/perlinNoise.glsl"
 
-    // Hide blade if it sits over the lake.
-    // instanceMatrix[3].xz is the blade's local XZ position (group only offsets Y so this equals world XZ).
-    // The ground plane is PLANE_SIZE × PLANE_SIZE, rotated -π/2 around X, so:
-    //   u = x / size + 0.5,  v = -z / size + 0.5
-    vec2 bladeXZ = instanceMatrix[3].xz;
-    vec2 lakeUV  = vec2(bladeXZ.x / uPlaneSize + 0.5, -bladeXZ.y / uPlaneSize + 0.5);
-    float lakeAlpha = texture2D(uLakeAlphaMap, lakeUV).r;
-    csm_Position.y -= step(0.1, lakeAlpha) * 1000.0;
+const vec2 WIND_DIRECTION = vec2(0.8, -0.5);
+const float WIND_SPEED = 0.3;
+const float WIND_FREQUENCY = 0.1;
+const float WIND_STRENGTH = 0.05;
+
+void main() {
+    vec3 instanceWorldOrigin = (modelMatrix * instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
+    vec2 windSamplePosition =
+        instanceWorldOrigin.xz * WIND_FREQUENCY - WIND_DIRECTION * uTime * WIND_SPEED;
+
+    // Wind gusts
+    float gust = cnoise(vec3(windSamplePosition, 0.0));
+    float flutter = cnoise(
+        vec3(windSamplePosition * 3.0 + aBladeRandom * 10.0, uTime * 0.6 + aBladeRandom)
+    );
+
+    // Each blade bends a little more or less than its neighbours
+    float bladeStrength = 0.8 + aBladeRandom * 0.6;
+    float windAmount = (gust + flutter * 0.3) * bladeStrength;
+
+    float windMultiplier = smoothstep(0.0, 1.0, uv.y);
+
+    vec3 localPosition = position;
+    localPosition.x += windAmount * windMultiplier * WIND_STRENGTH;
+
+    // Always face the camera
+    vec3 cameraModelSpace = (inverse(modelMatrix) * vec4(cameraPosition, 1.0)).xyz;
+    vec3 instanceModelOrigin = (instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
+    vec3 toCamera = cameraModelSpace - instanceModelOrigin;
+    float facingAngle = atan(toCamera.x, toCamera.z);
+    float sinAngle = sin(facingAngle);
+    float cosAngle = cos(facingAngle);
+    localPosition = vec3(
+        localPosition.x * cosAngle + localPosition.z * sinAngle,
+        localPosition.y,
+        -localPosition.x * sinAngle + localPosition.z * cosAngle
+    );
+
+    vec4 worldPosition = modelMatrix * instanceMatrix * vec4(localPosition, 1.0);
+
+    vec4 viewPosition = viewMatrix * worldPosition;
+    vec4 projectionPosition = projectionMatrix * viewPosition;
+    gl_Position = projectionPosition;
 
     vUv = uv;
+
+    // Feed world position + normal into three's shadow chunk
+    vec3 transformedNormal = normalMatrix * normal;
+    #include <shadowmap_vertex>
 }

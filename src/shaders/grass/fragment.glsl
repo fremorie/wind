@@ -1,17 +1,49 @@
-uniform sampler2D alphaMap;
+#include <common>
+#include <shadowmap_pars_fragment>
+
+uniform float uTime;
+uniform sampler2D uAlphaMap;
+uniform vec3 uCenterColor;
+uniform vec3 uShadowColor;
+
 varying vec2 vUv;
 
+// Set by the renderer from the receiveShadow flag.
+uniform bool receiveShadow;
+
 void main() {
-    float alpha = texture2D(alphaMap, vUv).r;
+    float alpha = texture2D(uAlphaMap, vUv).r;
 
-    if (alpha < 0.15) discard;
+    if (alpha < 0.9) {
+        discard;
+    }
 
-    vec3 baseColor = vec3(0.2, 1.0, 0.1);
+    vec3 baseColor = uCenterColor;
 
     // Make sides darker
-    vec3 color = vec3(vUv.y, vUv.y, 0.0);
-    color = mix(baseColor, color, 0.5);
+    vec3 finalColor = vec3(vUv.y, vUv.y, 0.0);
+    finalColor = mix(baseColor, finalColor, 0.5);
+
+    // Shadows
+    float directionalShadow = 1.0;
+    #if NUM_DIR_LIGHT_SHADOWS > 0
+        vec4 shadowCoord = vDirectionalShadowCoord[0];
+        directionalShadow = getShadow(
+            directionalShadowMap[0],
+            directionalLightShadows[0].shadowMapSize,
+            directionalLightShadows[0].shadowIntensity,
+            directionalLightShadows[0].shadowBias,
+            directionalLightShadows[0].shadowRadius,
+            shadowCoord
+        );
+    #endif
+    if (!receiveShadow) directionalShadow = 1.0;
+
+    vec3 shadowTint = finalColor * uShadowColor;
+    finalColor = mix(shadowTint, finalColor, directionalShadow);
 
     // Final color
-    csm_DiffuseColor = vec4(color, 1.0);
+    gl_FragColor = vec4(finalColor, 1.0);
+
+    #include <colorspace_fragment>
 }
