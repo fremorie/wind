@@ -15,6 +15,7 @@ export function TerrainChunk({ position }: Props) {
             material={terrainMaterial}
             customDepthMaterial={terrainDepthMaterial}
             position={position}
+            receiveShadow
         />
     );
 }

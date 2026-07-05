@@ -1,18 +1,17 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useKeyboardControls } from '@react-three/drei';
 import { type Mesh } from 'three';
 import { useFrame } from '@react-three/fiber';
 
-import { getPlayerInitialPosition } from '../Terrain/utils';
 import useGame from '../../store/useGame';
 
 const SPEED = 5;
 
 export function Player() {
     const playerMeshRef = useRef<Mesh>(null);
-    const initialPosition = useMemo(() => getPlayerInitialPosition(), []);
     const [subscribeKeys] = useKeyboardControls();
 
+    const playerPosition = useGame((state) => state.playerPosition);
     const moveForward = useGame((state) => state.moveForward);
     const stop = useGame((state) => state.stop);
     const isMovingForward = useGame((state) => state.isMovingForward);
@@ -22,10 +21,8 @@ export function Player() {
             (state) => state.forward,
             (value) => {
                 if (value) {
-                    console.log('Moving forward');
                     moveForward();
                 } else {
-                    console.log('Stopping');
                     stop();
                 }
             },
@@ -34,23 +31,26 @@ export function Player() {
         return () => unsubscribeMoveForward();
     }, [moveForward, stop, subscribeKeys]);
 
+    // eslint-disable-next-line react-hooks/immutability
     useFrame((state, delta) => {
         if (!playerMeshRef.current) {
             return;
         }
 
         if (isMovingForward) {
-            playerMeshRef.current.position.x += SPEED * delta;
+            // eslint-disable-next-line react-hooks/immutability
+            playerPosition.x += SPEED * delta;
+            playerMeshRef.current.position.copy(playerPosition);
         }
 
-        state.camera.position.x = playerMeshRef.current.position.x - 20;
-        state.camera.lookAt(playerMeshRef.current.position);
+        state.camera.position.x = playerPosition.x - 20;
+        state.camera.lookAt(playerPosition);
     });
 
     return (
-        <mesh ref={playerMeshRef} position={initialPosition}>
+        <mesh ref={playerMeshRef} position={playerPosition} castShadow>
             <sphereGeometry />
-            <meshBasicMaterial color="mediumpurple" />
+            <meshStandardMaterial color="mediumpurple" />
         </mesh>
     );
 }
