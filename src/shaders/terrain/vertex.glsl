@@ -3,9 +3,14 @@ uniform float uPositionFrequency;
 uniform float uStrength;
 uniform vec2 uPlayerPosition;
 uniform float uCurvature;
+uniform vec3 uRoadCenter;
+uniform float uRoadWidth;
+uniform float uRoadAmplitude;
+uniform float uRoadWaviness;
 
 varying vec3 vPosition;
 varying float vUpDot;
+varying float vRoadMask;
 
 #include "../includes/simplexNoise2d.glsl"
 #include "../includes/curveWorld.glsl"
@@ -21,10 +26,18 @@ float getElevation(vec2 position) {
     return elevation;
 }
 
+float roadCenterZ(float x) {
+    return uRoadCenter.z + uRoadAmplitude * sin(x * uRoadWaviness);
+}
+
 void main() {
     // Sample the noise field in world space so neighbouring chunks line up
     // seamlessly (modelMatrix carries this chunk's offset per draw call).
     vec2 worldUV = (modelMatrix * vec4(csm_Position, 1.0)).xz;
+
+    // Road
+    float distanceToRoad = abs(worldUV.y - roadCenterZ(worldUV.x));
+    float roadMask = 1.0 - smoothstep(uRoadWidth - 0.2, uRoadWidth, distanceToRoad);
 
     // Neighbours
     float shift = 0.01;
@@ -42,10 +55,11 @@ void main() {
     vec3 toB = normalize(positionB - csm_Position);
     csm_Normal = cross(toA, toB);
 
+    // Varyings
     vPosition = csm_Position;
     vPosition.xz = worldUV + uTime * 0.2;
-
     vUpDot = dot(csm_Normal, vec3(0.0, 1.0, 0.0));
+    vRoadMask = roadMask;
 
     // Curve world
     csm_Position = curveWorld(csm_Position, worldUV, uPlayerPosition, uCurvature);

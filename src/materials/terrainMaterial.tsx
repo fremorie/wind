@@ -3,15 +3,26 @@ import * as THREE from 'three';
 
 import terrainVertexShader from '../shaders/terrain/vertex.glsl';
 import terrainFragmentShader from '../shaders/terrain/fragment.glsl';
+import { GRID_TOTAL_WIDTH } from '../utils/constants';
 
 export const terrainUniforms = {
     uPositionFrequency: new THREE.Uniform(0.03),
     uStrength: new THREE.Uniform(10.0),
     uTime: new THREE.Uniform(0),
 
-    uColorGrass: new THREE.Uniform(new THREE.Color('#85d534')),
+    uColorGrass: new THREE.Uniform(new THREE.Color('#608d34')),
+    uColorDirt: new THREE.Uniform(new THREE.Color('#90895b')),
+
     uPlayerPosition: new THREE.Uniform(new THREE.Vector2()),
     uCurvature: new THREE.Uniform(0.001),
+
+    // Road
+    uRoadCenter: new THREE.Uniform(
+        new THREE.Vector3(GRID_TOTAL_WIDTH / 2, 0, GRID_TOTAL_WIDTH / 2),
+    ),
+    uRoadWidth: new THREE.Uniform(5),
+    uRoadAmplitude: new THREE.Uniform(0),
+    uRoadWaviness: new THREE.Uniform(0),
 };
 
 export const terrainDepthMaterial = new CustomShaderMaterial({
@@ -27,7 +38,7 @@ export const terrainDepthMaterial = new CustomShaderMaterial({
 export const terrainMaterial = new CustomShaderMaterial({
     // MeshStandardMaterial props
     metalness: 0,
-    roughness: 0.5,
+    roughness: 0.8,
     color: '#85d534',
 
     // Shader (CSM props)
