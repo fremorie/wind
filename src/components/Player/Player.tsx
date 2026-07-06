@@ -12,6 +12,7 @@ import { Bicycle } from '../Bicycle';
 
 const SPEED = 10;
 const SPHERE_RADIUS = 1;
+const PITCH_DELTA = 1;
 
 export function Player() {
     const playerMeshRef = useRef<Mesh>(null);
@@ -25,6 +26,8 @@ export function Player() {
         if (!playerMeshRef.current) {
             return;
         }
+
+        playerMeshRef.current.rotation.order = 'YXZ';
 
         const { forward, backward, leftward, rightward } = getKeys();
 
@@ -46,6 +49,7 @@ export function Player() {
             getElevation(playerPosition.x, playerPosition.z) + SPHERE_RADIUS;
         playerMeshRef.current.position.copy(playerPosition);
 
+        // Yaw
         if (playerDirection.current.lengthSq() > 0) {
             const directionAngle = Math.atan2(
                 playerDirection.current.x,
@@ -54,6 +58,23 @@ export function Player() {
 
             playerMeshRef.current.rotation.y = directionAngle;
         }
+
+        // Pitch
+        const forwardX = Math.sin(playerMeshRef.current.rotation.y);
+        const forwardZ = Math.cos(playerMeshRef.current.rotation.y);
+
+        const ahead = getElevation(
+            playerPosition.x + forwardX * PITCH_DELTA,
+            playerPosition.z + forwardZ * PITCH_DELTA,
+        );
+
+        const behind = getElevation(
+            playerPosition.x - forwardX * PITCH_DELTA,
+            playerPosition.z - forwardZ * PITCH_DELTA,
+        );
+
+        const pitch = Math.atan2(ahead - behind, 2 * PITCH_DELTA);
+        playerMeshRef.current.rotation.x = -pitch;
 
         terrainMaterial.uniforms.uPlayerPosition.value.set(
             playerPosition.x,
@@ -70,7 +91,7 @@ export function Player() {
 
     return (
         <group ref={playerMeshRef} position={playerPosition}>
-            <Bicycle scale={0.005} />
+            <Bicycle scale={0.005} position-y={0.2} />
         </group>
     );
 }
