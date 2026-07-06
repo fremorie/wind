@@ -11,7 +11,7 @@ export const terrainUniforms = {
     uTime: new THREE.Uniform(0),
 
     uColorGrass: new THREE.Uniform(new THREE.Color('#608d34')),
-    uColorDirt: new THREE.Uniform(new THREE.Color('#90895b')),
+    uColorDirt: new THREE.Uniform(new THREE.Color('#c4bb82')),
 
     uPlayerPosition: new THREE.Uniform(new THREE.Vector2()),
     uCurvature: new THREE.Uniform(0.001),
