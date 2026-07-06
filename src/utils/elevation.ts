@@ -1,7 +1,16 @@
 import { simplexNoise2d } from './simplexNoise';
 import { terrainUniforms } from '../materials/terrainMaterial';
 
-export function getElevation(x: number, z: number): number {
+function smoothstep(edge0: number, edge1: number, x: number): number {
+    const t = Math.min(Math.max((x - edge0) / (edge1 - edge0), 0), 1);
+    return t * t * (3 - 2 * t);
+}
+
+function mix(a: number, b: number, t: number): number {
+    return a + (b - a) * t;
+}
+
+function getBaseElevation(x: number, z: number): number {
     let elevation = 0;
     elevation +=
         simplexNoise2d(
@@ -14,4 +23,33 @@ export function getElevation(x: number, z: number): number {
     elevation *= terrainUniforms.uStrength.value;
 
     return elevation;
+}
+
+function roadCenterZ(x: number): number {
+    return (
+        terrainUniforms.uRoadCenter.value.z +
+        terrainUniforms.uRoadAmplitude.value *
+            Math.sin(x * terrainUniforms.uRoadWaviness.value)
+    );
+}
+
+function getRoadMask(x: number, z: number): number {
+    const distanceToRoad = Math.abs(z - roadCenterZ(x));
+    return (
+        1 -
+        smoothstep(
+            terrainUniforms.uRoadWidth.value -
+                terrainUniforms.uRoadFalloff.value,
+            terrainUniforms.uRoadWidth.value,
+            distanceToRoad,
+        )
+    );
+}
+
+function getRoadElevation(x: number): number {
+    return getBaseElevation(x, roadCenterZ(x));
+}
+
+export function getElevation(x: number, z: number): number {
+    return mix(getBaseElevation(x, z), getRoadElevation(x), getRoadMask(x, z));
 }

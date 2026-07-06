@@ -20,9 +20,10 @@ export const terrainUniforms = {
     uRoadCenter: new THREE.Uniform(
         new THREE.Vector3(GRID_TOTAL_WIDTH / 2, 0, GRID_TOTAL_WIDTH / 2),
     ),
-    uRoadWidth: new THREE.Uniform(5),
+    uRoadWidth: new THREE.Uniform(8),
     uRoadAmplitude: new THREE.Uniform(0),
     uRoadWaviness: new THREE.Uniform(0),
+    uRoadFalloff: new THREE.Uniform(5),
 };
 
 export const terrainDepthMaterial = new CustomShaderMaterial({

@@ -21,6 +21,7 @@ export function useTerrainControls() {
         uColorDirt,
         uRoadAmplitude,
         uRoadWaviness,
+        uRoadFalloff,
     } = useControls('Terrain', {
         Shape: folder({
             uPositionFrequency: {
@@ -59,6 +60,12 @@ export function useTerrainControls() {
                 max: 10,
                 step: 0.001,
             },
+            uRoadFalloff: {
+                value: terrainUniforms.uRoadFalloff.value,
+                min: 0,
+                max: 10,
+                step: 0.001,
+            },
         }),
     });
 
@@ -72,6 +79,7 @@ export function useTerrainControls() {
 
         terrainUniforms.uRoadAmplitude.value = uRoadAmplitude;
         terrainUniforms.uRoadWaviness.value = uRoadWaviness;
+        terrainUniforms.uRoadFalloff.value = uRoadFalloff;
     }, [
         uPositionFrequency,
         uStrength,
@@ -80,5 +88,6 @@ export function useTerrainControls() {
         uColorDirt,
         uRoadAmplitude,
         uRoadWaviness,
+        uRoadFalloff,
     ]);
 }

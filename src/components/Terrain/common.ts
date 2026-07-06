@@ -5,8 +5,8 @@ import { CHUNK_SIZE } from '../../utils/constants';
 export const terrainGeometry = new THREE.PlaneGeometry(
     CHUNK_SIZE,
     CHUNK_SIZE,
-    8,
-    8,
+    132,
+    132,
 );
 
 terrainGeometry.rotateX(-Math.PI / 2);

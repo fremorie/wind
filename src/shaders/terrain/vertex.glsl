@@ -7,6 +7,7 @@ uniform vec3 uRoadCenter;
 uniform float uRoadWidth;
 uniform float uRoadAmplitude;
 uniform float uRoadWaviness;
+uniform float uRoadFalloff;
 
 varying vec3 vPosition;
 varying float vUpDot;
@@ -30,14 +31,34 @@ float roadCenterZ(float x) {
     return uRoadCenter.z + uRoadAmplitude * sin(x * uRoadWaviness);
 }
 
+float getRoadMask(vec2 position) {
+    float distanceToRoad = abs(position.y - roadCenterZ(position.x));
+    float roadMask = 1.0 - smoothstep(uRoadWidth - uRoadFalloff, uRoadWidth, distanceToRoad);
+
+    return roadMask;
+}
+
+float getRoadElevation(vec2 position) {
+    return getElevation(
+        vec2(position.x, roadCenterZ(position.x))
+    );
+}
+
+float getFinalElevation(vec2 position) {
+    return mix(
+        getElevation(position),
+        getRoadElevation(position),
+        getRoadMask(position)
+    );
+}
+
 void main() {
     // Sample the noise field in world space so neighbouring chunks line up
     // seamlessly (modelMatrix carries this chunk's offset per draw call).
     vec2 worldUV = (modelMatrix * vec4(csm_Position, 1.0)).xz;
 
     // Road
-    float distanceToRoad = abs(worldUV.y - roadCenterZ(worldUV.x));
-    float roadMask = 1.0 - smoothstep(uRoadWidth - 0.2, uRoadWidth, distanceToRoad);
+    float roadMask = getRoadMask(worldUV);
 
     // Neighbours
     float shift = 0.01;
@@ -45,10 +66,10 @@ void main() {
     vec3 positionB = csm_Position + vec3(0.0, 0.0, - shift);
 
     // Elevation
-    float elevation = getElevation(worldUV);
+    float elevation = getFinalElevation(worldUV);
     csm_Position.y += elevation;
-    positionA.y = getElevation(worldUV + vec2(shift, 0.0));
-    positionB.y = getElevation(worldUV + vec2(0.0, - shift));
+    positionA.y = getFinalElevation(worldUV + vec2(shift, 0.0));
+    positionB.y = getFinalElevation(worldUV + vec2(0.0, - shift));
 
     // Compute normal
     vec3 toA = normalize(positionA - csm_Position);
