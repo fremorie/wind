@@ -10,12 +10,9 @@ interface GameState {
 
 export default create<GameState>()(
     subscribeWithSelector(() => {
+        const center = ((GRID_SIZE - 1) * CHUNK_SIZE) / 2;
         return {
-            playerPosition: new THREE.Vector3(
-                CHUNK_SIZE,
-                0,
-                ((GRID_SIZE - 1) * CHUNK_SIZE) / 2,
-            ),
+            playerPosition: new THREE.Vector3(center, 0, center),
         };
     }),
 );

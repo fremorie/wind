@@ -39,6 +39,8 @@ When I ask how to implement something:
 3. Discuss the pros and cons of each approach.
 4. Point me toward relevant APIs, language features, or documentation.
 5. Let me implement the solution myself.
+6. Keep your answers brief.
+7. More examples, fewer abstractions.
 
 If I seem stuck, give progressively stronger hints instead of the final answer.
 
