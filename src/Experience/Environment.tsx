@@ -1,5 +1,5 @@
 import { Sky } from '@react-three/drei';
-import { useRef } from 'react';
+import { type ComponentRef, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { type DirectionalLight } from 'three';
 
@@ -7,10 +7,12 @@ import useGame from '../store/useGame';
 
 export function Environment() {
     const lightRef = useRef<DirectionalLight>(null);
+    const skyRef = useRef<ComponentRef<typeof Sky>>(null);
+
     const playerPosition = useGame((state) => state.playerPosition);
 
     useFrame(() => {
-        if (!lightRef.current) return;
+        if (!lightRef.current || !skyRef.current) return;
 
         // keep the light at a fixed offset above/beside the player...
         lightRef.current.position.set(
@@ -21,11 +23,14 @@ export function Environment() {
         // ...and aim its shadow box at the player
         lightRef.current.target.position.copy(playerPosition);
         lightRef.current.target.updateMatrixWorld();
+
+        // Sky follows the player
+        skyRef.current.position.copy(playerPosition);
     });
 
     return (
         <>
-            <Sky />
+            <Sky ref={skyRef} />
             <directionalLight
                 ref={lightRef}
                 castShadow
