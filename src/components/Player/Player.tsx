@@ -46,6 +46,15 @@ export function Player() {
             getElevation(playerPosition.x, playerPosition.z) + SPHERE_RADIUS;
         playerMeshRef.current.position.copy(playerPosition);
 
+        if (playerDirection.current.lengthSq() > 0) {
+            const directionAngle = Math.atan2(
+                playerDirection.current.x,
+                playerDirection.current.z,
+            );
+
+            playerMeshRef.current.rotation.y = directionAngle;
+        }
+
         terrainMaterial.uniforms.uPlayerPosition.value.set(
             playerPosition.x,
             playerPosition.z,
@@ -61,7 +70,7 @@ export function Player() {
 
     return (
         <group ref={playerMeshRef} position={playerPosition}>
-            <Bicycle scale={0.005} rotation-y={Math.PI / 2} />
+            <Bicycle scale={0.005} />
         </group>
     );
 }
