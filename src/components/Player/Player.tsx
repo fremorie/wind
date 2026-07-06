@@ -1,38 +1,23 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { useKeyboardControls } from '@react-three/drei';
 import { type Mesh } from 'three';
 import { useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
 
 import useGame from '../../store/useGame';
 import { getElevation } from '../../utils/elevation';
 import { terrainMaterial } from '../../materials/terrainMaterial';
+import { updatePlayerDirection } from '../../utils/player';
 
 const SPEED = 10;
 const SPHERE_RADIUS = 1;
 
 export function Player() {
     const playerMeshRef = useRef<Mesh>(null);
-    const [subscribeKeys] = useKeyboardControls();
+    const [, getKeys] = useKeyboardControls();
 
     const playerPosition = useGame((state) => state.playerPosition);
-    const moveForward = useGame((state) => state.moveForward);
-    const stop = useGame((state) => state.stop);
-    const isMovingForward = useGame((state) => state.isMovingForward);
-
-    useEffect(() => {
-        const unsubscribeMoveForward = subscribeKeys(
-            (state) => state.forward,
-            (value) => {
-                if (value) {
-                    moveForward();
-                } else {
-                    stop();
-                }
-            },
-        );
-
-        return () => unsubscribeMoveForward();
-    }, [moveForward, stop, subscribeKeys]);
+    const playerDirection = useRef<THREE.Vector3>(null);
 
     // eslint-disable-next-line react-hooks/immutability
     useFrame((state, delta) => {
@@ -40,14 +25,25 @@ export function Player() {
             return;
         }
 
-        if (isMovingForward) {
-            // eslint-disable-next-line react-hooks/immutability
-            playerPosition.x += SPEED * delta;
-            playerPosition.y =
-                getElevation(playerPosition.x, playerPosition.z) +
-                SPHERE_RADIUS;
-            playerMeshRef.current.position.copy(playerPosition);
+        const { forward, backward, leftward, rightward } = getKeys();
+
+        if (!playerDirection.current) {
+            playerDirection.current = new THREE.Vector3(0, 0, 0);
         }
+
+        updatePlayerDirection(playerDirection.current, {
+            forward,
+            backward,
+            leftward,
+            rightward,
+        });
+
+        // eslint-disable-next-line react-hooks/immutability
+        playerPosition.x += playerDirection.current.x * SPEED * delta;
+        playerPosition.z += playerDirection.current.z * SPEED * delta;
+        playerPosition.y =
+            getElevation(playerPosition.x, playerPosition.z) + SPHERE_RADIUS;
+        playerMeshRef.current.position.copy(playerPosition);
 
         terrainMaterial.uniforms.uPlayerPosition.value.set(
             playerPosition.x,
