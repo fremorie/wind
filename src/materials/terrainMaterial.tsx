@@ -10,6 +10,8 @@ export const terrainUniforms = {
     uTime: new THREE.Uniform(0),
 
     uColorGrass: new THREE.Uniform(new THREE.Color('#85d534')),
+    uPlayerPosition: new THREE.Uniform(new THREE.Vector2()),
+    uCurvature: new THREE.Uniform(0.001),
 };
 
 export const terrainDepthMaterial = new CustomShaderMaterial({

@@ -5,8 +5,9 @@ import { useFrame } from '@react-three/fiber';
 
 import useGame from '../../store/useGame';
 import { getElevation } from '../../utils/elevation';
+import { terrainMaterial } from '../../materials/terrainMaterial';
 
-const SPEED = 5;
+const SPEED = 10;
 const SPHERE_RADIUS = 1;
 
 export function Player() {
@@ -47,6 +48,11 @@ export function Player() {
                 SPHERE_RADIUS;
             playerMeshRef.current.position.copy(playerPosition);
         }
+
+        terrainMaterial.uniforms.uPlayerPosition.value.set(
+            playerPosition.x,
+            playerPosition.z,
+        );
 
         state.camera.position.set(
             playerPosition.x - 20,

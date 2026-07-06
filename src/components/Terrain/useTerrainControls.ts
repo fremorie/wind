@@ -13,9 +13,8 @@ const hex = (color: Color) => `#${color.getHexString()}`;
  * React Compiler lint rule.
  */
 export function useTerrainControls() {
-    const { uPositionFrequency, uStrength, uColorGrass } = useControls(
-        'Terrain',
-        {
+    const { uPositionFrequency, uStrength, uColorGrass, uCurvature } =
+        useControls('Terrain', {
             Shape: folder({
                 uPositionFrequency: {
                     value: terrainUniforms.uPositionFrequency.value,
@@ -29,17 +28,23 @@ export function useTerrainControls() {
                     max: 10,
                     step: 0.001,
                 },
+                uCurvature: {
+                    value: terrainUniforms.uCurvature.value,
+                    min: 0,
+                    max: 0.1,
+                    step: 0.0001,
+                },
             }),
             Colors: folder({
                 uColorGrass: { value: hex(terrainUniforms.uColorGrass.value) },
             }),
-        },
-    );
+        });
 
     useEffect(() => {
         terrainUniforms.uPositionFrequency.value = uPositionFrequency;
         terrainUniforms.uStrength.value = uStrength;
+        terrainUniforms.uCurvature.value = uCurvature;
 
         terrainUniforms.uColorGrass.value.set(uColorGrass);
-    }, [uPositionFrequency, uStrength, uColorGrass]);
+    }, [uPositionFrequency, uStrength, uColorGrass, uCurvature]);
 }

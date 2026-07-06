@@ -1,11 +1,14 @@
 uniform float uTime;
 uniform float uPositionFrequency;
 uniform float uStrength;
+uniform vec2 uPlayerPosition;
+uniform float uCurvature;
 
 varying vec3 vPosition;
 varying float vUpDot;
 
 #include "../includes/simplexNoise2d.glsl"
+#include "../includes/curveWorld.glsl"
 
 float getElevation(vec2 position) {
     float elevation = 0.0;
@@ -43,4 +46,7 @@ void main() {
     vPosition.xz = worldUV + uTime * 0.2;
 
     vUpDot = dot(csm_Normal, vec3(0.0, 1.0, 0.0));
+
+    // Curve world
+    csm_Position = curveWorld(csm_Position, worldUV, uPlayerPosition, uCurvature);
 }
