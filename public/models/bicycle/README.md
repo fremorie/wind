@@ -1,0 +1,5 @@
+# Bicycle model
+
+Source: https://poly.pizza/m/5pBoRkAPQk6
+
+Bicycle by [Poly by Google](https://poly.pizza/u/Poly%20by%20Google) [CC-BY](https://creativecommons.org/licenses/by/3.0/) via Poly Pizza(https://poly.pizza/m/5pBoRkAPQk6)

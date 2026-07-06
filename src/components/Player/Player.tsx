@@ -8,6 +8,7 @@ import useGame from '../../store/useGame';
 import { getElevation } from '../../utils/elevation';
 import { terrainMaterial } from '../../materials/terrainMaterial';
 import { updatePlayerDirection } from '../../utils/player';
+import { Bicycle } from '../Bicycle';
 
 const SPEED = 10;
 const SPHERE_RADIUS = 1;
@@ -59,9 +60,8 @@ export function Player() {
     });
 
     return (
-        <mesh ref={playerMeshRef} position={playerPosition} castShadow>
-            <sphereGeometry />
-            <meshStandardMaterial color="mediumpurple" />
-        </mesh>
+        <group ref={playerMeshRef} position={playerPosition}>
+            <Bicycle scale={0.005} rotation-y={Math.PI / 2} />
+        </group>
     );
 }
