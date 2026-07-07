@@ -39,8 +39,9 @@ void main() {
     // Blade's ground position in world space
     vec2 base = instanceWorldOrigin.xz;
     // Move tiles around the player
+    vec2 tileCenter = uPlayerPosition + vec2(uTileSize * 0.5 - 20.0, 0.0);
     vec2 wrappedTile =
-        mod(base - uPlayerPosition + uTileSize * 0.5, uTileSize) - uTileSize * 0.5 + uPlayerPosition;
+        mod(base - tileCenter + uTileSize * 0.5, uTileSize) - uTileSize * 0.5 + tileCenter;
     vec2 shift = wrappedTile - base;
 
     // Wind gusts

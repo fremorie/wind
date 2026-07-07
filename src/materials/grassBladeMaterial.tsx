@@ -1,9 +1,10 @@
 import * as THREE from 'three';
-import { GRID_TOTAL_WIDTH } from '../utils/constants';
-import vertexShader from '../shaders/grass/vertex.glsl';
-import fragmentShader from '../shaders/grass/fragment.glsl';
 import { shaderMaterial } from '@react-three/drei';
 import { extend, type ThreeElement } from '@react-three/fiber';
+
+import { GRID_TOTAL_WIDTH, GRASS_TILE_SIZE } from '../utils/constants';
+import vertexShader from '../shaders/grass/vertex.glsl';
+import fragmentShader from '../shaders/grass/fragment.glsl';
 
 export const GrassBladeMaterial = shaderMaterial(
     {
@@ -27,9 +28,9 @@ export const GrassBladeMaterial = shaderMaterial(
         uRoadFalloff: 5,
 
         uPlayerPosition: new THREE.Vector2(),
-        uCurvature: 0.001,
+        uCurvature: 0.0007,
 
-        uTileSize: GRID_TOTAL_WIDTH,
+        uTileSize: GRASS_TILE_SIZE,
     },
     vertexShader,
     fragmentShader,

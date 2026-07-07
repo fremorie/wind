@@ -14,7 +14,7 @@ export const terrainUniforms = {
     uColorDirt: new THREE.Uniform(new THREE.Color('#c4bb82')),
 
     uPlayerPosition: new THREE.Uniform(new THREE.Vector2()),
-    uCurvature: new THREE.Uniform(0.001),
+    uCurvature: new THREE.Uniform(0.0007),
 
     // Road
     uRoadCenter: new THREE.Uniform(
