@@ -4,6 +4,7 @@ import { Environment } from './Environment';
 import { Grass } from '../components/Grass';
 import { WindTurbine } from '../components/WindTurbine';
 import { GRID_TOTAL_WIDTH } from '../utils/constants';
+import { Cow } from '../components/Cow';
 
 export function Experience() {
     return (
@@ -15,6 +16,7 @@ export function Experience() {
             <Terrain />
             <Grass />
             <Player />
+            <Cow />
 
             {/* Left side */}
             <WindTurbine
