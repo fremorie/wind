@@ -6,10 +6,6 @@ const MAX_BLADE_SCALE = 5;
 export const BLADE_WIDTH = 0.2;
 export const BLADE_HEIGHT = 0.3;
 
-// Vertical subdivisions so the blade can curve along its length instead of
-// tilting as a rigid strip.
-export const BLADE_HEIGHT_SEGMENTS = 6;
-
 const COUNT = 10000;
 const PLANE_SIZE = 100;
 const TURBINE_POSITIONS: [number, number][] = [

@@ -11,7 +11,6 @@ import {
 } from '../../materials/grassBladeMaterial';
 import {
     BLADE_HEIGHT,
-    BLADE_HEIGHT_SEGMENTS,
     BLADE_WIDTH,
     generateGrassBladesAttributes,
 } from '../../utils/grass';
@@ -36,7 +35,7 @@ export function GrassField({ positions, ...props }: Props) {
             BLADE_WIDTH,
             BLADE_HEIGHT,
             1,
-            BLADE_HEIGHT_SEGMENTS,
+            1,
         );
         // Move the origin to the base of the blade so it plants on the terrain
         // surface instead of sinking its lower half below ground.
