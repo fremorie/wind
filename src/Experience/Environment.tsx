@@ -4,12 +4,14 @@ import { useFrame } from '@react-three/fiber';
 import { type DirectionalLight } from 'three';
 
 import useGame from '../store/useGame';
+import { useSkyControls } from './useSkyControls';
 
 export function Environment() {
     const lightRef = useRef<DirectionalLight>(null);
     const skyRef = useRef<ComponentRef<typeof Sky>>(null);
 
     const playerPosition = useGame((state) => state.playerPosition);
+    const sky = useSkyControls();
 
     useFrame(() => {
         if (!lightRef.current || !skyRef.current) return;
@@ -30,7 +32,7 @@ export function Environment() {
 
     return (
         <>
-            <Sky ref={skyRef} />
+            <Sky ref={skyRef} {...sky} />
             <directionalLight
                 ref={lightRef}
                 castShadow
