@@ -27,7 +27,7 @@ export function GrassField({ positions, ...props }: Props) {
     const playerPosition = useGame((state) => state.playerPosition);
 
     const { shadowColor } = useControls('Grass Shadow', {
-        shadowColor: '#d3d9de',
+        shadowColor: '#88a9c4',
     });
 
     const bladeGeometry = useMemo(() => {

@@ -9,7 +9,7 @@ export const GrassBladeMaterial = shaderMaterial(
     {
         uTime: 0,
         uCenterColor: new THREE.Color('#608d34'),
-        uShadowColor: new THREE.Color('#d3d9de'),
+        uShadowColor: new THREE.Color('#88a9c4'),
         uAlphaMap: null as THREE.Texture | null,
 
         uPositionFrequency: 0.03,

@@ -26,6 +26,11 @@ const float WIND_SPEED = 0.7;
 const float WIND_FREQUENCY = 0.1;
 const float WIND_STRENGTH = 0.1;
 
+// How far the tip is shoved to the side as the player drives through.
+const float TRAIL_PUSH = 0.65;
+// Radius around the player within which grass bends.
+const float TRAIL_RADIUS = 3.0;
+
 void main() {
     vec3 instanceWorldOrigin = (modelMatrix * instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
     vec2 windSamplePosition =
@@ -37,7 +42,6 @@ void main() {
     vec2 wrappedTile =
         mod(base - uPlayerPosition + uTileSize * 0.5, uTileSize) - uTileSize * 0.5 + uPlayerPosition;
     vec2 shift = wrappedTile - base;
-
 
     // Wind gusts
     float gust = cnoise(vec3(windSamplePosition, 0.0));
@@ -70,6 +74,13 @@ void main() {
 
     vec4 worldPosition = modelMatrix * instanceMatrix * vec4(localPosition, 1.0);
     worldPosition.xz += shift;
+
+    // Bend the tip away from the player while they're driving through it.
+    vec2 fromPlayer = wrappedTile - uPlayerPosition;
+    float distToPlayer = length(fromPlayer);
+    float bend = 1.0 - smoothstep(0.0, TRAIL_RADIUS, distToPlayer);
+    vec2 leanDir = distToPlayer > 0.001 ? fromPlayer / distToPlayer : vec2(0.0);
+    worldPosition.xz += leanDir * bend * windMultiplier * TRAIL_PUSH;
 
     // Terrain elevation
     float elevation = getFinalElevation(wrappedTile);
