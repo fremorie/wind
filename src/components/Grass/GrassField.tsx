@@ -6,13 +6,32 @@ import { extend, useFrame, type ThreeElement } from '@react-three/fiber';
 
 import vertexShader from '../../shaders/grass/vertex.glsl';
 import fragmentShader from '../../shaders/grass/fragment.glsl';
+import { GRID_TOTAL_WIDTH } from '../../utils/constants';
+import useGame from '../../store/useGame';
 
 const GrassBladeMaterial = shaderMaterial(
     {
         uTime: 0,
-        uCenterColor: new THREE.Color('#6f8f46'),
+        uCenterColor: new THREE.Color('#608d34'),
         uShadowColor: new THREE.Color('#d3d9de'),
         uAlphaMap: null as THREE.Texture | null,
+
+        uPositionFrequency: 0.03,
+        uStrength: 10.0,
+
+        // Road
+        uRoadCenter: new THREE.Vector3(
+            GRID_TOTAL_WIDTH / 2,
+            0,
+            GRID_TOTAL_WIDTH / 2,
+        ),
+        uRoadWidth: 8,
+        uRoadAmplitude: 0,
+        uRoadWaviness: 0,
+        uRoadFalloff: 5,
+
+        uPlayerPosition: new THREE.Vector2(),
+        uCurvature: 0.001,
     },
     vertexShader,
     fragmentShader,
@@ -40,8 +59,8 @@ declare module '@react-three/fiber' {
 const MIN_BLADE_SCALE = 3;
 const MAX_BLADE_SCALE = 5;
 
-const BLADE_WIDTH = 0.5;
-const BLADE_HEIGHT = 1;
+const BLADE_WIDTH = 0.2;
+const BLADE_HEIGHT = 0.3;
 
 // Vertical subdivisions so the blade can curve along its length instead of
 // tilting as a rigid strip.
@@ -55,6 +74,8 @@ export function GrassField({ positions, ...props }: Props) {
     const meshRef = useRef<THREE.InstancedMesh>(null);
     const materialRef = useRef<GrassBladeMaterialImpl>(null);
     const bladeAlphaMap = useTexture('./textures/grassBladeSimplified.jpg');
+
+    const playerPosition = useGame((state) => state.playerPosition);
 
     // const { shadowColor } = useControls('Grass Shadow', {
     //     shadowColor: '#d3d9de',
@@ -129,6 +150,10 @@ export function GrassField({ positions, ...props }: Props) {
     useFrame((_, delta) => {
         if (materialRef.current) {
             materialRef.current.uTime += delta;
+            materialRef.current.uPlayerPosition.set(
+                playerPosition.x,
+                playerPosition.z,
+            );
         }
     });
 

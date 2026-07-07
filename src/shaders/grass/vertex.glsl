@@ -2,12 +2,23 @@
 #include <shadowmap_pars_vertex>
 
 uniform float uTime;
+uniform float uPositionFrequency;
+uniform vec2 uPlayerPosition;
+uniform float uCurvature;
+uniform float uStrength;
+uniform vec3 uRoadCenter;
+uniform float uRoadWidth;
+uniform float uRoadAmplitude;
+uniform float uRoadWaviness;
+uniform float uRoadFalloff;
 
 attribute float aBladeRandom;
 
 varying vec2 vUv;
 
 #include "../includes/perlinNoise.glsl"
+#include "../includes/elevation.glsl"
+#include "../includes/curveWorld.glsl"
 
 const vec2 WIND_DIRECTION = vec2(0.8, -0.5);
 const float WIND_SPEED = 0.3;
@@ -48,6 +59,13 @@ void main() {
     );
 
     vec4 worldPosition = modelMatrix * instanceMatrix * vec4(localPosition, 1.0);
+
+    // Terrain elevation
+    float elevation = getFinalElevation(instanceWorldOrigin.xz);
+    worldPosition.y += elevation;
+
+    // Curve world
+    worldPosition.xyz = curveWorld(worldPosition.xyz, instanceWorldOrigin.xz, uPlayerPosition, uCurvature);
 
     vec4 viewPosition = viewMatrix * worldPosition;
     vec4 projectionPosition = projectionMatrix * viewPosition;
