@@ -64,6 +64,10 @@ void main() {
         -localPosition.x * sinAngle + localPosition.z * cosAngle
     );
 
+    // No grass on the road
+    float roadMask = getRoadMask(wrappedTile);
+    localPosition *= (1.0 - roadMask);
+
     vec4 worldPosition = modelMatrix * instanceMatrix * vec4(localPosition, 1.0);
     worldPosition.xz += shift;
 
@@ -78,6 +82,7 @@ void main() {
     vec4 projectionPosition = projectionMatrix * viewPosition;
     gl_Position = projectionPosition;
 
+    // Varyings
     vUv = uv;
 
     // Feed world position + normal into three's shadow chunk

@@ -20,9 +20,9 @@ export const terrainUniforms = {
     uRoadCenter: new THREE.Uniform(
         new THREE.Vector3(GRID_TOTAL_WIDTH / 2, 0, GRID_TOTAL_WIDTH / 2),
     ),
-    uRoadWidth: new THREE.Uniform(8),
-    uRoadAmplitude: new THREE.Uniform(0),
-    uRoadWaviness: new THREE.Uniform(0),
+    uRoadWidth: new THREE.Uniform(12),
+    uRoadAmplitude: new THREE.Uniform(3.46),
+    uRoadWaviness: new THREE.Uniform(0.16),
     uRoadFalloff: new THREE.Uniform(5),
 };
 

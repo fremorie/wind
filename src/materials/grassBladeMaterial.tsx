@@ -21,9 +21,9 @@ export const GrassBladeMaterial = shaderMaterial(
             0,
             GRID_TOTAL_WIDTH / 2,
         ),
-        uRoadWidth: 8,
-        uRoadAmplitude: 0,
-        uRoadWaviness: 0,
+        uRoadWidth: 12,
+        uRoadAmplitude: 3.46,
+        uRoadWaviness: 0.16,
         uRoadFalloff: 5,
 
         uPlayerPosition: new THREE.Vector2(),
