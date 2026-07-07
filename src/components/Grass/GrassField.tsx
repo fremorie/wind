@@ -40,8 +40,8 @@ declare module '@react-three/fiber' {
 const MIN_BLADE_SCALE = 3;
 const MAX_BLADE_SCALE = 5;
 
-const BLADE_WIDTH = 0.1;
-const BLADE_HEIGHT = 0.15;
+const BLADE_WIDTH = 0.5;
+const BLADE_HEIGHT = 1;
 
 // Vertical subdivisions so the blade can curve along its length instead of
 // tilting as a rigid strip.
