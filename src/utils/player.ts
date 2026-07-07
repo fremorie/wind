@@ -7,6 +7,14 @@ import { getElevation } from './elevation';
 const PITCH_DELTA = 1;
 const SPEED = 10;
 const SPHERE_RADIUS = 1;
+const STIFFNESS = 2;
+
+const UP = new THREE.Vector3(0, 1, 0);
+const RIGHT = new THREE.Vector3(1, 0, 0);
+
+const yawQuaternion = new THREE.Quaternion();
+const targetYawQuaternion = new THREE.Quaternion();
+const pitchQuaternion = new THREE.Quaternion();
 
 export function updatePlayerDirection(
     playerDirection: THREE.Vector3,
@@ -32,11 +40,39 @@ export function updateCamera(camera: Camera, playerPosition: THREE.Vector3) {
     camera.lookAt(playerPosition);
 }
 
-export function updatePlayerPitch(
+export function updatePlayerPosition(
+    playerPosition: THREE.Vector3,
+    playerDirection: RefObject<THREE.Vector3 | null>,
+    playerMeshRef: RefObject<THREE.Mesh | null>,
+    delta: number,
+) {
+    if (!playerMeshRef.current || !playerDirection.current) return;
+
+    playerPosition.x += playerDirection.current.x * SPEED * delta;
+    playerPosition.z += playerDirection.current.z * SPEED * delta;
+    playerPosition.y =
+        getElevation(playerPosition.x, playerPosition.z) + SPHERE_RADIUS;
+    playerMeshRef.current.position.copy(playerPosition);
+}
+
+export function getPlayerDirectionAngle(
+    playerDirection: RefObject<THREE.Vector3 | null>,
+    playerMeshRef: RefObject<THREE.Mesh | null>,
+) {
+    if (!playerMeshRef.current) return 0;
+
+    if (playerDirection.current && playerDirection.current.lengthSq() > 0) {
+        return Math.atan2(playerDirection.current.x, playerDirection.current.z);
+    }
+
+    return playerMeshRef.current.rotation.y;
+}
+
+export function getPlayerPitch(
     playerMeshRef: RefObject<THREE.Mesh | null>,
     playerPosition: THREE.Vector3,
 ) {
-    if (!playerMeshRef.current) return;
+    if (!playerMeshRef.current) return 0;
 
     const forwardX = Math.sin(playerMeshRef.current.rotation.y);
     const forwardZ = Math.cos(playerMeshRef.current.rotation.y);
@@ -51,37 +87,28 @@ export function updatePlayerPitch(
         playerPosition.z - forwardZ * PITCH_DELTA,
     );
 
-    const pitch = Math.atan2(ahead - behind, 2 * PITCH_DELTA);
-    playerMeshRef.current.rotation.x = -pitch;
+    return -Math.atan2(ahead - behind, 2 * PITCH_DELTA);
 }
 
-export function updatePlayerYaw(
+export function updatePlayerPitchAndYaw(
     playerDirection: RefObject<THREE.Vector3 | null>,
     playerMeshRef: RefObject<THREE.Mesh | null>,
-) {
-    if (!playerMeshRef.current || !playerDirection.current) return;
-
-    if (playerDirection.current.lengthSq() > 0) {
-        const directionAngle = Math.atan2(
-            playerDirection.current.x,
-            playerDirection.current.z,
-        );
-
-        playerMeshRef.current.rotation.y = directionAngle;
-    }
-}
-
-export function updatePlayerPosition(
     playerPosition: THREE.Vector3,
-    playerDirection: RefObject<THREE.Vector3 | null>,
-    playerMeshRef: RefObject<THREE.Mesh | null>,
     delta: number,
 ) {
-    if (!playerMeshRef.current || !playerDirection.current) return;
+    if (!playerMeshRef.current) return;
 
-    playerPosition.x += playerDirection.current.x * SPEED * delta;
-    playerPosition.z += playerDirection.current.z * SPEED * delta;
-    playerPosition.y =
-        getElevation(playerPosition.x, playerPosition.z) + SPHERE_RADIUS;
-    playerMeshRef.current.position.copy(playerPosition);
+    const yaw = getPlayerDirectionAngle(playerDirection, playerMeshRef);
+    const pitch = getPlayerPitch(playerMeshRef, playerPosition);
+
+    targetYawQuaternion.setFromAxisAngle(UP, yaw);
+    const t = 1 - Math.exp(-STIFFNESS * delta);
+    yawQuaternion.slerp(targetYawQuaternion, t);
+
+    pitchQuaternion.setFromAxisAngle(RIGHT, pitch);
+
+    playerMeshRef.current.quaternion.multiplyQuaternions(
+        yawQuaternion,
+        pitchQuaternion,
+    );
 }

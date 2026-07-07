@@ -9,9 +9,8 @@ import { terrainMaterial } from '../../materials/terrainMaterial';
 import {
     updateCamera,
     updatePlayerDirection,
-    updatePlayerPitch,
+    updatePlayerPitchAndYaw,
     updatePlayerPosition,
-    updatePlayerYaw,
 } from '../../utils/player';
 import { Bicycle } from '../Bicycle';
 
@@ -48,8 +47,13 @@ export function Player() {
             playerMeshRef,
             delta,
         );
-        updatePlayerYaw(playerDirection, playerMeshRef);
-        updatePlayerPitch(playerMeshRef, playerPosition);
+
+        updatePlayerPitchAndYaw(
+            playerDirection,
+            playerMeshRef,
+            playerPosition,
+            delta,
+        );
 
         terrainMaterial.uniforms.uPlayerPosition.value.set(
             playerPosition.x,
