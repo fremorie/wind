@@ -1,5 +1,3 @@
-import { OrbitControls } from '@react-three/drei';
-
 import { Terrain } from '../components/Terrain';
 import { Player } from '../components/Player';
 import { Environment } from './Environment';
@@ -10,7 +8,6 @@ export function Experience() {
         <>
             <Environment />
 
-            <OrbitControls makeDefault />
             <axesHelper />
 
             <Terrain />

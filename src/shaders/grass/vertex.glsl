@@ -30,6 +30,15 @@ void main() {
     vec2 windSamplePosition =
         instanceWorldOrigin.xz * WIND_FREQUENCY - WIND_DIRECTION * uTime * WIND_SPEED;
 
+    // Blade's ground position in world space
+    vec2 base = instanceWorldOrigin.xz;
+    float tile = 220.0;
+    // Move tiles around the player
+    vec2 wrappedTile =
+        mod(base - uPlayerPosition + tile * 0.5, tile) - tile * 0.5 + uPlayerPosition;
+    vec2 shift = wrappedTile - base;
+
+
     // Wind gusts
     float gust = cnoise(vec3(windSamplePosition, 0.0));
     float flutter = cnoise(
@@ -46,10 +55,7 @@ void main() {
     localPosition.x += windAmount * windMultiplier * WIND_STRENGTH;
 
     // Always face the camera
-    vec3 cameraModelSpace = (inverse(modelMatrix) * vec4(cameraPosition, 1.0)).xyz;
-    vec3 instanceModelOrigin = (instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
-    vec3 toCamera = cameraModelSpace - instanceModelOrigin;
-    float facingAngle = atan(toCamera.x, toCamera.z);
+    float facingAngle = atan(cameraPosition.x - wrappedTile.x, cameraPosition.z - wrappedTile.y);
     float sinAngle = sin(facingAngle);
     float cosAngle = cos(facingAngle);
     localPosition = vec3(
@@ -59,13 +65,14 @@ void main() {
     );
 
     vec4 worldPosition = modelMatrix * instanceMatrix * vec4(localPosition, 1.0);
+    worldPosition.xz += shift;
 
     // Terrain elevation
-    float elevation = getFinalElevation(instanceWorldOrigin.xz);
+    float elevation = getFinalElevation(wrappedTile);
     worldPosition.y += elevation;
 
     // Curve world
-    worldPosition.xyz = curveWorld(worldPosition.xyz, instanceWorldOrigin.xz, uPlayerPosition, uCurvature);
+    worldPosition.xyz = curveWorld(worldPosition.xyz, wrappedTile, uPlayerPosition, uCurvature);
 
     vec4 viewPosition = viewMatrix * worldPosition;
     vec4 projectionPosition = projectionMatrix * viewPosition;

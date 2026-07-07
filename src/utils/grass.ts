@@ -55,8 +55,8 @@ export function getGrassBladesPositions(
 ) {
     const result: Array<[number, number, number]> = [];
     while (result.length < count) {
-        const x = (Math.random() - 0.5) * (planeSize - 0.5);
-        const z = (Math.random() - 0.5) * (planeSize - 0.5);
+        const x = (Math.random() - 0.5) * planeSize;
+        const z = (Math.random() - 0.5) * planeSize;
         if (
             turbinePositions.some(
                 ([tx, tz]) => Math.hypot(x - tx, z - tz) < turbineClearRadius,
