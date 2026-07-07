@@ -10,7 +10,7 @@ export const terrainUniforms = {
     uStrength: new THREE.Uniform(10.0),
     uTime: new THREE.Uniform(0),
 
-    uColorGrass: new THREE.Uniform(new THREE.Color('#6b832d')),
+    uColorGrass: new THREE.Uniform(new THREE.Color('#3a521c')),
     uColorDirt: new THREE.Uniform(new THREE.Color('#c4bb82')),
 
     uPlayerPosition: new THREE.Uniform(new THREE.Vector2()),
