@@ -3,7 +3,7 @@ import * as THREE from 'three';
 
 import terrainVertexShader from '../shaders/terrain/vertex.glsl';
 import terrainFragmentShader from '../shaders/terrain/fragment.glsl';
-import { GRID_TOTAL_WIDTH } from '../utils/constants';
+import { CURVATURE, GRID_TOTAL_WIDTH } from '../utils/constants';
 
 export const terrainUniforms = {
     uPositionFrequency: new THREE.Uniform(0.03),
@@ -14,7 +14,7 @@ export const terrainUniforms = {
     uColorDirt: new THREE.Uniform(new THREE.Color('#c4bb82')),
 
     uPlayerPosition: new THREE.Uniform(new THREE.Vector2()),
-    uCurvature: new THREE.Uniform(0.0007),
+    uCurvature: new THREE.Uniform(CURVATURE),
 
     // Road
     uRoadCenter: new THREE.Uniform(

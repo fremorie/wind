@@ -1,5 +1,6 @@
 import { simplexNoise2d } from './simplexNoise';
 import { terrainUniforms } from '../materials/terrainMaterial';
+import { CURVATURE } from './constants';
 
 function smoothstep(edge0: number, edge1: number, x: number): number {
     const t = Math.min(Math.max((x - edge0) / (edge1 - edge0), 0), 1);
@@ -52,4 +53,17 @@ function getRoadElevation(x: number): number {
 
 export function getElevation(x: number, z: number): number {
     return mix(getBaseElevation(x, z), getRoadElevation(x), getRoadMask(x, z));
+}
+
+export function curveOffset(
+    x: number,
+    z: number,
+    playerX: number,
+    playerZ: number,
+    curvature: number = CURVATURE,
+): number {
+    const dx = x - playerX;
+    const dz = z - playerZ;
+
+    return (dx * dx + dz * dz) * curvature;
 }
