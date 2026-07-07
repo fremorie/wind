@@ -5,14 +5,15 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 import useGame from '../../store/useGame';
-import { getElevation } from '../../utils/elevation';
 import { terrainMaterial } from '../../materials/terrainMaterial';
-import { updatePlayerDirection } from '../../utils/player';
+import {
+    updateCamera,
+    updatePlayerDirection,
+    updatePlayerPitch,
+    updatePlayerPosition,
+    updatePlayerYaw,
+} from '../../utils/player';
 import { Bicycle } from '../Bicycle';
-
-const SPEED = 10;
-const SPHERE_RADIUS = 1;
-const PITCH_DELTA = 1;
 
 export function Player() {
     const playerMeshRef = useRef<Mesh>(null);
@@ -21,7 +22,6 @@ export function Player() {
     const playerPosition = useGame((state) => state.playerPosition);
     const playerDirection = useRef<THREE.Vector3>(null);
 
-    // eslint-disable-next-line react-hooks/immutability
     useFrame((state, delta) => {
         if (!playerMeshRef.current) {
             return;
@@ -42,51 +42,21 @@ export function Player() {
             rightward,
         });
 
-        // eslint-disable-next-line react-hooks/immutability
-        playerPosition.x += playerDirection.current.x * SPEED * delta;
-        playerPosition.z += playerDirection.current.z * SPEED * delta;
-        playerPosition.y =
-            getElevation(playerPosition.x, playerPosition.z) + SPHERE_RADIUS;
-        playerMeshRef.current.position.copy(playerPosition);
-
-        // Yaw
-        if (playerDirection.current.lengthSq() > 0) {
-            const directionAngle = Math.atan2(
-                playerDirection.current.x,
-                playerDirection.current.z,
-            );
-
-            playerMeshRef.current.rotation.y = directionAngle;
-        }
-
-        // Pitch
-        const forwardX = Math.sin(playerMeshRef.current.rotation.y);
-        const forwardZ = Math.cos(playerMeshRef.current.rotation.y);
-
-        const ahead = getElevation(
-            playerPosition.x + forwardX * PITCH_DELTA,
-            playerPosition.z + forwardZ * PITCH_DELTA,
+        updatePlayerPosition(
+            playerPosition,
+            playerDirection,
+            playerMeshRef,
+            delta,
         );
-
-        const behind = getElevation(
-            playerPosition.x - forwardX * PITCH_DELTA,
-            playerPosition.z - forwardZ * PITCH_DELTA,
-        );
-
-        const pitch = Math.atan2(ahead - behind, 2 * PITCH_DELTA);
-        playerMeshRef.current.rotation.x = -pitch;
+        updatePlayerYaw(playerDirection, playerMeshRef);
+        updatePlayerPitch(playerMeshRef, playerPosition);
 
         terrainMaterial.uniforms.uPlayerPosition.value.set(
             playerPosition.x,
             playerPosition.z,
         );
 
-        state.camera.position.set(
-            playerPosition.x - 20,
-            playerPosition.y + 5,
-            playerPosition.z - 1,
-        );
-        state.camera.lookAt(playerPosition);
+        updateCamera(state.camera, playerPosition);
     });
 
     return (
