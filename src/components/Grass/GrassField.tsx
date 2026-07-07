@@ -1,70 +1,20 @@
-import { shaderMaterial, useTexture } from '@react-three/drei';
+import { useTexture } from '@react-three/drei';
 import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
-import { extend, useFrame, type ThreeElement } from '@react-three/fiber';
-// import { useControls } from 'leva'
+import { useFrame } from '@react-three/fiber';
+import { useControls } from 'leva';
 
-import vertexShader from '../../shaders/grass/vertex.glsl';
-import fragmentShader from '../../shaders/grass/fragment.glsl';
-import { GRID_TOTAL_WIDTH } from '../../utils/constants';
 import useGame from '../../store/useGame';
-
-const GrassBladeMaterial = shaderMaterial(
-    {
-        uTime: 0,
-        uCenterColor: new THREE.Color('#608d34'),
-        uShadowColor: new THREE.Color('#d3d9de'),
-        uAlphaMap: null as THREE.Texture | null,
-
-        uPositionFrequency: 0.03,
-        uStrength: 10.0,
-
-        // Road
-        uRoadCenter: new THREE.Vector3(
-            GRID_TOTAL_WIDTH / 2,
-            0,
-            GRID_TOTAL_WIDTH / 2,
-        ),
-        uRoadWidth: 8,
-        uRoadAmplitude: 0,
-        uRoadWaviness: 0,
-        uRoadFalloff: 5,
-
-        uPlayerPosition: new THREE.Vector2(),
-        uCurvature: 0.001,
-    },
-    vertexShader,
-    fragmentShader,
-    (material) => {
-        if (!material) return;
-        // Real-time directional light shadows
-        material.lights = true;
-        material.uniforms = THREE.UniformsUtils.merge([
-            THREE.UniformsLib.lights,
-            material.uniforms,
-        ]);
-    },
-);
-
-extend({ GrassBladeMaterial });
-
-type GrassBladeMaterialImpl = InstanceType<typeof GrassBladeMaterial>;
-
-declare module '@react-three/fiber' {
-    interface ThreeElements {
-        grassBladeMaterial: ThreeElement<typeof GrassBladeMaterial>;
-    }
-}
-
-const MIN_BLADE_SCALE = 3;
-const MAX_BLADE_SCALE = 5;
-
-const BLADE_WIDTH = 0.2;
-const BLADE_HEIGHT = 0.3;
-
-// Vertical subdivisions so the blade can curve along its length instead of
-// tilting as a rigid strip.
-const BLADE_HEIGHT_SEGMENTS = 6;
+import {
+    GrassBladeMaterial,
+    type GrassBladeMaterialImpl,
+} from '../../materials/grassBladeMaterial';
+import {
+    BLADE_HEIGHT,
+    BLADE_HEIGHT_SEGMENTS,
+    BLADE_WIDTH,
+    generateGrassBladesAttributes,
+} from '../../utils/grass';
 
 type Props = {
     positions: Array<[number, number, number]>;
@@ -77,9 +27,9 @@ export function GrassField({ positions, ...props }: Props) {
 
     const playerPosition = useGame((state) => state.playerPosition);
 
-    // const { shadowColor } = useControls('Grass Shadow', {
-    //     shadowColor: '#d3d9de',
-    // })
+    const { shadowColor } = useControls('Grass Shadow', {
+        shadowColor: '#d3d9de',
+    });
 
     const bladeGeometry = useMemo(() => {
         const geometry = new THREE.PlaneGeometry(
@@ -94,37 +44,10 @@ export function GrassField({ positions, ...props }: Props) {
         return geometry;
     }, []);
 
-    const { count, matrices, bladeRandoms } = useMemo(() => {
-        const count = positions.length;
-
-        const bladeRandoms = new Float32Array(count);
-        const matrices = [];
-        const matrix = new THREE.Matrix4();
-        const position = new THREE.Vector3();
-        const quaternion = new THREE.Quaternion();
-        const scale = new THREE.Vector3();
-
-        for (let i = 0; i < count; i++) {
-            const [x, y, z] = positions[i];
-            position.set(x, y, z);
-
-            const uniformScale =
-                MIN_BLADE_SCALE +
-                // eslint-disable-next-line
-                Math.random() * (MAX_BLADE_SCALE - MIN_BLADE_SCALE);
-
-            scale.set(uniformScale, uniformScale, uniformScale);
-
-            matrix.compose(position, quaternion, scale);
-
-            matrices.push(matrix.clone());
-
-            // eslint-disable-next-line
-            bladeRandoms[i] = Math.random();
-        }
-
-        return { count, matrices, bladeRandoms };
-    }, [positions]);
+    const { count, matrices, bladeRandoms } = useMemo(
+        () => generateGrassBladesAttributes(positions),
+        [positions],
+    );
 
     useEffect(() => {
         const mesh = meshRef.current;
@@ -141,11 +64,11 @@ export function GrassField({ positions, ...props }: Props) {
         );
     }, [count, matrices, bladeRandoms]);
 
-    // useEffect(() => {
-    //     if (materialRef.current) {
-    //         materialRef.current.uShadowColor = new THREE.Color(shadowColor)
-    //     }
-    // }, [shadowColor])
+    useEffect(() => {
+        if (materialRef.current) {
+            materialRef.current.uShadowColor = new THREE.Color(shadowColor);
+        }
+    }, [shadowColor]);
 
     useFrame((_, delta) => {
         if (materialRef.current) {

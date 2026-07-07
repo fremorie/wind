@@ -11,6 +11,7 @@ uniform float uRoadWidth;
 uniform float uRoadAmplitude;
 uniform float uRoadWaviness;
 uniform float uRoadFalloff;
+uniform float uTileSize;
 
 attribute float aBladeRandom;
 
@@ -32,10 +33,9 @@ void main() {
 
     // Blade's ground position in world space
     vec2 base = instanceWorldOrigin.xz;
-    float tile = 220.0;
     // Move tiles around the player
     vec2 wrappedTile =
-        mod(base - uPlayerPosition + tile * 0.5, tile) - tile * 0.5 + uPlayerPosition;
+        mod(base - uPlayerPosition + uTileSize * 0.5, uTileSize) - uTileSize * 0.5 + uPlayerPosition;
     vec2 shift = wrappedTile - base;
 
 

@@ -1,3 +1,15 @@
+import * as THREE from 'three';
+
+const MIN_BLADE_SCALE = 3;
+const MAX_BLADE_SCALE = 5;
+
+export const BLADE_WIDTH = 0.2;
+export const BLADE_HEIGHT = 0.3;
+
+// Vertical subdivisions so the blade can curve along its length instead of
+// tilting as a rigid strip.
+export const BLADE_HEIGHT_SEGMENTS = 6;
+
 const COUNT = 10000;
 const PLANE_SIZE = 100;
 const TURBINE_POSITIONS: [number, number][] = [
@@ -67,4 +79,36 @@ export function getGrassBladesPositions(
         result.push([x, grassY, z]);
     }
     return result;
+}
+
+export function generateGrassBladesAttributes(
+    positions: Array<[x: number, y: number, z: number]>,
+) {
+    const count = positions.length;
+
+    const bladeRandoms = new Float32Array(count);
+    const matrices = [];
+    const matrix = new THREE.Matrix4();
+    const position = new THREE.Vector3();
+    const quaternion = new THREE.Quaternion();
+    const scale = new THREE.Vector3();
+
+    for (let i = 0; i < count; i++) {
+        const [x, y, z] = positions[i];
+        position.set(x, y, z);
+
+        const uniformScale =
+            MIN_BLADE_SCALE +
+            Math.random() * (MAX_BLADE_SCALE - MIN_BLADE_SCALE);
+
+        scale.set(uniformScale, uniformScale, uniformScale);
+
+        matrix.compose(position, quaternion, scale);
+
+        matrices.push(matrix.clone());
+
+        bladeRandoms[i] = Math.random();
+    }
+
+    return { count, matrices, bladeRandoms };
 }
