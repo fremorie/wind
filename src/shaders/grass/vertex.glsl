@@ -22,9 +22,9 @@ varying vec2 vUv;
 #include "../includes/curveWorld.glsl"
 
 const vec2 WIND_DIRECTION = vec2(0.8, -0.5);
-const float WIND_SPEED = 0.3;
+const float WIND_SPEED = 0.7;
 const float WIND_FREQUENCY = 0.1;
-const float WIND_STRENGTH = 0.05;
+const float WIND_STRENGTH = 0.1;
 
 void main() {
     vec3 instanceWorldOrigin = (modelMatrix * instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;

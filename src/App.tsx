@@ -24,6 +24,7 @@ function App() {
                     far: 2000,
                     position: [-15, 10, 39],
                 }}
+                flat
             >
                 <Experience />
                 <Perf position="top-left" />
