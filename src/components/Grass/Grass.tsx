@@ -6,7 +6,7 @@ import { GRID_TOTAL_WIDTH } from '../../utils/constants';
 
 export function Grass() {
     const clamps = useMemo(
-        () => getGrassBladesPositions(50000, GRID_TOTAL_WIDTH, [], 1, 0),
+        () => getGrassBladesPositions(500000, GRID_TOTAL_WIDTH, [], 1, 0),
         [],
     );
 
