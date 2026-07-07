@@ -13,44 +13,8 @@ varying vec3 vPosition;
 varying float vUpDot;
 varying float vRoadMask;
 
-#include "../includes/simplexNoise2d.glsl"
 #include "../includes/curveWorld.glsl"
-
-float getElevation(vec2 position) {
-    float elevation = 0.0;
-    elevation += simplexNoise2d(position * uPositionFrequency) / 2.0;
-
-    float elevationSign = sign(elevation);
-    elevation = elevationSign * pow(abs(elevation), 2.0);
-    elevation *= uStrength;
-
-    return elevation;
-}
-
-float roadCenterZ(float x) {
-    return uRoadCenter.z + uRoadAmplitude * sin(x * uRoadWaviness);
-}
-
-float getRoadMask(vec2 position) {
-    float distanceToRoad = abs(position.y - roadCenterZ(position.x));
-    float roadMask = 1.0 - smoothstep(uRoadWidth - uRoadFalloff, uRoadWidth, distanceToRoad);
-
-    return roadMask;
-}
-
-float getRoadElevation(vec2 position) {
-    return getElevation(
-        vec2(position.x, roadCenterZ(position.x))
-    );
-}
-
-float getFinalElevation(vec2 position) {
-    return mix(
-        getElevation(position),
-        getRoadElevation(position),
-        getRoadMask(position)
-    );
-}
+#include "../includes/elevation.glsl"
 
 void main() {
     // Sample the noise field in world space so neighbouring chunks line up
