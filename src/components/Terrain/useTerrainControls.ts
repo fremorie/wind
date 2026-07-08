@@ -22,6 +22,7 @@ export function useTerrainControls() {
         uRoadAmplitude,
         uRoadWaviness,
         uRoadFalloff,
+        uColorLake,
     } = useControls('Terrain', {
         Shape: folder({
             uPositionFrequency: {
@@ -46,6 +47,7 @@ export function useTerrainControls() {
         Colors: folder({
             uColorGrass: { value: hex(terrainUniforms.uColorGrass.value) },
             uColorDirt: { value: hex(terrainUniforms.uColorDirt.value) },
+            uColorLake: { value: hex(terrainUniforms.uColorLake.value) },
         }),
         Road: folder({
             uRoadAmplitude: {
@@ -76,6 +78,7 @@ export function useTerrainControls() {
 
         terrainUniforms.uColorDirt.value.set(uColorDirt);
         terrainUniforms.uColorGrass.value.set(uColorGrass);
+        terrainUniforms.uColorLake.value.set(uColorLake);
 
         terrainUniforms.uRoadAmplitude.value = uRoadAmplitude;
         terrainUniforms.uRoadWaviness.value = uRoadWaviness;
@@ -89,5 +92,6 @@ export function useTerrainControls() {
         uRoadAmplitude,
         uRoadWaviness,
         uRoadFalloff,
+        uColorLake,
     ]);
 }
