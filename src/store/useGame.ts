@@ -12,7 +12,7 @@ export default create<GameState>()(
     subscribeWithSelector(() => {
         const center = ((GRID_SIZE - 1) * CHUNK_SIZE) / 2;
         return {
-            playerPosition: new THREE.Vector3(center, 0, center),
+            playerPosition: new THREE.Vector3(center - 20, 0, center + 10),
         };
     }),
 );
