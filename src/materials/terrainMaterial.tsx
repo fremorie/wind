@@ -3,7 +3,13 @@ import * as THREE from 'three';
 
 import terrainVertexShader from '../shaders/terrain/vertex.glsl';
 import terrainFragmentShader from '../shaders/terrain/fragment.glsl';
-import { CURVATURE, GRID_TOTAL_WIDTH } from '../utils/constants';
+import {
+    BEACH_WIDTH,
+    CURVATURE,
+    GRID_TOTAL_WIDTH,
+    LAKE_FLOOR_Y,
+    SHORE_POSITION_X,
+} from '../utils/constants';
 
 export const terrainUniforms = {
     uPositionFrequency: new THREE.Uniform(0.03),
@@ -24,6 +30,11 @@ export const terrainUniforms = {
     uRoadAmplitude: new THREE.Uniform(3.46),
     uRoadWaviness: new THREE.Uniform(0.16),
     uRoadFalloff: new THREE.Uniform(5),
+
+    // Beach
+    uShorePositionX: new THREE.Uniform(SHORE_POSITION_X),
+    uBeachWidth: new THREE.Uniform(BEACH_WIDTH),
+    uLakeFloorY: new THREE.Uniform(LAKE_FLOOR_Y),
 };
 
 export const terrainDepthMaterial = new CustomShaderMaterial({

@@ -3,6 +3,7 @@ import { type RefObject } from 'react';
 import { type Camera } from '@react-three/fiber';
 
 import { getElevation } from './elevation';
+import { BEACH_WIDTH, SHORE_POSITION_X } from './constants';
 
 const PITCH_DELTA = 1;
 const SPEED = 10;
@@ -32,9 +33,13 @@ export function updatePlayerDirection(
 }
 
 export function updateCamera(camera: Camera, playerPosition: THREE.Vector3) {
+    const isPlayerOnTheBeach =
+        playerPosition.x > SHORE_POSITION_X - BEACH_WIDTH;
+    const cameraYOffset = isPlayerOnTheBeach ? 10 : 5;
+
     camera.position.set(
         playerPosition.x - 20,
-        playerPosition.y + 5,
+        playerPosition.y + cameraYOffset,
         playerPosition.z - 1,
     );
     camera.lookAt(playerPosition);

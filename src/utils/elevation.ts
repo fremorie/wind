@@ -1,6 +1,11 @@
 import { simplexNoise2d } from './simplexNoise';
 import { terrainUniforms } from '../materials/terrainMaterial';
-import { CURVATURE } from './constants';
+import {
+    CURVATURE,
+    SHORE_POSITION_X,
+    BEACH_WIDTH,
+    LAKE_FLOOR_Y,
+} from './constants';
 
 function smoothstep(edge0: number, edge1: number, x: number): number {
     const t = Math.min(Math.max((x - edge0) / (edge1 - edge0), 0), 1);
@@ -9,6 +14,14 @@ function smoothstep(edge0: number, edge1: number, x: number): number {
 
 function mix(a: number, b: number, t: number): number {
     return a + (b - a) * t;
+}
+
+function getBeachMask(
+    x: number,
+    shorePositionX: number = SHORE_POSITION_X,
+    beachWidth: number = BEACH_WIDTH,
+): number {
+    return smoothstep(shorePositionX - beachWidth, shorePositionX, x);
 }
 
 function getBaseElevation(x: number, z: number): number {
@@ -23,7 +36,8 @@ function getBaseElevation(x: number, z: number): number {
     elevation = elevationSign * Math.pow(Math.abs(elevation), 2);
     elevation *= terrainUniforms.uStrength.value;
 
-    return elevation;
+    // Lake at the end of the road
+    return mix(elevation, LAKE_FLOOR_Y, getBeachMask(x));
 }
 
 function roadCenterZ(x: number): number {
