@@ -8,9 +8,6 @@ uniform float uRoadWidth;
 uniform float uRoadAmplitude;
 uniform float uRoadWaviness;
 uniform float uRoadFalloff;
-uniform float uShorePositionX;
-uniform float uBeachWidth;
-uniform float uLakeFloorY;
 
 varying vec3 vPosition;
 varying float vUpDot;
@@ -33,10 +30,10 @@ void main() {
     vec3 positionB = csm_Position + vec3(0.0, 0.0, - shift);
 
     // Elevation
-    float elevation = getFinalElevation(worldUV, uShorePositionX, uBeachWidth, uLakeFloorY);
+    float elevation = getFinalElevation(worldUV);
     csm_Position.y += elevation;
-    positionA.y = getFinalElevation(worldUV + vec2(shift, 0.0), uShorePositionX, uBeachWidth, uLakeFloorY);
-    positionB.y = getFinalElevation(worldUV + vec2(0.0, - shift), uShorePositionX, uBeachWidth, uLakeFloorY);
+    positionA.y = getFinalElevation(worldUV + vec2(shift, 0.0));
+    positionB.y = getFinalElevation(worldUV + vec2(0.0, - shift));
 
     // Compute normal
     vec3 toA = normalize(positionA - csm_Position);

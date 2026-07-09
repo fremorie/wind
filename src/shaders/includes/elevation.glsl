@@ -1,10 +1,6 @@
 #include "../includes/simplexNoise2d.glsl"
 
-float getBeachMask(vec2 position, float shorePositionX, float beachWidth) {
-    return smoothstep(shorePositionX - beachWidth, shorePositionX, position.x);
-}
-
-float getElevation(vec2 position, float shorePositionX, float beachWidth, float lakeY) {
+float getElevation(vec2 position) {
     float elevation = 0.0;
     elevation += simplexNoise2d(position * uPositionFrequency) / 2.0;
 
@@ -12,11 +8,7 @@ float getElevation(vec2 position, float shorePositionX, float beachWidth, float 
     elevation = elevationSign * pow(abs(elevation), 2.0);
     elevation *= uStrength;
 
-    // Lake at the end of the road
-    float beachMask = getBeachMask(position, shorePositionX, beachWidth);
-    float finalElevation = mix(elevation, lakeY, beachMask);
-
-    return finalElevation;
+    return elevation;
 }
 
 float roadCenterZ(float x) {
@@ -30,19 +22,16 @@ float getRoadMask(vec2 position) {
     return roadMask;
 }
 
-float getRoadElevation(vec2 position, float shorePositionX, float beachWidth, float lakeY) {
+float getRoadElevation(vec2 position) {
     return getElevation(
-        vec2(position.x, roadCenterZ(position.x)),
-        shorePositionX,
-        beachWidth,
-        lakeY
+        vec2(position.x, roadCenterZ(position.x))
     );
 }
 
-float getFinalElevation(vec2 position, float shorePositionX, float beachWidth, float lakeY) {
+float getFinalElevation(vec2 position) {
     return mix(
-        getElevation(position, shorePositionX, beachWidth, lakeY),
-        getRoadElevation(position, shorePositionX, beachWidth, lakeY),
+        getElevation(position),
+        getRoadElevation(position),
         getRoadMask(position)
     );
 }

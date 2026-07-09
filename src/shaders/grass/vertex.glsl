@@ -12,9 +12,6 @@ uniform float uRoadAmplitude;
 uniform float uRoadWaviness;
 uniform float uRoadFalloff;
 uniform float uTileSize;
-uniform float uShorePositionX;
-uniform float uBeachWidth;
-uniform float uLakeFloorY;
 
 attribute float aBladeRandom;
 
@@ -76,10 +73,6 @@ void main() {
     float roadMask = getRoadMask(wrappedTile);
     localPosition *= (1.0 - roadMask);
 
-    // No grass on the beach and under water
-    float beachMask = getBeachMask(wrappedTile, uShorePositionX, uBeachWidth);
-    localPosition *= (1.0 - beachMask);
-
     vec4 worldPosition = modelMatrix * instanceMatrix * vec4(localPosition, 1.0);
     worldPosition.xz += shift;
 
@@ -91,7 +84,7 @@ void main() {
     worldPosition.xz += leanDir * bend * windMultiplier * TRAIL_PUSH;
 
     // Terrain elevation
-    float elevation = getFinalElevation(wrappedTile, uShorePositionX, uBeachWidth, uLakeFloorY);
+    float elevation = getFinalElevation(wrappedTile);
     worldPosition.y += elevation;
 
     // Curve world
