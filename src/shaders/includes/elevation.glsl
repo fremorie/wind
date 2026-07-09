@@ -19,6 +19,11 @@ float getRoadMask(vec2 position) {
     float distanceToRoad = abs(position.y - roadCenterZ(position.x));
     float roadMask = 1.0 - smoothstep(uRoadWidth - uRoadFalloff, uRoadWidth, distanceToRoad);
 
+    // No roads under water!
+    float distToLake = length(position - vec2(uLakeCenterX, uLakeCenterZ));
+    float grassLine  = uLakeRadius + uBeachWidth;
+    roadMask *= smoothstep(grassLine - 10.0, grassLine, distToLake);
+
     return roadMask;
 }
 

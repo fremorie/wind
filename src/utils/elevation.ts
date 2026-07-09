@@ -36,23 +36,49 @@ function roadCenterZ(x: number): number {
 
 function getRoadMask(x: number, z: number): number {
     const distanceToRoad = Math.abs(z - roadCenterZ(x));
-    return (
+    let roadMask =
         1 -
         smoothstep(
             terrainUniforms.uRoadWidth.value -
                 terrainUniforms.uRoadFalloff.value,
             terrainUniforms.uRoadWidth.value,
             distanceToRoad,
-        )
+        );
+
+    const distToLake = Math.hypot(
+        x - terrainUniforms.uLakeCenterX.value,
+        z - terrainUniforms.uLakeCenterZ.value,
     );
+    const grassLine =
+        terrainUniforms.uLakeRadius.value + terrainUniforms.uBeachWidth.value;
+    roadMask *= smoothstep(grassLine - 10, grassLine, distToLake);
+
+    return roadMask;
 }
 
 function getRoadElevation(x: number): number {
     return getBaseElevation(x, roadCenterZ(x));
 }
 
+function getLakeDepth(x: number, z: number): number {
+    const dist = Math.hypot(
+        x - terrainUniforms.uLakeCenterX.value,
+        z - terrainUniforms.uLakeCenterZ.value,
+    );
+    return (
+        terrainUniforms.uLakeDepth.value *
+        (1 - smoothstep(0, terrainUniforms.uLakeRadius.value, dist))
+    );
+}
+
 export function getElevation(x: number, z: number): number {
-    return mix(getBaseElevation(x, z), getRoadElevation(x), getRoadMask(x, z));
+    const elevation = mix(
+        getBaseElevation(x, z),
+        getRoadElevation(x),
+        getRoadMask(x, z),
+    );
+
+    return elevation - getLakeDepth(x, z);
 }
 
 export function curveOffset(
