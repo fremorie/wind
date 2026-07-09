@@ -16,6 +16,7 @@ uniform float uLakeCenterX;
 uniform float uLakeCenterZ;
 uniform float uLakeRadius;
 uniform float uBeachWidth;
+uniform float uLakeDepth;
 
 attribute float aBladeRandom;
 

@@ -22,12 +22,12 @@ float getRoadMask(vec2 position) {
     return roadMask;
 }
 
-float getLakeMask(vec2 position) {
+float getLakeDepth(vec2 position) {
     vec2 lakeCenter = vec2(uLakeCenterX, uLakeCenterZ);
     float dist = length(position - lakeCenter);
+    float depth = uLakeDepth * (1.0 - smoothstep(0.0, uLakeRadius, dist));
 
-    // SDF: 1 inside the lake, 0 outside
-    return smoothstep(uLakeRadius, uLakeRadius - uBeachWidth, dist);
+    return depth;
 }
 
 float getRoadElevation(vec2 position) {
@@ -43,8 +43,9 @@ float getFinalElevation(vec2 position) {
         getRoadMask(position)
     );
 
-    float lakeFloorY = -15.0;
-    elevation = mix(elevation, lakeFloorY, getLakeMask(position));
+    float lakeDepth = getLakeDepth(position);
+
+    elevation -= lakeDepth;
 
     return elevation;
 }

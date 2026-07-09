@@ -11,6 +11,7 @@ uniform float uLakeCenterX;
 uniform float uLakeCenterZ;
 uniform float uLakeRadius;
 uniform float uBeachWidth;
+uniform float uLakeDepth;
 
 varying vec3 vPosition;
 varying float vUpDot;

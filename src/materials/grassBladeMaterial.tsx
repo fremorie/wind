@@ -9,6 +9,7 @@ import {
     LAKE_CENTER,
     LAKE_RADIUS,
     BEACH_WIDTH,
+    LAKE_DEPTH,
 } from '../utils/constants';
 import vertexShader from '../shaders/grass/vertex.glsl';
 import fragmentShader from '../shaders/grass/fragment.glsl';
@@ -44,6 +45,7 @@ export const GrassBladeMaterial = shaderMaterial(
         uLakeCenterZ: LAKE_CENTER[1],
         uLakeRadius: LAKE_RADIUS,
         uBeachWidth: BEACH_WIDTH,
+        uLakeDepth: LAKE_DEPTH,
     },
     vertexShader,
     fragmentShader,

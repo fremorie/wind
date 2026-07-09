@@ -8,6 +8,7 @@ import {
     CURVATURE,
     GRID_TOTAL_WIDTH,
     LAKE_CENTER,
+    LAKE_DEPTH,
     LAKE_RADIUS,
 } from '../utils/constants';
 
@@ -35,6 +36,7 @@ export const terrainUniforms = {
     uLakeCenterZ: new THREE.Uniform(LAKE_CENTER[1]),
     uLakeRadius: new THREE.Uniform(LAKE_RADIUS),
     uBeachWidth: new THREE.Uniform(BEACH_WIDTH),
+    uLakeDepth: new THREE.Uniform(LAKE_DEPTH),
 };
 
 export const terrainDepthMaterial = new CustomShaderMaterial({
