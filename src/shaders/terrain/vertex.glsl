@@ -1,4 +1,3 @@
-uniform float uTime;
 uniform float uPositionFrequency;
 uniform float uStrength;
 uniform vec2 uPlayerPosition;
@@ -8,6 +7,10 @@ uniform float uRoadWidth;
 uniform float uRoadAmplitude;
 uniform float uRoadWaviness;
 uniform float uRoadFalloff;
+uniform float uLakeCenterX;
+uniform float uLakeCenterZ;
+uniform float uLakeRadius;
+uniform float uBeachWidth;
 
 varying vec3 vPosition;
 varying float vUpDot;
@@ -42,7 +45,7 @@ void main() {
 
     // Varyings
     vPosition = csm_Position;
-    vPosition.xz = worldUV + uTime * 0.2;
+    vPosition.xz = worldUV;
     vUpDot = dot(csm_Normal, vec3(0.0, 1.0, 0.0));
     vRoadMask = roadMask;
 

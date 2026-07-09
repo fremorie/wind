@@ -6,6 +6,9 @@ import {
     GRID_TOTAL_WIDTH,
     GRASS_TILE_SIZE,
     CURVATURE,
+    LAKE_CENTER,
+    LAKE_RADIUS,
+    BEACH_WIDTH,
 } from '../utils/constants';
 import vertexShader from '../shaders/grass/vertex.glsl';
 import fragmentShader from '../shaders/grass/fragment.glsl';
@@ -35,6 +38,12 @@ export const GrassBladeMaterial = shaderMaterial(
         uCurvature: CURVATURE,
 
         uTileSize: GRASS_TILE_SIZE,
+
+        // Lake
+        uLakeCenterX: LAKE_CENTER[0],
+        uLakeCenterZ: LAKE_CENTER[1],
+        uLakeRadius: LAKE_RADIUS,
+        uBeachWidth: BEACH_WIDTH,
     },
     vertexShader,
     fragmentShader,

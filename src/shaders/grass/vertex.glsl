@@ -12,6 +12,10 @@ uniform float uRoadAmplitude;
 uniform float uRoadWaviness;
 uniform float uRoadFalloff;
 uniform float uTileSize;
+uniform float uLakeCenterX;
+uniform float uLakeCenterZ;
+uniform float uLakeRadius;
+uniform float uBeachWidth;
 
 attribute float aBladeRandom;
 
