@@ -8,4 +8,4 @@ export const CURVATURE = 0.0007;
 // Lake
 export const LAKE_CENTER = [110, 110];
 export const LAKE_RADIUS = 60;
-export const BEACH_WIDTH = 45;
+export const BEACH_WIDTH = 15;
