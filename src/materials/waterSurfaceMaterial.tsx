@@ -2,7 +2,7 @@ import CustomShaderMaterial from 'three-custom-shader-material/vanilla';
 import * as THREE from 'three';
 
 import waterSurfaceVertexShader from '../shaders/waterSurface/vertex.glsl';
-import waterSurfaceFragmentShader from '../shaders/waterSurface/fragment.glsl';
+// import waterSurfaceFragmentShader from '../shaders/waterSurface/fragment.glsl';
 import { CURVATURE } from '../utils/constants';
 
 export const waterSurfaceUniforms = {
@@ -11,7 +11,7 @@ export const waterSurfaceUniforms = {
 };
 
 export const waterSurfaceDepthMaterial = new CustomShaderMaterial({
-    // MeshPhysicalMaterial props
+    // MeshDepthMaterial props
     depthPacking: THREE.RGBADepthPacking,
 
     // Shader (CSM props)
@@ -21,16 +21,15 @@ export const waterSurfaceDepthMaterial = new CustomShaderMaterial({
 });
 
 export const waterSurfaceMaterial = new CustomShaderMaterial({
-    // MeshPhysicalMaterial props
-    metalness: 0,
-    roughness: 0.3,
+    // MeshBasicMaterial props
     color: '#ffffff',
-    transmission: 1,
+    transparent: true,
+    opacity: 0.2,
     side: THREE.DoubleSide,
 
     // Shader (CSM props)
     vertexShader: waterSurfaceVertexShader,
-    fragmentShader: waterSurfaceFragmentShader,
+    //fragmentShader: waterSurfaceFragmentShader,
     uniforms: waterSurfaceUniforms,
-    baseMaterial: THREE.MeshPhysicalMaterial,
+    baseMaterial: THREE.MeshBasicMaterial,
 });

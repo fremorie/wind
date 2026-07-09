@@ -8,7 +8,7 @@ import { waterSurfaceGeometry } from './geometry';
 export function WaterSurface() {
     return (
         <mesh
-            position={[LAKE_CENTER[0], -1, LAKE_CENTER[1]]}
+            position={[LAKE_CENTER[0], -2.1, LAKE_CENTER[1]]}
             frustumCulled={false}
             material={waterSurfaceMaterial}
             customDepthMaterial={waterSurfaceDepthMaterial}

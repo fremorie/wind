@@ -26,11 +26,11 @@ void main() {
     color = mix(color, uColorDirt, sandMask);
 
     // Water
-    float waterLevelY = -1.0;
+    float waterLevelY = -2.0;
     float lakeRegion = smoothstep(uLakeRadius, uLakeRadius - 0.5, distanceToLake);
     float submerged = smoothstep(waterLevelY, waterLevelY - 0.5, vPosition.y);
     float waterMask = lakeRegion * submerged;
-    float waterMix = smoothstep(waterLevelY, -uLakeDepth * 0.6, vPosition.y);
+    float waterMix = smoothstep(waterLevelY, -uLakeDepth * 0.4, vPosition.y);
     vec3 waterColor = mix(uColorWaterShallow, uColorWaterDeep, waterMix);
     color = mix(color, waterColor, waterMask);
 
