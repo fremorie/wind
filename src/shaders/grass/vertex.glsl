@@ -77,9 +77,10 @@ void main() {
     float roadMask = getRoadMask(wrappedTile);
     localPosition *= (1.0 - roadMask);
 
-    // No grass under water
-    float lakeMask = getLakeMask(wrappedTile);
-    float lakeCull = step(0.1, lakeMask);
+    // No grass under water or on the beach
+    float distanceToLake = length(wrappedTile - vec2(uLakeCenterX, uLakeCenterZ));
+    float grassLine = uLakeRadius + uBeachWidth;
+    float lakeCull = smoothstep(grassLine, grassLine - 5.0, distanceToLake);
     localPosition *= (1.0 - lakeCull);
 
     vec4 worldPosition = modelMatrix * instanceMatrix * vec4(localPosition, 1.0);
