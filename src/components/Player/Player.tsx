@@ -13,6 +13,7 @@ import {
     updatePlayerPosition,
 } from '../../utils/player';
 import { Bicycle } from '../Bicycle';
+import { waterSurfaceMaterial } from '../../materials/waterSurfaceMaterial';
 
 export function Player() {
     const playerMeshRef = useRef<Mesh>(null);
@@ -56,6 +57,11 @@ export function Player() {
         );
 
         terrainMaterial.uniforms.uPlayerPosition.value.set(
+            playerPosition.x,
+            playerPosition.z,
+        );
+
+        waterSurfaceMaterial.uniforms.uPlayerPosition.value.set(
             playerPosition.x,
             playerPosition.z,
         );
