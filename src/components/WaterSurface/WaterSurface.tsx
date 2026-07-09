@@ -4,11 +4,14 @@ import {
     waterSurfaceMaterial,
 } from '../../materials/waterSurfaceMaterial';
 import { waterSurfaceGeometry } from './geometry';
+import { useWaterSurfaceControls } from './useWaterSurfaceControls';
 
 export function WaterSurface() {
+    useWaterSurfaceControls();
+
     return (
         <mesh
-            position={[LAKE_CENTER[0], -2.1, LAKE_CENTER[1]]}
+            position={[LAKE_CENTER[0], -2, LAKE_CENTER[1]]}
             frustumCulled={false}
             material={waterSurfaceMaterial}
             customDepthMaterial={waterSurfaceDepthMaterial}
