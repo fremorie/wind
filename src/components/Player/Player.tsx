@@ -60,7 +60,7 @@ export function Player() {
             playerPosition.z,
         );
 
-        updateCamera(state.camera, playerPosition);
+        updateCamera(state.camera, playerPosition, delta);
     });
 
     return (

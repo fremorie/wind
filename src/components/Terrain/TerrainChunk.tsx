@@ -11,6 +11,7 @@ type Props = {
 export function TerrainChunk({ position }: Props) {
     return (
         <mesh
+            frustumCulled={false}
             geometry={terrainGeometry}
             material={terrainMaterial}
             customDepthMaterial={terrainDepthMaterial}

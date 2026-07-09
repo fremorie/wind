@@ -16,6 +16,10 @@ const yawQuaternion = new THREE.Quaternion();
 const targetYawQuaternion = new THREE.Quaternion();
 const pitchQuaternion = new THREE.Quaternion();
 
+// Camera
+const cameraTargetPosition = new THREE.Vector3(0, 0, 0);
+const CAMERA_STIFFNESS = 10;
+
 export function updatePlayerDirection(
     playerDirection: THREE.Vector3,
     keys: {
@@ -31,11 +35,27 @@ export function updatePlayerDirection(
     playerDirection.set(xDirection, 0, zDirection).normalize();
 }
 
-export function updateCamera(camera: Camera, playerPosition: THREE.Vector3) {
-    camera.position.set(
+export function updateCamera(
+    camera: Camera,
+    playerPosition: THREE.Vector3,
+    delta: number,
+) {
+    const margin = 2;
+    const groundAtCamera =
+        getElevation(camera.position.x, camera.position.z) + margin;
+    const desiredCameraY = playerPosition.y + 5;
+
+    const cameraY = Math.max(desiredCameraY, groundAtCamera);
+
+    cameraTargetPosition.set(
         playerPosition.x - 20,
-        playerPosition.y + 5,
+        cameraY,
         playerPosition.z - 1,
+    );
+
+    camera.position.lerp(
+        cameraTargetPosition,
+        1 - Math.exp(-CAMERA_STIFFNESS * delta),
     );
     camera.lookAt(playerPosition);
 }
