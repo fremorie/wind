@@ -6,7 +6,7 @@ import { getElevation } from './elevation';
 import { BEACH_WIDTH, SHORE_POSITION_X } from './constants';
 
 const PITCH_DELTA = 1;
-const SPEED = 20;
+const SPEED = 10;
 const SPHERE_RADIUS = 1;
 const STIFFNESS = 2;
 
