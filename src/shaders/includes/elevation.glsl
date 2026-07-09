@@ -25,7 +25,7 @@ float getRoadMask(vec2 position) {
 float getLakeMask(vec2 position) {
     vec2 lakeCenter = vec2(110.0, 110.0);
     float lakeRadius = 60.0;
-    float beachWidth = 25.0;
+    float beachWidth = 45.0;
     float dist = length(position - lakeCenter);
 
     // SDF: 1 inside the lake, 0 outside
