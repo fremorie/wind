@@ -56,7 +56,7 @@ export function Environment() {
                 shadow-mapSize={[2048, 2048]}
             />
             <ambientLight intensity={1.5} />
-            <fog attach="fog" args={[fogColor, 20, 150]} />
+            {/*<fog attach="fog" args={[fogColor, 20, 150]} />*/}
         </>
     );
 }
