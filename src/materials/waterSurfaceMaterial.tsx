@@ -19,6 +19,7 @@ export const waterSurfaceUniforms = {
     uFresnelPower: new THREE.Uniform(4.2),
     uFresnelStrength: new THREE.Uniform(1.0),
     uFresnelColor: new THREE.Uniform(new THREE.Color('#ffffff')),
+    uTime: new THREE.Uniform(0),
 
     uPositionFrequency: new THREE.Uniform(0.03),
     uStrength: new THREE.Uniform(10.0),

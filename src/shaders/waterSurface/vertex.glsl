@@ -16,6 +16,8 @@ uniform float uLakeDepth;
 varying float vLakeElevation;
 varying vec3 vWorldPosition;
 varying vec3 vWorldNormal;
+varying vec2 vUv;
+varying float vLakeDepth;
 
 #include "../includes/curveWorld.glsl"
 #include "../includes/elevation.glsl"
@@ -34,4 +36,6 @@ void main() {
     vLakeElevation = lakeElevation;
     vWorldPosition = worldPositionNew;
     vWorldNormal = normalize(mat3(modelMatrix) * normal);
+    vUv = worldUV;
+    vLakeDepth = getLakeDepth(worldUV) / uLakeDepth;
 }

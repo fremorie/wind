@@ -1,3 +1,5 @@
+import { useFrame } from '@react-three/fiber';
+
 import { LAKE_CENTER } from '../../utils/constants';
 import {
     waterSurfaceDepthMaterial,
@@ -8,6 +10,10 @@ import { useWaterSurfaceControls } from './useWaterSurfaceControls';
 
 export function WaterSurface() {
     useWaterSurfaceControls();
+
+    useFrame((_, delta) => {
+        waterSurfaceMaterial.uniforms.uTime.value += delta;
+    });
 
     return (
         <mesh
