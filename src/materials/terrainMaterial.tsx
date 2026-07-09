@@ -37,8 +37,8 @@ export const terrainUniforms = {
     uLakeRadius: new THREE.Uniform(LAKE_RADIUS),
     uBeachWidth: new THREE.Uniform(BEACH_WIDTH),
     uLakeDepth: new THREE.Uniform(LAKE_DEPTH),
-    uColorWaterShallow: new THREE.Uniform(new THREE.Color('#43a0a3')),
-    uColorWaterDeep: new THREE.Uniform(new THREE.Color('#065b6f')),
+    uColorWaterShallow: new THREE.Uniform(new THREE.Color('#60cfd8')),
+    uColorWaterDeep: new THREE.Uniform(new THREE.Color('#1c7d93')),
 };
 
 export const terrainDepthMaterial = new CustomShaderMaterial({

@@ -32,14 +32,12 @@ void main() {
     vec3 finalColor = vec3(0.0, 0.0, 0.0);
 
     // Fresnel
-//    vec3 viewDirection = normalize(cameraPosition - vWorldPosition);
-//    float fresnel = pow(
-//        1.0 - max(dot(normalize(vWorldNormal), viewDirection), 0.0),
-//        uFresnelPower
-//    );
-//    finalColor = mix(finalColor, uFresnelColor, fresnel * uFresnelStrength);
-//
-//    float alpha = mix(opacity, 1.0, fresnel);
+    vec3 viewDirection = normalize(cameraPosition - vWorldPosition);
+    float fresnel = pow(
+        1.0 - max(dot(normalize(vWorldNormal), viewDirection), 0.0),
+        uFresnelPower
+    );
+    finalColor = mix(finalColor, uFresnelColor, fresnel * uFresnelStrength);
 
     // Ripple
     float lakeElevation = getFinalElevation(vUv);
@@ -54,14 +52,14 @@ void main() {
     ripple = ripple - (1.0 - shore);
     ripple += noise;
 
-    ripple = ripple > 1.3 ? ripple : 0.0;
+    float rippleMask = step(1.3, ripple);
 
-    finalColor += ripple;
+    finalColor += rippleMask;
 
-    if (finalColor.r < 1.0) {
-        discard;
-    }
+    // Alpha
+    float alpha = mix(opacity, 1.0, fresnel);
+    alpha = max(alpha, rippleMask);
 
     // Final color
-    csm_DiffuseColor = vec4(finalColor, 1.0);
+    csm_DiffuseColor = vec4(finalColor, alpha);
 }

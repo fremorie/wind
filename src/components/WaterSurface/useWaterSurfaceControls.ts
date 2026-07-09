@@ -14,8 +14,18 @@ export function useWaterSurfaceControls() {
                 uFresnelColor: {
                     value: hex(waterSurfaceUniforms.uFresnelColor.value),
                 },
-                uFresnelPower: 4.2,
-                uFresnelStrength: 0.88,
+                uFresnelPower: {
+                    value: waterSurfaceUniforms.uFresnelPower.value,
+                    min: 0,
+                    max: 10,
+                    step: 0.001,
+                },
+                uFresnelStrength: {
+                    value: waterSurfaceUniforms.uFresnelStrength.value,
+                    min: 0,
+                    max: 1,
+                    step: 0.001,
+                },
             }),
         },
     );

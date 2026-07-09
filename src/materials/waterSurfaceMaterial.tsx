@@ -16,8 +16,8 @@ export const waterSurfaceUniforms = {
     // Water surface params
     uPlayerPosition: new THREE.Uniform(new THREE.Vector2()),
     uCurvature: new THREE.Uniform(CURVATURE),
-    uFresnelPower: new THREE.Uniform(4.2),
-    uFresnelStrength: new THREE.Uniform(1.0),
+    uFresnelPower: new THREE.Uniform(4.11),
+    uFresnelStrength: new THREE.Uniform(0.79),
     uFresnelColor: new THREE.Uniform(new THREE.Color('#ffffff')),
     uTime: new THREE.Uniform(0),
 

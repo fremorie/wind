@@ -17,7 +17,7 @@ export function WaterSurface() {
 
     return (
         <mesh
-            position={[LAKE_CENTER[0], -2, LAKE_CENTER[1]]}
+            position={[LAKE_CENTER[0], -1.9, LAKE_CENTER[1]]}
             frustumCulled={false}
             material={waterSurfaceMaterial}
             customDepthMaterial={waterSurfaceDepthMaterial}
