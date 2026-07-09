@@ -4,6 +4,9 @@ uniform float uLakeCenterX;
 uniform float uLakeCenterZ;
 uniform float uLakeRadius;
 uniform float uBeachWidth;
+uniform vec3 uColorWaterShallow;
+uniform vec3 uColorWaterDeep;
+uniform float uLakeDepth;
 
 varying vec3 vPosition;
 varying float vUpDot;
@@ -17,10 +20,19 @@ void main() {
     color = mix(color, uColorDirt, vRoadMask);
 
     // Beach
-    float dist = length(vPosition.xz - vec2(uLakeCenterX, uLakeCenterZ));
+    float distanceToLake = length(vPosition.xz - vec2(uLakeCenterX, uLakeCenterZ));
     float grassLine = uLakeRadius + uBeachWidth;
-    float sandMask = smoothstep(grassLine, grassLine - 5.0, dist);
+    float sandMask = smoothstep(grassLine, grassLine - 5.0, distanceToLake);
     color = mix(color, uColorDirt, sandMask);
+
+    // Water
+    float waterLevelY = -1.0;
+    float lakeRegion = smoothstep(uLakeRadius, uLakeRadius - 0.5, distanceToLake);
+    float submerged = smoothstep(waterLevelY, waterLevelY - 0.5, vPosition.y);
+    float waterMask = lakeRegion * submerged;
+    float waterMix = smoothstep(waterLevelY, -uLakeDepth * 0.6, vPosition.y);
+    vec3 waterColor = mix(uColorWaterShallow, uColorWaterDeep, waterMix);
+    color = mix(color, waterColor, waterMask);
 
     // Final color
     csm_DiffuseColor = vec4(color, 1.0);
