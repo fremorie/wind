@@ -12,3 +12,6 @@ export const LAKE_RADIUS = 60;
 export const BEACH_WIDTH = 1;
 export const LAKE_DEPTH = 20;
 export const LAKE_SURFACE_LEVEL = -2;
+
+// Wind farm
+export const WIND_TURBINE_COUNT = 8;

@@ -1,7 +1,9 @@
 import { Merged, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
+import { useMemo } from 'react';
 
 import { Turbine, type TurbineInstance, type TurbineParts } from './Turbine';
+import { WIND_TURBINE_COUNT } from '../../utils/constants';
 
 type GLTFNodes = {
     nodes: {
@@ -14,7 +16,12 @@ type GLTFNodes = {
     };
 };
 
-export function WindFarm() {
+type Props = {
+    count?: number;
+    radius?: number;
+};
+
+export function WindFarm({ count = WIND_TURBINE_COUNT, radius = 300 }: Props) {
     const { nodes } = useGLTF('./windTurbine.glb') as unknown as GLTFNodes;
 
     const meshes = {
@@ -26,7 +33,29 @@ export function WindFarm() {
         TowerB: nodes.Circle002_1,
     };
 
-    const turbines: TurbineInstance[] = [];
+    const turbines: TurbineInstance[] = useMemo(() => {
+        const result = [];
+
+        for (let i = 0; i < count; i++) {
+            const angle = ((i / count) * Math.PI) / 2;
+            const x = radius * Math.cos(angle);
+            const z = radius * Math.sin(angle);
+            const yaw = 1;
+            const phase = i * 0.2;
+            const speed = i;
+
+            result.push({
+                key: `turbine-${i}`,
+                x,
+                z,
+                yaw,
+                phase,
+                speed,
+                scale: 10,
+            });
+        }
+        return result;
+    }, [count, radius]);
 
     return (
         <Merged
