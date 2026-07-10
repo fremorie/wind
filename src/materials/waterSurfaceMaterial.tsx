@@ -10,13 +10,14 @@ import {
     LAKE_CENTER,
     LAKE_DEPTH,
     LAKE_RADIUS,
+    LAKE_SURFACE_LEVEL,
 } from '../utils/constants';
 
 export const waterSurfaceUniforms = {
     // Water surface params
     uPlayerPosition: new THREE.Uniform(new THREE.Vector2()),
     uCurvature: new THREE.Uniform(CURVATURE),
-    uFresnelPower: new THREE.Uniform(4.11),
+    uFresnelPower: new THREE.Uniform(7.22),
     uFresnelStrength: new THREE.Uniform(0.79),
     uFresnelColor: new THREE.Uniform(new THREE.Color('#ffffff')),
     uTime: new THREE.Uniform(0),
@@ -39,6 +40,12 @@ export const waterSurfaceUniforms = {
     uLakeRadius: new THREE.Uniform(LAKE_RADIUS),
     uBeachWidth: new THREE.Uniform(BEACH_WIDTH),
     uLakeDepth: new THREE.Uniform(LAKE_DEPTH),
+    uLakeSurfaceLevel: new THREE.Uniform(LAKE_SURFACE_LEVEL),
+
+    // Match the colours the terrain paints so surface and floor read as one body
+    uColorWaterShallow: new THREE.Uniform(new THREE.Color('#60cfd8')),
+    uColorWaterDeep: new THREE.Uniform(new THREE.Color('#1c7d93')),
+    uOpacityDeep: new THREE.Uniform(0.85),
 };
 
 export const waterSurfaceDepthMaterial = new CustomShaderMaterial({

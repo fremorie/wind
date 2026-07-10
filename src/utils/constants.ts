@@ -7,7 +7,7 @@ export const GRASS_TILE_SIZE = GRID_TOTAL_WIDTH / 2 + 20;
 export const CURVATURE = 0.0007;
 
 // Lake
-export const LAKE_CENTER = [GRID_TOTAL_WIDTH, GRID_TOTAL_WIDTH / 2];
+export const LAKE_CENTER = [GRID_TOTAL_WIDTH * 2, GRID_TOTAL_WIDTH / 2];
 export const LAKE_RADIUS = 60;
 export const BEACH_WIDTH = 1;
 export const LAKE_DEPTH = 20;

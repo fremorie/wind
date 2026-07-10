@@ -3,6 +3,10 @@ uniform float uFresnelPower;
 uniform float uFresnelStrength;
 uniform float uLakeDepth;
 
+uniform vec3 uColorWaterShallow;
+uniform vec3 uColorWaterDeep;
+uniform float uOpacityDeep;
+
 uniform float uPositionFrequency;
 uniform float uStrength;
 uniform vec3 uRoadCenter;
@@ -14,6 +18,7 @@ uniform float uLakeCenterX;
 uniform float uLakeCenterZ;
 uniform float uLakeRadius;
 uniform float uBeachWidth;
+uniform float uLakeSurfaceLevel;
 
 uniform float uTime;
 
@@ -27,7 +32,10 @@ varying float vLakeDepth;
 #include "../includes/elevation.glsl"
 
 void main() {
-    vec3 finalColor = vec3(0.0, 0.0, 0.0);
+    float lakeElevation = getFinalElevation(vUv);
+    float depth = clamp((uLakeSurfaceLevel - lakeElevation) / uLakeDepth, 0.0, 1.0);
+
+    vec3 finalColor = mix(uColorWaterShallow, uColorWaterDeep, depth);
 
     // Fresnel
     vec3 viewDirection = normalize(cameraPosition - vWorldPosition);
@@ -38,7 +46,6 @@ void main() {
     finalColor = mix(finalColor, uFresnelColor, fresnel * uFresnelStrength);
 
     // Ripple
-    float lakeElevation = getFinalElevation(vUv);
     float shore = clamp(1.0 + lakeElevation / uLakeDepth, 0.0, 1.0);
 
     float depthMap = 1.0 - vLakeDepth;
@@ -54,9 +61,19 @@ void main() {
 
     finalColor += rippleMask;
 
-    // Alpha
-    float alpha = mix(opacity, 1.0, fresnel);
+    float distanceToLake = length(vUv - vec2(uLakeCenterX, uLakeCenterZ));
+    float lakeRegion = smoothstep(uLakeRadius, uLakeRadius - 0.5, distanceToLake);
+    float coverage = lakeRegion
+        * smoothstep(uLakeSurfaceLevel, uLakeSurfaceLevel - 0.5, lakeElevation);
+
+    // Far water reads opaque, near water stays clear
+    float distanceOpacity = smoothstep(30.0, 120.0, length(cameraPosition - vWorldPosition));
+
+    // Clear shallows up close, opaque over deep or distant water
+    float baseOpacity = mix(mix(opacity, uOpacityDeep, depth), 1.0, distanceOpacity);
+    float alpha = mix(baseOpacity, 1.0, fresnel);
     alpha = max(alpha, rippleMask);
+    alpha *= coverage;
 
     // Final color
     csm_DiffuseColor = vec4(finalColor, alpha);
