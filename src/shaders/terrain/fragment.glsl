@@ -13,8 +13,6 @@ varying vec3 vPosition;
 varying float vUpDot;
 varying float vRoadMask;
 
-#include "../includes/simplexNoise2d.glsl"
-
 void main() {
     // Color
     vec3 color = vec3(uColorGrass);

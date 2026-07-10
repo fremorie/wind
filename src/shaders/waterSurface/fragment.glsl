@@ -5,8 +5,6 @@ uniform float uLakeDepth;
 
 uniform float uPositionFrequency;
 uniform float uStrength;
-uniform vec2 uPlayerPosition;
-uniform float uCurvature;
 uniform vec3 uRoadCenter;
 uniform float uRoadWidth;
 uniform float uRoadAmplitude;
