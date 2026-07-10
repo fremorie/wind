@@ -10,6 +10,7 @@ import {
     LAKE_CENTER,
     LAKE_DEPTH,
     LAKE_RADIUS,
+    LAKE_SURFACE_LEVEL,
 } from '../utils/constants';
 
 export const terrainUniforms = {
@@ -39,6 +40,7 @@ export const terrainUniforms = {
     uLakeDepth: new THREE.Uniform(LAKE_DEPTH),
     uColorWaterShallow: new THREE.Uniform(new THREE.Color('#60cfd8')),
     uColorWaterDeep: new THREE.Uniform(new THREE.Color('#1c7d93')),
+    uLakeSurfaceLevel: new THREE.Uniform(LAKE_SURFACE_LEVEL),
 };
 
 export const terrainDepthMaterial = new CustomShaderMaterial({

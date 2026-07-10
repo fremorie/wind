@@ -1,6 +1,6 @@
 import { useFrame } from '@react-three/fiber';
 
-import { LAKE_CENTER } from '../../utils/constants';
+import { LAKE_CENTER, LAKE_SURFACE_LEVEL } from '../../utils/constants';
 import {
     waterSurfaceDepthMaterial,
     waterSurfaceMaterial,
@@ -17,7 +17,7 @@ export function WaterSurface() {
 
     return (
         <mesh
-            position={[LAKE_CENTER[0], -1.9, LAKE_CENTER[1]]}
+            position={[LAKE_CENTER[0], LAKE_SURFACE_LEVEL, LAKE_CENTER[1]]}
             frustumCulled={false}
             material={waterSurfaceMaterial}
             customDepthMaterial={waterSurfaceDepthMaterial}

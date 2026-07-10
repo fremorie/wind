@@ -7,6 +7,7 @@ uniform float uBeachWidth;
 uniform vec3 uColorWaterShallow;
 uniform vec3 uColorWaterDeep;
 uniform float uLakeDepth;
+uniform float uLakeSurfaceLevel;
 
 varying vec3 vPosition;
 varying float vUpDot;
@@ -26,11 +27,10 @@ void main() {
     color = mix(color, uColorDirt, sandMask);
 
     // Water
-    float waterLevelY = -2.0;
     float lakeRegion = smoothstep(uLakeRadius, uLakeRadius - 0.5, distanceToLake);
-    float submerged = smoothstep(waterLevelY, waterLevelY - 0.5, vPosition.y);
+    float submerged = smoothstep(uLakeSurfaceLevel, uLakeSurfaceLevel - 0.5, vPosition.y);
     float waterMask = lakeRegion * submerged;
-    float waterMix = smoothstep(waterLevelY, -uLakeDepth * 0.4, vPosition.y);
+    float waterMix = smoothstep(uLakeSurfaceLevel, -uLakeDepth * 0.4, vPosition.y);
     vec3 waterColor = mix(uColorWaterShallow, uColorWaterDeep, waterMix);
     color = mix(color, waterColor, waterMask);
 
