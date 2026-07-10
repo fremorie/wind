@@ -3,6 +3,7 @@ import { Player } from '../components/Player';
 import { Environment } from './Environment';
 import { Grass } from '../components/Grass';
 import { WindTurbine } from '../components/WindTurbine';
+import { WindFarm } from '../components/WindFarm';
 import { GRID_TOTAL_WIDTH } from '../utils/constants';
 import { Cow } from '../components/Cow';
 import { ConstructionSign } from '../components/constructionSign';
@@ -20,6 +21,8 @@ export function Experience() {
             <WaterSurface />
             <Player />
             <Cow />
+
+            <WindFarm />
 
             {/* tmp */}
             <ConstructionSign />

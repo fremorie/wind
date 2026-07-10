@@ -1,0 +1,1 @@
+export { WindFarm } from './WindFarm';
