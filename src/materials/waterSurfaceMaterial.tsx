@@ -56,7 +56,6 @@ export const waterSurfaceMaterial = new CustomShaderMaterial({
     color: '#ffffff',
     transparent: true,
     opacity: 0.2,
-    side: THREE.DoubleSide,
 
     // Shader (CSM props)
     vertexShader: waterSurfaceVertexShader,
