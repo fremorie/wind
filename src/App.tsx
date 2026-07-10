@@ -1,6 +1,6 @@
 import { Canvas } from '@react-three/fiber';
 import { Perf } from 'r3f-perf';
-import { KeyboardControls, StatsGl } from '@react-three/drei';
+import { KeyboardControls } from '@react-three/drei';
 
 import { Experience } from './Experience/Experience';
 import './App.css';
@@ -27,8 +27,7 @@ function App() {
                 flat
             >
                 <Experience />
-                <Perf position="bottom-left" />
-                <StatsGl className="stats" trackGPU />
+                <Perf position="top-left" />
             </Canvas>
             <div
                 style={{
