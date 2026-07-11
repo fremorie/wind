@@ -48,13 +48,13 @@ export function Turbine({ data, parts }: Props) {
             scale={data.scale}
         >
             {/* Tower */}
-            <group scale={[0.809, 1, 0.809]}>
+            <group scale={[0.809, 3, 0.809]}>
                 <TowerA />
                 <TowerB />
             </group>
 
             {/* Nacelle assembly */}
-            <group position={[0, 3.278, 0.011]}>
+            <group position={[0, 9, 0.011]}>
                 <Nacelle />
 
                 {/* Rotor: this whole group spins, carrying the blades with it */}

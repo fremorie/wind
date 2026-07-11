@@ -7,7 +7,7 @@ import { getElevation } from './elevation';
 const PITCH_DELTA = 1;
 const SPEED = 30;
 const SPHERE_RADIUS = 1;
-const STIFFNESS = 2;
+const STIFFNESS = 10;
 
 const UP = new THREE.Vector3(0, 1, 0);
 const RIGHT = new THREE.Vector3(1, 0, 0);
@@ -43,7 +43,7 @@ export function updateCamera(
     const margin = 2;
     const groundAtCamera =
         getElevation(camera.position.x, camera.position.z) + margin;
-    const desiredCameraY = playerPosition.y + 5;
+    const desiredCameraY = playerPosition.y + 7;
 
     const cameraY = Math.max(desiredCameraY, groundAtCamera);
 

@@ -1,9 +1,16 @@
 import { Merged, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
 
 import { Turbine, type TurbineInstance, type TurbineParts } from './Turbine';
-import { WIND_TURBINE_COUNT } from '../../utils/constants';
+import {
+    CURVATURE,
+    WIND_TURBINE_COUNT,
+    WIND_FARM_RADIUS,
+} from '../../utils/constants';
+import useGame from '../../store/useGame';
+import { getWindTurbineInstancesParams } from '../../utils/decorations';
 
 type GLTFNodes = {
     nodes: {
@@ -21,7 +28,13 @@ type Props = {
     radius?: number;
 };
 
-export function WindFarm({ count = WIND_TURBINE_COUNT, radius = 300 }: Props) {
+export function WindFarm({
+    count = WIND_TURBINE_COUNT,
+    radius = WIND_FARM_RADIUS,
+}: Props) {
+    const groupRef = useRef<THREE.Group>(null);
+    const playerPosition = useGame((state) => state.playerPosition);
+
     const { nodes } = useGLTF('./windTurbine.glb') as unknown as GLTFNodes;
 
     const meshes = {
@@ -33,48 +46,38 @@ export function WindFarm({ count = WIND_TURBINE_COUNT, radius = 300 }: Props) {
         TowerB: nodes.Circle002_1,
     };
 
-    const turbines: TurbineInstance[] = useMemo(() => {
-        const result = [];
+    const turbines: TurbineInstance[] = useMemo(
+        () => getWindTurbineInstancesParams(count, radius),
+        [count, radius],
+    );
 
-        for (let i = 0; i < count; i++) {
-            const angle = ((i / count) * Math.PI) / 2;
-            const x = radius * Math.cos(angle);
-            const z = radius * Math.sin(angle);
-            const yaw = 1;
-            const phase = i * 0.2;
-            const speed = i;
+    useFrame(() => {
+        if (!groupRef.current) return;
 
-            result.push({
-                key: `turbine-${i}`,
-                x,
-                z,
-                yaw,
-                phase,
-                speed,
-                scale: 10,
-            });
-        }
-        return result;
-    }, [count, radius]);
+        groupRef.current.position.x = playerPosition.x;
+        groupRef.current.position.z = playerPosition.z;
+    });
 
     return (
-        <Merged
-            meshes={meshes}
-            limit={128}
-            castShadow
-            receiveShadow
-            frustumCulled={false}
-        >
-            {(parts) =>
-                turbines.map((data) => (
-                    <Turbine
-                        key={data.key}
-                        data={data}
-                        parts={parts as unknown as TurbineParts}
-                    />
-                ))
-            }
-        </Merged>
+        <group ref={groupRef} position-y={-radius * radius * CURVATURE}>
+            <Merged
+                meshes={meshes}
+                limit={128}
+                castShadow
+                receiveShadow
+                frustumCulled={false}
+            >
+                {(parts) =>
+                    turbines.map((data) => (
+                        <Turbine
+                            key={data.key}
+                            data={data}
+                            parts={parts as unknown as TurbineParts}
+                        />
+                    ))
+                }
+            </Merged>
+        </group>
     );
 }
 
