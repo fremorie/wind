@@ -28,9 +28,9 @@ export function ConstructionSign() {
         <group
             ref={groupRef}
             position={[
-                ((GRID_SIZE - 1) * CHUNK_SIZE) / 2 + 8,
+                ((GRID_SIZE - 1) * CHUNK_SIZE) / 2 + 18,
                 0,
-                ((GRID_SIZE - 1) * CHUNK_SIZE) / 2 + 2,
+                ((GRID_SIZE - 1) * CHUNK_SIZE) / 2 + 14,
             ]}
         >
             <ConstructionSignModel scale={3} rotation-y={Math.PI / 2} />

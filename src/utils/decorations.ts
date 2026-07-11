@@ -17,7 +17,10 @@ export function getWindTurbinePosition(
     return baseElevation - offset;
 }
 
-export function getWindTurbineInstancesParams(count: number, windFarmRadius: number) {
+export function getWindTurbineInstancesParams(
+    count: number,
+    windFarmRadius: number,
+) {
     const result = [];
     const spread = (Math.PI * 60) / 180;
 

@@ -5,6 +5,7 @@ import { Grass } from '../components/Grass';
 import { WindFarm } from '../components/WindFarm';
 import { Cow } from '../components/Cow';
 import { WaterSurface } from '../components/WaterSurface';
+import { ConstructionSign } from '../components/constructionSign';
 
 export function Experience() {
     return (
@@ -20,6 +21,9 @@ export function Experience() {
             <Cow />
 
             <WindFarm />
+
+            {/* tmp */}
+            <ConstructionSign />
         </>
     );
 }
