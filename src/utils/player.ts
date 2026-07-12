@@ -5,7 +5,7 @@ import { type Camera } from '@react-three/fiber';
 import { getElevation } from './elevation';
 
 const PITCH_DELTA = 1;
-const SPEED = 30;
+const SPEED = 10;
 const SPHERE_RADIUS = 1;
 const STIFFNESS = 10;
 

@@ -6,6 +6,7 @@ import { WindFarm } from '../components/WindFarm';
 import { Cow } from '../components/Cow';
 import { WaterSurface } from '../components/WaterSurface';
 import { ConstructionSign } from '../components/constructionSign';
+import { Bushes } from '../components/Bushes';
 
 export function Experience() {
     return (
@@ -21,6 +22,7 @@ export function Experience() {
             <Cow />
 
             <WindFarm />
+            <Bushes count={10} />
 
             {/* tmp */}
             <ConstructionSign />
