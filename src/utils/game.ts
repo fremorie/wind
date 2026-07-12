@@ -1,8 +1,12 @@
 import {
     CHUNK_SIZE,
-    GRID_SIZE,
+    GRID_SIZE_X,
+    GRID_SIZE_Z,
     GRID_TOTAL_WIDTH,
-    RECYCLING_RADIUS,
+    GRID_TOTAL_DEPTH,
+    RECYCLING_RADIUS_Z,
+    CHUNKS_BEHIND_PLAYER,
+    CHUNKS_IN_FRONT_OF_PLAYER,
 } from './constants';
 
 export type GridChunkPosition = [x: number, y: number, z: number];
@@ -12,11 +16,14 @@ export type GridChunk = {
     key: string;
 };
 
-export function generateTerrainChunkPositions(gridSize: number = GRID_SIZE) {
+export function generateTerrainChunkPositions(
+    gridSizeX: number = GRID_SIZE_X,
+    gridSizeZ: number = GRID_SIZE_Z,
+) {
     const positions: Array<GridChunk> = [];
 
-    for (let z = 0; z < gridSize; z++) {
-        for (let x = 0; x < gridSize; x++) {
+    for (let z = 0; z < gridSizeZ; z++) {
+        for (let x = 0; x < gridSizeX; x++) {
             positions.push({
                 position: [x * CHUNK_SIZE, 0, z * CHUNK_SIZE],
                 key: `${x}_${z}`,
@@ -40,10 +47,11 @@ export function wrapTerrainChunk(
     const chunkCellX = terrainChunk.position[0] / CHUNK_SIZE;
     const chunkCellZ = terrainChunk.position[2] / CHUNK_SIZE;
 
-    const shouldWrapNorth = chunkCellX < playerCellX - RECYCLING_RADIUS;
-    const shouldWrapEast = chunkCellZ < playerCellZ - RECYCLING_RADIUS;
-    const shouldWrapSouth = chunkCellX > playerCellX + RECYCLING_RADIUS;
-    const shouldWrapWest = chunkCellZ > playerCellZ + RECYCLING_RADIUS;
+    const shouldWrapNorth = chunkCellX < playerCellX - CHUNKS_BEHIND_PLAYER;
+    const shouldWrapEast = chunkCellZ < playerCellZ - RECYCLING_RADIUS_Z;
+    const shouldWrapSouth =
+        chunkCellX > playerCellX + CHUNKS_IN_FRONT_OF_PLAYER;
+    const shouldWrapWest = chunkCellZ > playerCellZ + RECYCLING_RADIUS_Z;
 
     if (
         !shouldWrapNorth &&
@@ -55,7 +63,7 @@ export function wrapTerrainChunk(
     }
 
     if (shouldWrapNorth) {
-        newTerrainChunk.position[0] += GRID_TOTAL_WIDTH;
+        newTerrainChunk.position[0] += GRID_TOTAL_DEPTH;
     }
 
     if (shouldWrapEast) {
@@ -63,7 +71,7 @@ export function wrapTerrainChunk(
     }
 
     if (shouldWrapSouth) {
-        newTerrainChunk.position[0] -= GRID_TOTAL_WIDTH;
+        newTerrainChunk.position[0] -= GRID_TOTAL_DEPTH;
     }
 
     if (shouldWrapWest) {

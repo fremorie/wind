@@ -4,7 +4,7 @@ import { Text3D, useMatcapTexture } from '@react-three/drei';
 import * as THREE from 'three';
 
 import { ConstructionSignModel } from './constructionSignModel';
-import { CHUNK_SIZE, GRID_SIZE } from '../../utils/constants';
+import { CHUNK_SIZE, GRID_SIZE_Z } from '../../utils/constants';
 import useGame from '../../store/useGame';
 import { getWindTurbinePosition } from '../../utils/decorations';
 
@@ -28,9 +28,9 @@ export function ConstructionSign() {
         <group
             ref={groupRef}
             position={[
-                ((GRID_SIZE - 1) * CHUNK_SIZE) / 2 + 18,
+                ((GRID_SIZE_Z - 1) * CHUNK_SIZE) / 2 + 18,
                 0,
-                ((GRID_SIZE - 1) * CHUNK_SIZE) / 2 + 14,
+                ((GRID_SIZE_Z - 1) * CHUNK_SIZE) / 2 + 14,
             ]}
         >
             <ConstructionSignModel scale={3} rotation-y={Math.PI / 2} />

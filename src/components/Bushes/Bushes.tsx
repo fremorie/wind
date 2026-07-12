@@ -4,7 +4,7 @@ import { useTexture } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 
 import { createFoliage } from '../../utils/foliage';
-import { CHUNK_SIZE, GRID_SIZE } from '../../utils/constants';
+import { CHUNK_SIZE, GRID_SIZE_Z } from '../../utils/constants';
 import { bushMaterial, bushDepthMaterial } from '../../materials/bushMaterial';
 import useGame from '../../store/useGame';
 
@@ -31,7 +31,7 @@ export function Bushes({ count }: Props) {
     useEffect(() => {
         if (!meshRef.current) return;
 
-        const center = ((GRID_SIZE - 1) * CHUNK_SIZE) / 2;
+        const center = ((GRID_SIZE_Z - 1) * CHUNK_SIZE) / 2;
 
         for (let i = 0; i < count; i++) {
             const dummyObject = new THREE.Object3D();

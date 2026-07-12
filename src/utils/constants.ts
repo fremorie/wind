@@ -1,8 +1,15 @@
 export const CHUNK_SIZE = 40;
-export const GRID_SIZE = 9;
-export const GRID_TOTAL_WIDTH = GRID_SIZE * CHUNK_SIZE;
+export const GRID_SIZE_X = 7;
+export const GRID_SIZE_Z = 7;
 
-export const RECYCLING_RADIUS = Math.floor(GRID_SIZE / 2);
+export const CHUNKS_BEHIND_PLAYER = 1;
+export const CHUNKS_IN_FRONT_OF_PLAYER = GRID_SIZE_X - CHUNKS_BEHIND_PLAYER - 1;
+
+export const GRID_TOTAL_WIDTH = GRID_SIZE_Z * CHUNK_SIZE;
+export const GRID_TOTAL_DEPTH = GRID_SIZE_X * CHUNK_SIZE;
+
+export const RECYCLING_RADIUS_Z = Math.floor(GRID_SIZE_Z / 2);
+
 export const GRASS_TILE_SIZE = GRID_TOTAL_WIDTH / 2 + 20;
 export const CURVATURE = 0.0007;
 
