@@ -4,6 +4,8 @@ import { alea } from 'seedrandom';
 
 const rng = alea('foliage');
 
+const BUSH_HEIGHT = 3;
+
 export function createFoliage() {
     const count = 100;
     const planes = [];
@@ -13,7 +15,7 @@ export function createFoliage() {
 
         // Position
         const spherical = new THREE.Spherical(
-            1 - Math.pow(rng(), 3),
+            1 - Math.pow(rng(), BUSH_HEIGHT),
             Math.PI * 2 * rng(),
             Math.PI * rng(),
         );
@@ -49,5 +51,8 @@ export function createFoliage() {
     }
 
     // Merge all planes
-    return mergeGeometries(planes);
+    const finalGeometry = mergeGeometries(planes);
+    finalGeometry.translate(0, BUSH_HEIGHT / 2 - 0.5, 0);
+
+    return finalGeometry;
 }
