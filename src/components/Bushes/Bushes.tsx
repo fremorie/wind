@@ -4,9 +4,10 @@ import { useTexture } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 
 import { createFoliage } from '../../utils/foliage';
-import { CHUNK_SIZE, GRID_SIZE_Z } from '../../utils/constants';
 import { bushMaterial, bushDepthMaterial } from '../../materials/bushMaterial';
 import useGame from '../../store/useGame';
+import { getBushesPositions } from '../../utils/bushes';
+import { getTreesPositions } from '../../utils/trees';
 
 type Props = {
     count: number;
@@ -28,23 +29,25 @@ export function Bushes({ count }: Props) {
         }
     }, [foliageTexture]);
 
+    const positions = useMemo(
+        () => getBushesPositions(getTreesPositions(4), [3, 3, 3, 3], count),
+        [count],
+    );
+
     useEffect(() => {
         if (!meshRef.current) return;
 
-        const center = ((GRID_SIZE_Z - 1) * CHUNK_SIZE) / 2;
-
-        for (let i = 0; i < count; i++) {
+        for (let i = 0; i < positions.length; i++) {
             const dummyObject = new THREE.Object3D();
-            const x = center - 20 + i * 10;
-            const z = center;
-            dummyObject.position.set(x, 3, z);
+            const [x, y, z] = positions[i];
+            dummyObject.position.set(x, y, z);
             dummyObject.rotation.set(0, -Math.PI / 2, 0);
             dummyObject.scale.set(2, 2, 2);
             dummyObject.updateMatrix();
             meshRef.current.setMatrixAt(i, dummyObject.matrix);
         }
         meshRef.current.instanceMatrix.needsUpdate = true;
-    }, [count]);
+    }, [positions]);
 
     useFrame(() => {
         bushMaterial.uniforms.uPlayerPosition.value.set(
@@ -56,7 +59,7 @@ export function Bushes({ count }: Props) {
     return (
         <instancedMesh
             ref={meshRef}
-            args={[bushGeometry, bushMaterial, count]}
+            args={[bushGeometry, bushMaterial, positions.length]}
             frustumCulled={false}
             receiveShadow
             castShadow

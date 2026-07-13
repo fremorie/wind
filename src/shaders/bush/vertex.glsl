@@ -21,6 +21,5 @@ void main() {
     float worldScale = length(worldMatrix[0].xyz);
 
     // Final position
-    float worldYOffset = surfaceY - instanceWorldOrigin.y;
-    csm_Position.y += worldYOffset / worldScale;
+    csm_Position.y += surfaceY / worldScale;
 }
