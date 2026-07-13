@@ -35,7 +35,7 @@ export const bushMaterial = new CustomShaderMaterial({
     // MeshStandardMaterial props
     metalness: 0,
     roughness: 0.8,
-    color: '#3a521c',
+    color: '#597932',
     // The leaf texture is a cutout mask: keep pixels above the threshold, drop the
     // rest. DoubleSide so both faces of each foliage plane are lit.
     alphaTest: 0.5,

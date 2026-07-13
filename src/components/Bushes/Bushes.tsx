@@ -30,7 +30,7 @@ export function Bushes({ count }: Props) {
     }, [foliageTexture]);
 
     const positions = useMemo(
-        () => getBushesPositions(getTreesPositions(4), [3, 3, 3, 3], count),
+        () => getBushesPositions(getTreesPositions(4), [2, 2, 2, 2], count),
         [count],
     );
 

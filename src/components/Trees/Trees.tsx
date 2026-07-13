@@ -18,7 +18,7 @@ type Props = {
     count: number;
 };
 
-const TREE_SCALE = 3;
+const TREE_SCALE = 2;
 
 export function Trees({ count }: Props) {
     const meshRef = useRef<THREE.InstancedMesh>(null);
