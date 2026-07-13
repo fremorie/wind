@@ -1,16 +1,14 @@
-import { CHUNK_SIZE, GRID_SIZE_Z } from '../../utils/constants';
 import { TreeModel } from './TreeModel';
+import { getTreesPositions } from '../../utils/trees';
 
 export function Tree() {
+    const positions = getTreesPositions();
+
     return (
         <>
-            <TreeModel
-                position={[
-                    ((GRID_SIZE_Z - 1) * CHUNK_SIZE) / 2 + 28,
-                    0,
-                    ((GRID_SIZE_Z - 1) * CHUNK_SIZE) / 2 + 44,
-                ]}
-            />
+            {positions.map((position, index) => (
+                <TreeModel position={position} key={index} />
+            ))}
         </>
     );
 }

@@ -13,33 +13,24 @@ const hex = (color: Color) => `#${color.getHexString()}`;
  * React Compiler lint rule.
  */
 export function useTerrainControls() {
-    const {
-        uColorGrass,
-        uColorDirt,
-        uColorWaterShallow,
-        uColorWaterDeep,
-    } = useControls('Terrain', {
-        Colors: folder({
-            uColorGrass: { value: hex(terrainUniforms.uColorGrass.value) },
-            uColorDirt: { value: hex(terrainUniforms.uColorDirt.value) },
-            uColorWaterShallow: {
-                value: hex(terrainUniforms.uColorWaterShallow.value),
-            },
-            uColorWaterDeep: {
-                value: hex(terrainUniforms.uColorWaterDeep.value),
-            },
-        }),
-    });
+    const { uColorGrass, uColorDirt, uColorWaterShallow, uColorWaterDeep } =
+        useControls('Terrain', {
+            Colors: folder({
+                uColorGrass: { value: hex(terrainUniforms.uColorGrass.value) },
+                uColorDirt: { value: hex(terrainUniforms.uColorDirt.value) },
+                uColorWaterShallow: {
+                    value: hex(terrainUniforms.uColorWaterShallow.value),
+                },
+                uColorWaterDeep: {
+                    value: hex(terrainUniforms.uColorWaterDeep.value),
+                },
+            }),
+        });
 
     useEffect(() => {
         terrainUniforms.uColorDirt.value.set(uColorDirt);
         terrainUniforms.uColorGrass.value.set(uColorGrass);
         terrainUniforms.uColorWaterShallow.value.set(uColorWaterShallow);
         terrainUniforms.uColorWaterDeep.value.set(uColorWaterDeep);
-    }, [
-        uColorGrass,
-        uColorDirt,
-        uColorWaterShallow,
-        uColorWaterDeep,
-    ]);
+    }, [uColorGrass, uColorDirt, uColorWaterShallow, uColorWaterDeep]);
 }
