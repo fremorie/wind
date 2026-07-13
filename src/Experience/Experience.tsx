@@ -8,7 +8,7 @@ import { WindFarm } from '../components/WindFarm';
 import { Cow } from '../components/Cow';
 import { WaterSurface } from '../components/WaterSurface';
 import { Bushes } from '../components/Bushes';
-import { Tree } from '../components/Trees/Tree';
+import { Trees } from '../components/Trees';
 
 export function Experience() {
     return (
@@ -16,7 +16,7 @@ export function Experience() {
             {/*<OrbitControls makeDefault />*/}
             <Environment />
 
-            <Tree />
+            <Trees count={10} />
 
             <axesHelper />
 

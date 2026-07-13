@@ -2,7 +2,7 @@ import { TreeModel } from './TreeModel';
 import { getTreesPositions } from '../../utils/trees';
 
 export function Tree() {
-    const positions = getTreesPositions();
+    const positions = getTreesPositions(10);
 
     return (
         <>

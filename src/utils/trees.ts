@@ -1,6 +1,8 @@
 import { CHUNK_SIZE, GRID_SIZE_Z } from './constants';
 
-export function getTreesPositions(): Array<[x: number, y: number, z: number]> {
+export function getTreesPositions(
+    count: number,
+): Array<[x: number, y: number, z: number]> {
     return [
         [
             ((GRID_SIZE_Z - 1) * CHUNK_SIZE) / 2 + 28,
