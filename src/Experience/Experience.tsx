@@ -9,8 +9,7 @@ import { Cow } from '../components/Cow';
 import { WaterSurface } from '../components/WaterSurface';
 import { ConstructionSign } from '../components/constructionSign';
 import { Bushes } from '../components/Bushes';
-import { TreeModel } from '../components/Trees/TreeModel';
-import { CHUNK_SIZE, GRID_SIZE_Z } from '../utils/constants';
+import { Tree } from '../components/Trees/Tree';
 
 export function Experience() {
     return (
@@ -18,13 +17,7 @@ export function Experience() {
             {/*<OrbitControls makeDefault />*/}
             <Environment />
 
-            <TreeModel
-                position={[
-                    ((GRID_SIZE_Z - 1) * CHUNK_SIZE) / 2 + 28,
-                    0,
-                    ((GRID_SIZE_Z - 1) * CHUNK_SIZE) / 2 + 24,
-                ]}
-            />
+            <Tree />
 
             <axesHelper />
 

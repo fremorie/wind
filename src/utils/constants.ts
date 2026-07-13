@@ -25,3 +25,21 @@ export const LAKE_SURFACE_LEVEL = -2;
 // Wind farm
 export const WIND_TURBINE_COUNT = 6;
 export const WIND_FARM_RADIUS = 300;
+
+/* Mirrored from GLSL! */
+// World settings
+export const uPositionFrequency = 0.03;
+export const uStrength = 10.0;
+export const uCurvature = 0.0007;
+
+// Road
+export const uRoadWidth = 12.0;
+export const uRoadAmplitude = 3.46;
+export const uRoadWaviness = 0.16;
+export const uRoadFalloff = 5.0;
+
+// Lake
+export const uLakeRadius = 70.0;
+export const uLakeDepth = 20.0;
+export const uBeachWidth = 1.0;
+export const uLakeSurfaceLevel = -2.0;

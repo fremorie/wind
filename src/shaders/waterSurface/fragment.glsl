@@ -1,24 +1,14 @@
 uniform vec3 uFresnelColor;
 uniform float uFresnelPower;
 uniform float uFresnelStrength;
-uniform float uLakeDepth;
 
 uniform vec3 uColorWaterShallow;
 uniform vec3 uColorWaterDeep;
 uniform float uOpacityDeep;
 
-uniform float uPositionFrequency;
-uniform float uStrength;
 uniform vec3 uRoadCenter;
-uniform float uRoadWidth;
-uniform float uRoadAmplitude;
-uniform float uRoadWaviness;
-uniform float uRoadFalloff;
 uniform float uLakeCenterX;
 uniform float uLakeCenterZ;
-uniform float uLakeRadius;
-uniform float uBeachWidth;
-uniform float uLakeSurfaceLevel;
 
 uniform float uTime;
 
@@ -28,6 +18,7 @@ varying vec3 vWorldNormal;
 varying vec2 vUv;
 varying float vLakeDepth;
 
+#include "../includes/worldSettings.glsl"
 #include "../includes/perlinNoise.glsl"
 #include "../includes/elevation.glsl"
 

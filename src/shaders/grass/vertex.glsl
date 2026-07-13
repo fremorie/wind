@@ -2,26 +2,17 @@
 #include <shadowmap_pars_vertex>
 
 uniform float uTime;
-uniform float uPositionFrequency;
 uniform vec2 uPlayerPosition;
-uniform float uCurvature;
-uniform float uStrength;
 uniform vec3 uRoadCenter;
-uniform float uRoadWidth;
-uniform float uRoadAmplitude;
-uniform float uRoadWaviness;
-uniform float uRoadFalloff;
 uniform float uTileSize;
 uniform float uLakeCenterX;
 uniform float uLakeCenterZ;
-uniform float uLakeRadius;
-uniform float uBeachWidth;
-uniform float uLakeDepth;
 
 attribute float aBladeRandom;
 
 varying vec2 vUv;
 
+#include "../includes/worldSettings.glsl"
 #include "../includes/perlinNoise.glsl"
 #include "../includes/elevation.glsl"
 #include "../includes/curveWorld.glsl"

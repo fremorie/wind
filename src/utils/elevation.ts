@@ -1,6 +1,17 @@
 import { simplexNoise2d } from './simplexNoise';
 import { terrainUniforms } from '../materials/terrainMaterial';
-import { CURVATURE } from './constants';
+import {
+    CURVATURE,
+    uBeachWidth,
+    uLakeDepth,
+    uLakeRadius,
+    uPositionFrequency,
+    uRoadAmplitude,
+    uRoadFalloff,
+    uRoadWaviness,
+    uRoadWidth,
+    uStrength,
+} from './constants';
 
 function smoothstep(edge0: number, edge1: number, x: number): number {
     const t = Math.min(Math.max((x - edge0) / (edge1 - edge0), 0), 1);
@@ -14,14 +25,11 @@ function mix(a: number, b: number, t: number): number {
 function getBaseElevation(x: number, z: number): number {
     let elevation = 0;
     elevation +=
-        simplexNoise2d(
-            x * terrainUniforms.uPositionFrequency.value,
-            z * terrainUniforms.uPositionFrequency.value,
-        ) / 2;
+        simplexNoise2d(x * uPositionFrequency, z * uPositionFrequency) / 2;
 
     const elevationSign = Math.sign(elevation);
     elevation = elevationSign * Math.pow(Math.abs(elevation), 2);
-    elevation *= terrainUniforms.uStrength.value;
+    elevation *= uStrength;
 
     return elevation;
 }
@@ -29,28 +37,20 @@ function getBaseElevation(x: number, z: number): number {
 function roadCenterZ(x: number): number {
     return (
         terrainUniforms.uRoadCenter.value.z +
-        terrainUniforms.uRoadAmplitude.value *
-            Math.sin(x * terrainUniforms.uRoadWaviness.value)
+        uRoadAmplitude * Math.sin(x * uRoadWaviness)
     );
 }
 
 function getRoadMask(x: number, z: number): number {
     const distanceToRoad = Math.abs(z - roadCenterZ(x));
     let roadMask =
-        1 -
-        smoothstep(
-            terrainUniforms.uRoadWidth.value -
-                terrainUniforms.uRoadFalloff.value,
-            terrainUniforms.uRoadWidth.value,
-            distanceToRoad,
-        );
+        1 - smoothstep(uRoadWidth - uRoadFalloff, uRoadWidth, distanceToRoad);
 
     const distToLake = Math.hypot(
         x - terrainUniforms.uLakeCenterX.value,
         z - terrainUniforms.uLakeCenterZ.value,
     );
-    const grassLine =
-        terrainUniforms.uLakeRadius.value + terrainUniforms.uBeachWidth.value;
+    const grassLine = uLakeRadius + uBeachWidth;
     roadMask *= smoothstep(grassLine - 10, grassLine, distToLake);
 
     return roadMask;
@@ -65,10 +65,7 @@ function getLakeDepth(x: number, z: number): number {
         x - terrainUniforms.uLakeCenterX.value,
         z - terrainUniforms.uLakeCenterZ.value,
     );
-    return (
-        terrainUniforms.uLakeDepth.value *
-        (1 - smoothstep(0, terrainUniforms.uLakeRadius.value, dist))
-    );
+    return uLakeDepth * (1 - smoothstep(0, uLakeRadius, dist));
 }
 
 export function getElevation(x: number, z: number): number {

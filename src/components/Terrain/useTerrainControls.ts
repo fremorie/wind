@@ -14,37 +14,11 @@ const hex = (color: Color) => `#${color.getHexString()}`;
  */
 export function useTerrainControls() {
     const {
-        uPositionFrequency,
-        uStrength,
         uColorGrass,
-        uCurvature,
         uColorDirt,
-        uRoadAmplitude,
-        uRoadWaviness,
-        uRoadFalloff,
         uColorWaterShallow,
         uColorWaterDeep,
     } = useControls('Terrain', {
-        Shape: folder({
-            uPositionFrequency: {
-                value: terrainUniforms.uPositionFrequency.value,
-                min: 0,
-                max: 1,
-                step: 0.001,
-            },
-            uStrength: {
-                value: terrainUniforms.uStrength.value,
-                min: 0,
-                max: 10,
-                step: 0.001,
-            },
-            uCurvature: {
-                value: terrainUniforms.uCurvature.value,
-                min: 0,
-                max: 0.1,
-                step: 0.0001,
-            },
-        }),
         Colors: folder({
             uColorGrass: { value: hex(terrainUniforms.uColorGrass.value) },
             uColorDirt: { value: hex(terrainUniforms.uColorDirt.value) },
@@ -55,50 +29,16 @@ export function useTerrainControls() {
                 value: hex(terrainUniforms.uColorWaterDeep.value),
             },
         }),
-        Road: folder({
-            uRoadAmplitude: {
-                value: terrainUniforms.uRoadAmplitude.value,
-                min: 0,
-                max: 10,
-                step: 0.001,
-            },
-            uRoadWaviness: {
-                value: terrainUniforms.uRoadWaviness.value,
-                min: 0,
-                max: 10,
-                step: 0.001,
-            },
-            uRoadFalloff: {
-                value: terrainUniforms.uRoadFalloff.value,
-                min: 0,
-                max: 10,
-                step: 0.001,
-            },
-        }),
     });
 
     useEffect(() => {
-        terrainUniforms.uPositionFrequency.value = uPositionFrequency;
-        terrainUniforms.uStrength.value = uStrength;
-        terrainUniforms.uCurvature.value = uCurvature;
-
         terrainUniforms.uColorDirt.value.set(uColorDirt);
         terrainUniforms.uColorGrass.value.set(uColorGrass);
         terrainUniforms.uColorWaterShallow.value.set(uColorWaterShallow);
         terrainUniforms.uColorWaterDeep.value.set(uColorWaterDeep);
-
-        terrainUniforms.uRoadAmplitude.value = uRoadAmplitude;
-        terrainUniforms.uRoadWaviness.value = uRoadWaviness;
-        terrainUniforms.uRoadFalloff.value = uRoadFalloff;
     }, [
-        uPositionFrequency,
-        uStrength,
         uColorGrass,
-        uCurvature,
         uColorDirt,
-        uRoadAmplitude,
-        uRoadWaviness,
-        uRoadFalloff,
         uColorWaterShallow,
         uColorWaterDeep,
     ]);

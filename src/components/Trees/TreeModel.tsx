@@ -14,7 +14,9 @@ type GLTFResult = GLTF & {
 };
 
 export function TreeModel(props: JSX.IntrinsicElements['group']) {
-    const { nodes } = useGLTF('./models/tree/tree.glb') as unknown as GLTFResult;
+    const { nodes } = useGLTF(
+        './models/tree/tree.glb',
+    ) as unknown as GLTFResult;
 
     return (
         <group {...props} scale={3} dispose={null}>

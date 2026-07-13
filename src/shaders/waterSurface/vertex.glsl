@@ -1,17 +1,7 @@
-uniform float uPositionFrequency;
-uniform float uStrength;
 uniform vec2 uPlayerPosition;
-uniform float uCurvature;
 uniform vec3 uRoadCenter;
-uniform float uRoadWidth;
-uniform float uRoadAmplitude;
-uniform float uRoadWaviness;
-uniform float uRoadFalloff;
 uniform float uLakeCenterX;
 uniform float uLakeCenterZ;
-uniform float uLakeRadius;
-uniform float uBeachWidth;
-uniform float uLakeDepth;
 
 varying float vLakeElevation;
 varying vec3 vWorldPosition;
@@ -19,6 +9,7 @@ varying vec3 vWorldNormal;
 varying vec2 vUv;
 varying float vLakeDepth;
 
+#include "../includes/worldSettings.glsl"
 #include "../includes/curveWorld.glsl"
 #include "../includes/elevation.glsl"
 

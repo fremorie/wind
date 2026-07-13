@@ -2,16 +2,14 @@ uniform vec3 uColorGrass;
 uniform vec3 uColorDirt;
 uniform float uLakeCenterX;
 uniform float uLakeCenterZ;
-uniform float uLakeRadius;
-uniform float uBeachWidth;
 uniform vec3 uColorWaterShallow;
 uniform vec3 uColorWaterDeep;
-uniform float uLakeDepth;
-uniform float uLakeSurfaceLevel;
 
 varying vec3 vPosition;
 varying float vUpDot;
 varying float vRoadMask;
+
+#include "../includes/worldSettings.glsl"
 
 void main() {
     // Color
