@@ -1,4 +1,4 @@
-// import { OrbitControls } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 
 import { Terrain } from '../components/Terrain';
 import { Player } from '../components/Player';
@@ -13,7 +13,7 @@ import { Trees } from '../components/Trees';
 export function Experience() {
     return (
         <>
-            {/*<OrbitControls makeDefault />*/}
+            <OrbitControls makeDefault />
             <Environment />
 
             <Trees count={10} />
