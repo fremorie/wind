@@ -22,9 +22,7 @@ export function Bushes({ positions }: Props) {
     const bushGeometry = useMemo(() => createFoliage(), []);
 
     useEffect(() => {
-        (
-            bushMaterial as THREE.Material & { alphaMap?: THREE.Texture | null }
-        ).alphaMap = foliageTexture;
+        bushMaterial.alphaMap = foliageTexture;
         bushMaterial.needsUpdate = true;
         bushDepthMaterial.needsUpdate = true;
     }, [foliageTexture]);

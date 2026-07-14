@@ -1,4 +1,6 @@
-import CustomShaderMaterial from 'three-custom-shader-material/vanilla';
+import CustomShaderMaterial, {
+    type CSMProxy,
+} from 'three-custom-shader-material/vanilla';
 import * as THREE from 'three';
 
 import bushVertexShader from '../shaders/bush/vertex.glsl';
@@ -43,4 +45,4 @@ export const bushMaterial = new CustomShaderMaterial({
     fragmentShader: bushFragmentShader,
     uniforms: bushUniforms,
     baseMaterial: THREE.MeshStandardMaterial,
-});
+}) as CSMProxy<typeof THREE.MeshStandardMaterial>;

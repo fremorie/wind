@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
-import { useGLTF } from '@react-three/drei';
+import { useGLTF, useTexture } from '@react-three/drei';
 import { type GLTF } from 'three-stdlib';
 
 import {
@@ -9,6 +9,7 @@ import {
     treeMaterial,
 } from '../../../materials/treeMaterial';
 import useGame from '../../../store/useGame';
+import { useTreeControls } from './useTreeControls';
 
 type GLTFResult = GLTF & {
     nodes: {
@@ -24,6 +25,12 @@ type Props = {
 export function Trees({ positions, scales }: Props) {
     const meshRef = useRef<THREE.InstancedMesh>(null);
     const playerPosition = useGame((state) => state.playerPosition);
+
+    useTreeControls();
+
+    const normalMap = useTexture(
+        './textures/wood/bark_willow_02_nor_gl_1k.jpg',
+    );
     const { nodes } = useGLTF(
         './models/tree/tree.glb',
     ) as unknown as GLTFResult;
@@ -48,6 +55,11 @@ export function Trees({ positions, scales }: Props) {
         );
     });
 
+    useEffect(() => {
+        treeMaterial.normalMap = normalMap;
+        treeMaterial.needsUpdate = true;
+    }, [normalMap]);
+
     return (
         <instancedMesh
             ref={meshRef}
@@ -61,3 +73,4 @@ export function Trees({ positions, scales }: Props) {
 }
 
 useGLTF.preload('./models/tree/tree.glb');
+useTexture.preload('./textures/wood/bark_willow_02_nor_gl_1k.jpg');

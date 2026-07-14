@@ -1,4 +1,6 @@
-import CustomShaderMaterial from 'three-custom-shader-material/vanilla';
+import CustomShaderMaterial, {
+    type CSMProxy,
+} from 'three-custom-shader-material/vanilla';
 import * as THREE from 'three';
 
 import treeVertexShader from '../shaders/tree/vertex.glsl';
@@ -32,11 +34,11 @@ export const treeMaterial = new CustomShaderMaterial({
     // MeshStandardMaterial props
     metalness: 0,
     roughness: 1,
-    color: '#936d2f',
+    color: '#4e433f',
 
     // Shader (CSM props)
     vertexShader: treeVertexShader,
     fragmentShader: treeFragmentShader,
     uniforms: treeUniforms,
     baseMaterial: THREE.MeshStandardMaterial,
-});
+}) as CSMProxy<typeof THREE.MeshStandardMaterial>;
