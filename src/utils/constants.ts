@@ -26,6 +26,13 @@ export const LAKE_SURFACE_LEVEL = -2;
 export const WIND_TURBINE_COUNT = 6;
 export const WIND_FARM_RADIUS = 300;
 
+// Trees
+export const TREES_COUNT = 10;
+export const TREE_BASE_SCALE = 2;
+
+// Bushes
+export const BUSHES_COUNT = 20;
+
 /* Mirrored from GLSL! */
 // World settings
 export const uPositionFrequency = 0.03;

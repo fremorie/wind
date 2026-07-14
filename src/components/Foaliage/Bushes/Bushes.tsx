@@ -3,17 +3,18 @@ import * as THREE from 'three';
 import { useTexture } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 
-import { createFoliage } from '../../utils/foliage';
-import { bushMaterial, bushDepthMaterial } from '../../materials/bushMaterial';
-import useGame from '../../store/useGame';
-import { getBushesPositions } from '../../utils/bushes';
-import { getTreesPositions } from '../../utils/trees';
+import { createFoliage } from '../../../utils/foliage';
+import {
+    bushMaterial,
+    bushDepthMaterial,
+} from '../../../materials/bushMaterial';
+import useGame from '../../../store/useGame';
 
 type Props = {
-    count: number;
+    positions: Array<[x: number, y: number, z: number]>;
 };
 
-export function Bushes({ count }: Props) {
+export function Bushes({ positions }: Props) {
     const meshRef = useRef<THREE.InstancedMesh>(null);
     const foliageTexture = useTexture('./textures/foliage/foliage.png');
     const playerPosition = useGame((state) => state.playerPosition);
@@ -28,11 +29,6 @@ export function Bushes({ count }: Props) {
             material.needsUpdate = true;
         }
     }, [foliageTexture]);
-
-    const positions = useMemo(
-        () => getBushesPositions(getTreesPositions(4), [2, 2, 2, 2], count),
-        [count],
-    );
 
     useEffect(() => {
         if (!meshRef.current) return;

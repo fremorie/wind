@@ -4,9 +4,8 @@ import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import { type GLTF } from 'three-stdlib';
 
-import { treeMaterial } from '../../materials/treeMaterial';
-import useGame from '../../store/useGame';
-import { getTreesPositions } from '../../utils/trees';
+import { treeMaterial } from '../../../materials/treeMaterial';
+import useGame from '../../../store/useGame';
 
 type GLTFResult = GLTF & {
     nodes: {
@@ -15,12 +14,11 @@ type GLTFResult = GLTF & {
 };
 
 type Props = {
-    count: number;
+    positions: Array<[x: number, y: number, z: number]>;
+    scales: Array<number>;
 };
 
-const TREE_SCALE = 2;
-
-export function Trees({ count }: Props) {
+export function Trees({ positions, scales }: Props) {
     const meshRef = useRef<THREE.InstancedMesh>(null);
     const playerPosition = useGame((state) => state.playerPosition);
     const { nodes } = useGLTF(
@@ -30,17 +28,15 @@ export function Trees({ count }: Props) {
     useEffect(() => {
         if (!meshRef.current) return;
 
-        const positions = getTreesPositions(count);
-
         for (let i = 0; i < positions.length; i++) {
             const dummyObject = new THREE.Object3D();
             dummyObject.position.set(...positions[i]);
-            dummyObject.scale.set(TREE_SCALE, TREE_SCALE, TREE_SCALE);
+            dummyObject.scale.set(scales[i], scales[i], scales[i]);
             dummyObject.updateMatrix();
             meshRef.current.setMatrixAt(i, dummyObject.matrix);
         }
         meshRef.current.instanceMatrix.needsUpdate = true;
-    }, [count]);
+    }, [positions, scales]);
 
     useFrame(() => {
         treeMaterial.uniforms.uPlayerPosition.value.set(
@@ -52,7 +48,7 @@ export function Trees({ count }: Props) {
     return (
         <instancedMesh
             ref={meshRef}
-            args={[nodes.Tree.geometry, treeMaterial, count]}
+            args={[nodes.Tree.geometry, treeMaterial, positions.length]}
             frustumCulled={false}
             receiveShadow
             castShadow
