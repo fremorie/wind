@@ -18,14 +18,21 @@ export const treeUniforms = {
     uLakeCenterZ: new THREE.Uniform(LAKE_CENTER[1]),
 };
 
+export const treeDepthMaterial = new CustomShaderMaterial({
+    // MeshdDepthMaterial props
+    depthPacking: THREE.RGBADepthPacking,
+
+    // Shader (CSM props)
+    vertexShader: treeVertexShader,
+    uniforms: treeUniforms,
+    baseMaterial: THREE.MeshDepthMaterial,
+});
+
 export const treeMaterial = new CustomShaderMaterial({
     // MeshStandardMaterial props
     metalness: 0,
     roughness: 1,
     color: '#936d2f',
-    // The leaf texture is a cutout mask: keep pixels above the threshold, drop the
-    // rest. DoubleSide so both faces of each foliage plane are lit.
-    alphaTest: 0.5,
 
     // Shader (CSM props)
     vertexShader: treeVertexShader,

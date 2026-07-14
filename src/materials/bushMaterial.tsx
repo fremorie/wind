@@ -19,11 +19,8 @@ export const bushUniforms = {
 };
 
 export const bushDepthMaterial = new CustomShaderMaterial({
-    // MeshdDepthMaterial props
+    // MeshDepthMaterial props
     depthPacking: THREE.RGBADepthPacking,
-    // Discard transparent leaf pixels so cast shadows are leaf-shaped, not solid
-    // quads (alphaMap is assigned once the texture loads).
-    alphaTest: 0.5,
 
     // Shader (CSM props)
     vertexShader: bushVertexShader,

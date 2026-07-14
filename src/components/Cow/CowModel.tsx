@@ -101,42 +101,49 @@ export function CowModel(props: ThreeElements['group']) {
                             geometry={nodes.Cow_1.geometry}
                             material={materials.Main}
                             skeleton={nodes.Cow_1.skeleton}
+                            castShadow
                         />
                         <skinnedMesh
                             name="Cow_2"
                             geometry={nodes.Cow_2.geometry}
                             material={materials.Main_Light}
                             skeleton={nodes.Cow_2.skeleton}
+                            castShadow
                         />
                         <skinnedMesh
                             name="Cow_3"
                             geometry={nodes.Cow_3.geometry}
                             material={materials.Muzzle}
                             skeleton={nodes.Cow_3.skeleton}
+                            castShadow
                         />
                         <skinnedMesh
                             name="Cow_4"
                             geometry={nodes.Cow_4.geometry}
                             material={materials.Hooves}
                             skeleton={nodes.Cow_4.skeleton}
+                            castShadow
                         />
                         <skinnedMesh
                             name="Cow_5"
                             geometry={nodes.Cow_5.geometry}
                             material={materials.Eye_Black}
                             skeleton={nodes.Cow_5.skeleton}
+                            castShadow
                         />
                         <skinnedMesh
                             name="Cow_6"
                             geometry={nodes.Cow_6.geometry}
                             material={materials.Eye_White}
                             skeleton={nodes.Cow_6.skeleton}
+                            castShadow
                         />
                         <skinnedMesh
                             name="Cow_7"
                             geometry={nodes.Cow_7.geometry}
                             material={materials.Horns}
                             skeleton={nodes.Cow_7.skeleton}
+                            castShadow
                         />
                     </group>
                 </group>

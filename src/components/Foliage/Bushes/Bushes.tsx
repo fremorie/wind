@@ -22,12 +22,11 @@ export function Bushes({ positions }: Props) {
     const bushGeometry = useMemo(() => createFoliage(), []);
 
     useEffect(() => {
-        for (const material of [bushMaterial, bushDepthMaterial]) {
-            (
-                material as THREE.Material & { alphaMap?: THREE.Texture | null }
-            ).alphaMap = foliageTexture;
-            material.needsUpdate = true;
-        }
+        (
+            bushMaterial as THREE.Material & { alphaMap?: THREE.Texture | null }
+        ).alphaMap = foliageTexture;
+        bushMaterial.needsUpdate = true;
+        bushDepthMaterial.needsUpdate = true;
     }, [foliageTexture]);
 
     useEffect(() => {
@@ -57,6 +56,7 @@ export function Bushes({ positions }: Props) {
             ref={meshRef}
             args={[bushGeometry, bushMaterial, positions.length]}
             frustumCulled={false}
+            customDepthMaterial={bushDepthMaterial}
             receiveShadow
             castShadow
         />

@@ -23,16 +23,6 @@ export const terrainUniforms = {
     uColorWaterDeep: new THREE.Uniform(new THREE.Color('#1c7d93')),
 };
 
-export const terrainDepthMaterial = new CustomShaderMaterial({
-    // MeshdDepthMaterial props
-    depthPacking: THREE.RGBADepthPacking,
-
-    // Shader (CSM props)
-    vertexShader: terrainVertexShader,
-    uniforms: terrainUniforms,
-    baseMaterial: THREE.MeshDepthMaterial,
-});
-
 export const terrainMaterial = new CustomShaderMaterial({
     // MeshStandardMaterial props
     metalness: 0,

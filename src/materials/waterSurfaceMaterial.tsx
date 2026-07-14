@@ -28,16 +28,6 @@ export const waterSurfaceUniforms = {
     uOpacityDeep: new THREE.Uniform(0.85),
 };
 
-export const waterSurfaceDepthMaterial = new CustomShaderMaterial({
-    // MeshDepthMaterial props
-    depthPacking: THREE.RGBADepthPacking,
-
-    // Shader (CSM props)
-    vertexShader: waterSurfaceVertexShader,
-    uniforms: waterSurfaceUniforms,
-    baseMaterial: THREE.MeshDepthMaterial,
-});
-
 export const waterSurfaceMaterial = new CustomShaderMaterial({
     // MeshBasicMaterial props
     color: '#ffffff',

@@ -4,7 +4,10 @@ import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import { type GLTF } from 'three-stdlib';
 
-import { treeMaterial } from '../../../materials/treeMaterial';
+import {
+    treeDepthMaterial,
+    treeMaterial,
+} from '../../../materials/treeMaterial';
 import useGame from '../../../store/useGame';
 
 type GLTFResult = GLTF & {
@@ -50,6 +53,7 @@ export function Trees({ positions, scales }: Props) {
             ref={meshRef}
             args={[nodes.Tree.geometry, treeMaterial, positions.length]}
             frustumCulled={false}
+            customDepthMaterial={treeDepthMaterial}
             receiveShadow
             castShadow
         />

@@ -7,7 +7,7 @@ import { Grass } from '../components/Grass';
 import { WindFarm } from '../components/WindFarm';
 import { Cow } from '../components/Cow';
 import { WaterSurface } from '../components/WaterSurface';
-import { Foliage } from '../components/Foaliage/Foliage';
+import { Foliage } from '../components/Foliage/Foliage';
 import { BUSHES_COUNT, TREES_COUNT } from '../utils/constants';
 
 export function Experience() {
