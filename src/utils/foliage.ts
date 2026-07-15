@@ -37,7 +37,7 @@ export function createFoliage() {
                 plane.attributes.position.array[i3 + 2],
             );
 
-            const mixedNormal = position.lerp(normal, 0.85);
+            const mixedNormal = position.lerp(normal, 0.85).normalize();
 
             normalArray[i3] = mixedNormal.x;
             normalArray[i3 + 1] = mixedNormal.y;
