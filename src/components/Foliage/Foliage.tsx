@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { Bushes } from './Bushes';
 import { Trees } from './Trees';
 import { getTreesPositions } from '../../utils/trees';
-import { getBushesPositions } from '../../utils/bushes';
+import { getFoliageAttributes } from '../../utils/bushes';
 
 type Props = {
     bushesCount: number;
@@ -15,14 +15,17 @@ export function Foliage({ bushesCount, treesCount }: Props) {
         () => getTreesPositions(treesCount),
         [treesCount],
     );
-    const bushesPositions = useMemo(
-        () => getBushesPositions(treesPositions, treesScales, bushesCount),
+    const foliageAttributes = useMemo(
+        () => getFoliageAttributes(treesPositions, treesScales, bushesCount),
         [treesPositions, treesScales, bushesCount],
     );
 
     return (
         <>
-            <Bushes positions={bushesPositions} />
+            <Bushes
+                positions={foliageAttributes.positions}
+                scales={foliageAttributes.scales}
+            />
             <Trees positions={treesPositions} scales={treesScales} />
         </>
     );

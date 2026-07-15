@@ -1,11 +1,13 @@
 import { CHUNK_SIZE, GRID_SIZE_Z } from './constants';
 
-export function getBushesPositions(
+const BASE_BUSH_SCALE = 2;
+
+export function getBushesAsTreeFoliageAttributes(
     treesPositions: Array<[x: number, y: number, z: number]>,
     treesScales: number[],
-    bushCount: number,
 ) {
-    const result: Array<[x: number, y: number, z: number]> = [];
+    const positions: Array<[x: number, y: number, z: number]> = [];
+    const scales: Array<number> = [];
 
     const treeBranches: Array<[x: number, y: number, z: number]> = [
         [-0.3, 2.8, -1],
@@ -24,17 +26,51 @@ export function getBushesPositions(
                 (coordinate, index) => coordinate * scale + treePosition[index],
             ) as [x: number, y: number, z: number];
 
-            result.push(position);
+            positions.push(position);
+            scales.push(BASE_BUSH_SCALE + (Math.random() - 0.5) - 0.5);
         }
     }
 
+    return {
+        positions,
+        scales,
+    };
+}
+
+export function getBushesAttributes(count: number) {
+    const positions: Array<[x: number, y: number, z: number]> = [];
+    const scales: Array<number> = [];
+
     const center = ((GRID_SIZE_Z - 1) * CHUNK_SIZE) / 2;
 
-    for (let i = 0; i < bushCount; i++) {
+    for (let i = 0; i < count; i++) {
         const x = center - 20 + i * 10;
+        const position: [x: number, y: number, z: number] = [x, 0, center];
+        const scale = BASE_BUSH_SCALE + (Math.random() - 0.5);
 
-        result.push([x, 0, center]);
+        positions.push(position);
+        scales.push(scale);
     }
 
-    return result;
+    return {
+        positions,
+        scales,
+    };
+}
+
+export function getFoliageAttributes(
+    treesPositions: Array<[x: number, y: number, z: number]>,
+    treesScales: number[],
+    bushCount: number,
+) {
+    const bushes = getBushesAttributes(bushCount);
+    const treeFoliage = getBushesAsTreeFoliageAttributes(
+        treesPositions,
+        treesScales,
+    );
+
+    return {
+        positions: [...bushes.positions, ...treeFoliage.positions],
+        scales: [...bushes.scales, ...treeFoliage.scales],
+    };
 }

@@ -12,9 +12,10 @@ import useGame from '../../../store/useGame';
 
 type Props = {
     positions: Array<[x: number, y: number, z: number]>;
+    scales: number[];
 };
 
-export function Bushes({ positions }: Props) {
+export function Bushes({ positions, scales }: Props) {
     const meshRef = useRef<THREE.InstancedMesh>(null);
     const foliageTexture = useTexture('./textures/foliage/foliage.png');
     const playerPosition = useGame((state) => state.playerPosition);
@@ -35,12 +36,12 @@ export function Bushes({ positions }: Props) {
             const [x, y, z] = positions[i];
             dummyObject.position.set(x, y, z);
             dummyObject.rotation.set(0, -Math.PI / 2, 0);
-            dummyObject.scale.set(2, 2, 2);
+            dummyObject.scale.set(scales[i], scales[i], scales[i]);
             dummyObject.updateMatrix();
             meshRef.current.setMatrixAt(i, dummyObject.matrix);
         }
         meshRef.current.instanceMatrix.needsUpdate = true;
-    }, [positions]);
+    }, [positions, scales]);
 
     useFrame(() => {
         bushMaterial.uniforms.uPlayerPosition.value.set(
