@@ -2,11 +2,10 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { alea } from 'seedrandom';
 
-const rng = alea('foliage');
-
 const BUSH_HEIGHT = 3;
 
 export function createFoliage() {
+    const rng = alea('foliage');
     const count = 100;
     const planes = [];
 

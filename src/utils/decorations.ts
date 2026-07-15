@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { alea } from 'seedrandom';
 
 import { curveOffset, getElevation } from './elevation';
 
@@ -21,6 +22,7 @@ export function getWindTurbineInstancesParams(
     count: number,
     windFarmRadius: number,
 ) {
+    const rng = alea('turbines');
     const result = [];
     const spread = (Math.PI * 60) / 180;
 
@@ -32,7 +34,7 @@ export function getWindTurbineInstancesParams(
             x: windFarmRadius * Math.cos(angle),
             z: windFarmRadius * Math.sin(angle),
             yaw: 1,
-            phase: Math.random() * i,
+            phase: rng() * i,
             speed: 0.4,
             scale: 7,
         });

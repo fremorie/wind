@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { alea } from 'seedrandom';
 
 const MIN_BLADE_SCALE = 3;
 const MAX_BLADE_SCALE = 5;
@@ -61,10 +62,11 @@ export function getGrassBladesPositions(
     turbineClearRadius: number = TURBINE_CLEAR_RADIUS,
     grassY: number = GRASS_Y,
 ) {
+    const rng = alea('grass-positions');
     const result: Array<[number, number, number]> = [];
     while (result.length < count) {
-        const x = (Math.random() - 0.5) * planeSize;
-        const z = (Math.random() - 0.5) * planeSize;
+        const x = (rng() - 0.5) * planeSize;
+        const z = (rng() - 0.5) * planeSize;
         if (
             turbinePositions.some(
                 ([tx, tz]) => Math.hypot(x - tx, z - tz) < turbineClearRadius,
@@ -82,6 +84,7 @@ export function generateGrassBladesAttributes(
 ) {
     const count = positions.length;
 
+    const rng = alea('grass-attributes');
     const bladeRandoms = new Float32Array(count);
     const matrices = [];
     const matrix = new THREE.Matrix4();
@@ -94,8 +97,7 @@ export function generateGrassBladesAttributes(
         position.set(x, y, z);
 
         const uniformScale =
-            MIN_BLADE_SCALE +
-            Math.random() * (MAX_BLADE_SCALE - MIN_BLADE_SCALE);
+            MIN_BLADE_SCALE + rng() * (MAX_BLADE_SCALE - MIN_BLADE_SCALE);
 
         scale.set(uniformScale, uniformScale, uniformScale);
 
@@ -103,7 +105,7 @@ export function generateGrassBladesAttributes(
 
         matrices.push(matrix.clone());
 
-        bladeRandoms[i] = Math.random();
+        bladeRandoms[i] = rng();
     }
 
     return { count, matrices, bladeRandoms };
