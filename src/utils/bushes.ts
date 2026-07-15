@@ -19,7 +19,6 @@ export function getBushesAsTreeFoliageAttributes(
         [0.6, 3.2, 0.2],
         [0, 3, 1.5],
         [-0.6, 3.6, -0.3],
-        [0, 2.7, 0],
     ];
 
     for (let i = 0; i < treesPositions.length; i++) {
@@ -32,7 +31,7 @@ export function getBushesAsTreeFoliageAttributes(
             ) as [x: number, y: number, z: number];
 
             positions.push(position);
-            scales.push(BASE_BUSH_SCALE + (rng() - 0.5) - 0.5);
+            scales.push(BASE_BUSH_SCALE + (rng() - 0.5));
         }
     }
 

@@ -56,7 +56,6 @@ export function Bushes({ positions, scales }: Props) {
             args={[bushGeometry, bushMaterial, positions.length]}
             frustumCulled={false}
             customDepthMaterial={bushDepthMaterial}
-            receiveShadow
             castShadow
         />
     );

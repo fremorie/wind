@@ -15,8 +15,8 @@ export function createFoliage() {
         // Position
         const spherical = new THREE.Spherical(
             1 - Math.pow(rng(), BUSH_HEIGHT),
-            Math.PI * 2 * rng(),
             Math.PI * rng(),
+            Math.PI * 2 * rng(),
         );
         const position = new THREE.Vector3().setFromSpherical(spherical);
 
