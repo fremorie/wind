@@ -10,6 +10,7 @@ import {
 } from '../../../materials/treeMaterial';
 import useGame from '../../../store/useGame';
 import { useTreeControls } from './useTreeControls';
+import { composeInstanceMatrix, type Instance } from '../../../utils/instances';
 
 type GLTFResult = GLTF & {
     nodes: {
@@ -18,11 +19,10 @@ type GLTFResult = GLTF & {
 };
 
 type Props = {
-    positions: Array<[x: number, y: number, z: number]>;
-    scales: Array<number>;
+    instances: Instance[];
 };
 
-export function Trees({ positions, scales }: Props) {
+export function Trees({ instances }: Props) {
     const meshRef = useRef<THREE.InstancedMesh>(null);
     const playerPosition = useGame((state) => state.playerPosition);
 
@@ -38,15 +38,15 @@ export function Trees({ positions, scales }: Props) {
     useEffect(() => {
         if (!meshRef.current) return;
 
-        for (let i = 0; i < positions.length; i++) {
-            const dummyObject = new THREE.Object3D();
-            dummyObject.position.set(...positions[i]);
-            dummyObject.scale.set(scales[i], scales[i], scales[i]);
-            dummyObject.updateMatrix();
-            meshRef.current.setMatrixAt(i, dummyObject.matrix);
+        const matrix = new THREE.Matrix4();
+        for (let i = 0; i < instances.length; i++) {
+            meshRef.current.setMatrixAt(
+                i,
+                composeInstanceMatrix(instances[i], matrix),
+            );
         }
         meshRef.current.instanceMatrix.needsUpdate = true;
-    }, [positions, scales]);
+    }, [instances]);
 
     useFrame(() => {
         treeMaterial.uniforms.uPlayerPosition.value.set(
@@ -63,7 +63,7 @@ export function Trees({ positions, scales }: Props) {
     return (
         <instancedMesh
             ref={meshRef}
-            args={[nodes.Tree.geometry, treeMaterial, positions.length]}
+            args={[nodes.Tree.geometry, treeMaterial, instances.length]}
             frustumCulled={false}
             customDepthMaterial={treeDepthMaterial}
             receiveShadow

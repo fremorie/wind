@@ -9,13 +9,13 @@ import {
     bushDepthMaterial,
 } from '../../../materials/bushMaterial';
 import useGame from '../../../store/useGame';
+import { composeInstanceMatrix, type Instance } from '../../../utils/instances';
 
 type Props = {
-    positions: Array<[x: number, y: number, z: number]>;
-    scales: number[];
+    instances: Instance[];
 };
 
-export function Bushes({ positions, scales }: Props) {
+export function Bushes({ instances }: Props) {
     const meshRef = useRef<THREE.InstancedMesh>(null);
     const foliageTexture = useTexture('./textures/foliage/foliage.png');
     const playerPosition = useGame((state) => state.playerPosition);
@@ -31,17 +31,15 @@ export function Bushes({ positions, scales }: Props) {
     useEffect(() => {
         if (!meshRef.current) return;
 
-        for (let i = 0; i < positions.length; i++) {
-            const dummyObject = new THREE.Object3D();
-            const [x, y, z] = positions[i];
-            dummyObject.position.set(x, y, z);
-            dummyObject.rotation.set(0, -Math.PI / 2, 0);
-            dummyObject.scale.set(scales[i], scales[i], scales[i]);
-            dummyObject.updateMatrix();
-            meshRef.current.setMatrixAt(i, dummyObject.matrix);
+        const matrix = new THREE.Matrix4();
+        for (let i = 0; i < instances.length; i++) {
+            meshRef.current.setMatrixAt(
+                i,
+                composeInstanceMatrix(instances[i], matrix),
+            );
         }
         meshRef.current.instanceMatrix.needsUpdate = true;
-    }, [positions, scales]);
+    }, [instances]);
 
     useFrame(() => {
         bushMaterial.uniforms.uPlayerPosition.value.set(
@@ -53,7 +51,7 @@ export function Bushes({ positions, scales }: Props) {
     return (
         <instancedMesh
             ref={meshRef}
-            args={[bushGeometry, bushMaterial, positions.length]}
+            args={[bushGeometry, bushMaterial, instances.length]}
             frustumCulled={false}
             customDepthMaterial={bushDepthMaterial}
             castShadow

@@ -1,31 +1,28 @@
 import { alea } from 'seedrandom';
 
 import { CHUNK_SIZE, GRID_SIZE_Z, TREE_BASE_SCALE } from './constants';
+import { type Instance } from './instances';
 
-export function getTreesPositions(count: number): {
-    positions: Array<[x: number, y: number, z: number]>;
-    scales: number[];
-} {
+export function getTreesAttributes(count: number): Instance[] {
     const rng = alea('trees');
-    const positions: Array<[x: number, y: number, z: number]> = [];
-    const scales: number[] = [];
+    const trees: Instance[] = [];
 
     for (let i = 1; i < count / 2 + 1; i++) {
-        positions.push([
-            ((GRID_SIZE_Z - 1) * CHUNK_SIZE) / 2 + 28 + 20 * i,
-            0,
-            ((GRID_SIZE_Z - 1) * CHUNK_SIZE) / 2 + 44 + 20 * i,
-        ]);
+        const x = ((GRID_SIZE_Z - 1) * CHUNK_SIZE) / 2 + 28 + 20 * i;
+        const z = ((GRID_SIZE_Z - 1) * CHUNK_SIZE) / 2 + 44;
 
-        positions.push([
-            ((GRID_SIZE_Z - 1) * CHUNK_SIZE) / 2 + 28 + 20 * i,
-            0,
-            ((GRID_SIZE_Z - 1) * CHUNK_SIZE) / 2 + 44 - 20 * i,
-        ]);
+        trees.push({
+            position: [x, 0, z + 20 * i],
+            rotation: rng() * Math.PI * 2,
+            scale: TREE_BASE_SCALE + rng() - 0.5,
+        });
 
-        scales.push(TREE_BASE_SCALE + rng() - 0.5);
-        scales.push(TREE_BASE_SCALE + rng() - 0.5);
+        trees.push({
+            position: [x, 0, z - 20 * i],
+            rotation: rng() * Math.PI * 2,
+            scale: TREE_BASE_SCALE + rng() - 0.5,
+        });
     }
 
-    return { positions, scales };
+    return trees;
 }
