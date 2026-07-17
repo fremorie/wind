@@ -46,3 +46,21 @@ export const bushMaterial = new CustomShaderMaterial({
     uniforms: bushUniforms,
     baseMaterial: THREE.MeshStandardMaterial,
 }) as CSMProxy<typeof THREE.MeshStandardMaterial>;
+
+// Same material as the bushes, only a different tint, so tree canopies read as
+// tree foliage rather than ground bushes. Shares bushUniforms, so the per-frame
+// uPlayerPosition update drives both.
+export const canopyMaterial = new CustomShaderMaterial({
+    // MeshStandardMaterial props
+    metalness: 0,
+    roughness: 0.8,
+    color: '#405833',
+    alphaTest: 0.5,
+    side: THREE.DoubleSide,
+
+    // Shader (CSM props)
+    vertexShader: bushVertexShader,
+    fragmentShader: bushFragmentShader,
+    uniforms: bushUniforms,
+    baseMaterial: THREE.MeshStandardMaterial,
+}) as CSMProxy<typeof THREE.MeshStandardMaterial>;

@@ -10,7 +10,7 @@ import {
 } from '../../../materials/treeMaterial';
 import {
     bushDepthMaterial,
-    bushMaterial,
+    canopyMaterial,
 } from '../../../materials/bushMaterial';
 import useGame from '../../../store/useGame';
 import { useTreeControls } from './useTreeControls';
@@ -43,6 +43,7 @@ export function Trees({ count }: Props) {
     const normalMap = useTexture(
         './textures/wood/bark_willow_02_nor_gl_1k.jpg',
     );
+    const foliageTexture = useTexture('./textures/foliage/foliage.png');
     const { nodes } = useGLTF(
         './models/tree/tree.glb',
     ) as unknown as GLTFResult;
@@ -51,6 +52,11 @@ export function Trees({ count }: Props) {
         treeMaterial.normalMap = normalMap;
         treeMaterial.needsUpdate = true;
     }, [normalMap]);
+
+    useEffect(() => {
+        canopyMaterial.alphaMap = foliageTexture;
+        canopyMaterial.needsUpdate = true;
+    }, [foliageTexture]);
 
     // Trees own their canopies: the two arrays are mutated together as a rigid
     // body when a tree recycles, so they are generated once and kept in refs.
@@ -96,7 +102,7 @@ export function Trees({ count }: Props) {
             />
             <instancedMesh
                 ref={canopyRef}
-                args={[bushGeometry, bushMaterial, canopies.length]}
+                args={[bushGeometry, canopyMaterial, canopies.length]}
                 frustumCulled={false}
                 customDepthMaterial={bushDepthMaterial}
                 castShadow
@@ -107,3 +113,4 @@ export function Trees({ count }: Props) {
 
 useGLTF.preload('./models/tree/tree.glb');
 useTexture.preload('./textures/wood/bark_willow_02_nor_gl_1k.jpg');
+useTexture.preload('./textures/foliage/foliage.png');
