@@ -27,3 +27,16 @@ export function composeInstanceMatrix(
 
     return target.compose(position, quaternion, scale);
 }
+
+const scratchMatrix = new THREE.Matrix4();
+
+/** Uploads every instance's transform into an InstancedMesh's matrix buffer. */
+export function writeInstanceMatrices(
+    mesh: THREE.InstancedMesh,
+    instances: Instance[],
+) {
+    for (let i = 0; i < instances.length; i++) {
+        mesh.setMatrixAt(i, composeInstanceMatrix(instances[i], scratchMatrix));
+    }
+    mesh.instanceMatrix.needsUpdate = true;
+}

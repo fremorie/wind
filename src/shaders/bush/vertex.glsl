@@ -20,6 +20,14 @@ void main() {
 
     float worldScale = length(worldMatrix[0].xyz);
 
+    // No bushes over the lake or beach: collapse the instance to a degenerate
+    // point (mirrors the grass lake cull). Done before the grounding offset so
+    // every vertex lands on the same point and the triangles drop out.
+    float distanceToLake = length(groundXZ - vec2(uLakeCenterX, uLakeCenterZ));
+    float grassLine = uLakeRadius + uBeachWidth;
+    float lakeCull = smoothstep(grassLine, grassLine - 5.0, distanceToLake);
+    csm_Position.xyz *= (1.0 - lakeCull);
+
     // Final position
     csm_Position.y += surfaceY / worldScale;
 }
