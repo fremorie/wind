@@ -28,7 +28,7 @@ export const WIND_FARM_RADIUS = 300;
 
 // Trees
 export const TREES_COUNT = 10;
-export const TREE_BASE_SCALE = 2;
+export const TREE_BASE_SCALE = 2.5;
 
 // Bushes
 export const BUSHES_COUNT = 20;

@@ -4,7 +4,7 @@ import { alea } from 'seedrandom';
 import { composeInstanceMatrix, type Instance } from './instances';
 import { scatterPositions } from './foliageField';
 
-const BASE_BUSH_SCALE = 2;
+const BASE_BUSH_SCALE = 1.5;
 
 // Every quad in createFoliage() faces +Z (rotateZ only spins each plane within
 // its own plane), so the blob only reads as foliage when viewed along that axis.
@@ -41,7 +41,7 @@ export function getBushesAsTreeFoliageAttributes(
             bushes.push({
                 position: [anchor.x, anchor.y, anchor.z],
                 rotation: BUSH_FACING_YAW,
-                scale: BASE_BUSH_SCALE + (rng() - 0.5),
+                scale: BASE_BUSH_SCALE + 0.7 + (rng() - 0.5),
             });
         }
     }
