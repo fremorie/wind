@@ -1,18 +1,32 @@
-import { Sky /* useHelper */ } from '@react-three/drei';
-import { type ComponentRef, useRef } from 'react';
+import { Sky, useHelper } from '@react-three/drei';
+import {
+    type ComponentRef,
+    type RefObject,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import { useFrame } from '@react-three/fiber';
-import { type DirectionalLight } from 'three';
-// import * as THREE from 'three';
+import {
+    CameraHelper,
+    DirectionalLightHelper,
+    type Camera,
+    type DirectionalLight,
+    type Object3D,
+} from 'three';
 // import { folder, useControls } from 'leva';
 
 import useGame from '../store/useGame';
 import { useSkyControls } from './useSkyControls';
+import { useDebug } from '../hooks/useDebug';
 import { CHUNK_SIZE } from '../utils/constants';
 
 export function Environment() {
+    const debug = useDebug();
     const lightRef = useRef<DirectionalLight>(null);
     const skyRef = useRef<ComponentRef<typeof Sky>>(null);
-    //const [shadowCamera, setShadowCamera] = useState(null)
+    const shadowCameraRef = useRef<Camera>(null);
+    const [hasShadowCamera, setHasShadowCamera] = useState(false);
 
     const playerPosition = useGame((state) => state.playerPosition);
     const sky = useSkyControls();
@@ -40,22 +54,24 @@ export function Environment() {
         skyRef.current.position.copy(playerPosition);
     });
 
-    // useHelper(
-    //     lightRef,
-    //     THREE.DirectionalLightHelper,
-    //     1
-    // )
-    //
-    // useHelper(
-    //     shadowCamera ? { current: shadowCamera } : null,
-    //     THREE.CameraHelper
-    // )
-    //
-    // useEffect(() => {
-    //     if (lightRef.current) {
-    //         setShadowCamera(lightRef.current.shadow.camera)
-    //     }
-    // }, [])
+    useEffect(() => {
+        if (!lightRef.current) return;
+
+        shadowCameraRef.current = lightRef.current.shadow.camera;
+        setHasShadowCamera(true);
+    }, []);
+
+    // The casts are needed because drei types useHelper's ref as
+    // RefObject<Object3D>, which predates React 19 making .current nullable.
+    useHelper(
+        debug && (lightRef as RefObject<Object3D>),
+        DirectionalLightHelper,
+        1,
+    );
+    useHelper(
+        debug && hasShadowCamera && (shadowCameraRef as RefObject<Object3D>),
+        CameraHelper,
+    );
 
     return (
         <>

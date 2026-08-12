@@ -9,14 +9,17 @@ import { Cow } from '../components/Cow';
 import { WaterSurface } from '../components/WaterSurface';
 import { Foliage } from '../components/Foliage/Foliage';
 import { BUSHES_COUNT, TREES_COUNT } from '../utils/constants';
+import { useDebug } from '../hooks/useDebug';
 
 export function Experience() {
+    const debug = useDebug();
+
     return (
         <>
             <OrbitControls makeDefault />
             <Environment />
 
-            <axesHelper />
+            {debug && <axesHelper />}
 
             <Player />
 

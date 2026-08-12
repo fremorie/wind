@@ -1,11 +1,15 @@
 import { Canvas } from '@react-three/fiber';
 import { Perf } from 'r3f-perf';
 import { KeyboardControls } from '@react-three/drei';
+import { Leva } from 'leva';
 
 import { Experience } from './Experience/Experience';
+import { useDebug } from './hooks/useDebug';
 import './App.css';
 
 function App() {
+    const debug = useDebug();
+
     return (
         <KeyboardControls
             map={[
@@ -16,6 +20,12 @@ function App() {
                 { name: 'jump', keys: ['Space'] },
             ]}
         >
+            <Leva
+                hidden={!debug}
+                theme={{ sizes: { rootWidth: '350px' } }}
+                collapsed
+            />
+
             <Canvas
                 shadows
                 camera={{
@@ -27,7 +37,8 @@ function App() {
                 flat
             >
                 <Experience />
-                <Perf position="top-left" />
+
+                {debug && <Perf position="top-left" />}
             </Canvas>
             <div
                 style={{
