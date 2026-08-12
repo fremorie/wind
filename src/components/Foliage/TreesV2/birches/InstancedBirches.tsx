@@ -1,14 +1,21 @@
-import { useGLTF, useTexture, createInstances } from '@react-three/drei';
-import { type GLTF } from 'three-stdlib';
+import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
-import { useEffect, useMemo } from 'react';
+import { useFrame } from '@react-three/fiber';
+import { useGLTF, useTexture } from '@react-three/drei';
+import { type GLTF } from 'three-stdlib';
 
 import {
+    birchBarkDarkMaterial,
+    birchBarkDepthMaterial,
+    birchBarkMaterial,
     birchFoliageDepthMaterial,
     birchFoliageMaterial,
+    birchUniforms,
 } from '../../../../materials/foliage/birchMaterial';
-import { useFrame } from '@react-three/fiber';
-import { bushDepthMaterial } from '../../../../materials/bushMaterial';
+import useGame from '../../../../store/useGame';
+import { writeInstanceMatrices } from '../../../../utils/instances';
+import { getBirchesAttributes } from '../../../../utils/birches';
+import { recycleInstances } from '../../../../utils/foliageField';
 
 type GLTFResult = GLTF & {
     nodes: {
@@ -16,106 +23,120 @@ type GLTFResult = GLTF & {
         Mesh_1007: THREE.Mesh;
         Mesh_1007_1: THREE.Mesh;
     };
-    materials: {
-        'White.001': THREE.Material;
-        'Black.001': THREE.Material;
-    };
 };
 
 type Props = {
     count: number;
 };
 
-type TreeParams = {
-    position: [x: number, y: number, z: number];
-    id: number | string;
-};
+// The wind reads the noise at each vertex's world position, which runs far
+// outside 0..1, so it has to tile. Hoisted out of the component because
+// useTexture only re-runs its onLoad when the callback identity changes.
+function tileTexture(texture: THREE.Texture) {
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.needsUpdate = true;
+}
 
 export function InstancedBirches({ count }: Props) {
+    const foliageRef = useRef<THREE.InstancedMesh>(null);
+    const barkRef = useRef<THREE.InstancedMesh>(null);
+    const stripesRef = useRef<THREE.InstancedMesh>(null);
+    const playerPosition = useGame((state) => state.playerPosition);
+
     const foliageTexture = useTexture('./textures/foliage/birch.png');
-    const { nodes, materials } = useGLTF(
+    const perlinNoiseTexture = useTexture(
+        './textures/perlinNoise/perlin.png',
+        tileTexture,
+    );
+    const { nodes } = useGLTF(
         './models/trees/BirchFlat.glb',
     ) as unknown as GLTFResult;
 
-    const perlinNoiseTexture = useTexture('./textures/perlinNoise/perlin.png');
-
-    // eslint-disable-next-line
-    foliageTexture.wrapS = THREE.RepeatWrapping;
-    // eslint-disable-next-line
-    foliageTexture.wrapT = THREE.RepeatWrapping;
-
-    // eslint-disable-next-line
     useEffect(() => {
         birchFoliageMaterial.alphaMap = foliageTexture;
-
-        // eslint-disable-next-line
-        perlinNoiseTexture.wrapS = THREE.RepeatWrapping;
-        perlinNoiseTexture.wrapT = THREE.RepeatWrapping;
-        perlinNoiseTexture.needsUpdate = true;
-
-        birchFoliageMaterial.uniforms.uPerlinNoiseTexture.value =
-            perlinNoiseTexture;
         birchFoliageMaterial.needsUpdate = true;
-        bushDepthMaterial.needsUpdate = true;
-    }, [foliageTexture, perlinNoiseTexture]);
+    }, [foliageTexture]);
 
-    const trees: Array<TreeParams> = useMemo(
-        () => [
-            { position: [0, 0, 0], id: 1 },
-            { position: [0, 0, 10], id: 2 },
-            { position: [0, 0, 25], id: 3 },
-        ],
-        [],
-    );
+    useEffect(() => {
+        birchUniforms.uPerlinNoiseTexture.value = perlinNoiseTexture;
+    }, [perlinNoiseTexture]);
 
-    const [FoliageInstances, FoliageInstance] = useMemo(
-        () => createInstances(),
-        [],
-    );
-    const [BarkInstances, BarkInstance] = useMemo(() => createInstances(), []);
-    const [StripeInstances, StripeInstance] = useMemo(
-        () => createInstances(),
-        [],
-    );
+    // The GLB parks the canopy in a child node lifted above the trunk. All three
+    // parts share one instance matrix here, so that offset has to move into the
+    // geometry: the shader grounds an instance by its own origin, and a canopy
+    // whose origin sat 3.3 units up would be snapped down onto the ground.
+    const foliageGeometry = useMemo(() => {
+        nodes.Foliage.updateMatrix();
+
+        return nodes.Foliage.geometry
+            .clone()
+            .applyMatrix4(nodes.Foliage.matrix);
+    }, [nodes]);
+
+    // One transform list for the whole tree, written into all three meshes, so
+    // canopy and trunk can never drift apart.
+    const birches = useMemo(() => getBirchesAttributes(count), [count]);
+
+    useLayoutEffect(() => {
+        for (const ref of [foliageRef, barkRef, stripesRef]) {
+            if (ref.current) writeInstanceMatrices(ref.current, birches);
+        }
+    }, [birches]);
 
     useFrame((_, delta) => {
-        birchFoliageMaterial.uniforms.uTime.value += delta;
+        birchUniforms.uTime.value += delta;
+
+        const moved = recycleInstances(
+            birches,
+            playerPosition.x,
+            playerPosition.z,
+        );
+
+        if (!moved) return;
+
+        for (const ref of [foliageRef, barkRef, stripesRef]) {
+            if (ref.current) writeInstanceMatrices(ref.current, birches);
+        }
     });
 
     return (
-        <FoliageInstances
-            geometry={nodes.Foliage.geometry}
-            material={birchFoliageMaterial}
-            customDepthMaterial={birchFoliageDepthMaterial}
-            castShadow
-            limit={count}
-        >
-            <BarkInstances
-                geometry={nodes.Mesh_1007.geometry}
-                material={materials['White.001']}
+        <>
+            <instancedMesh
+                ref={foliageRef}
+                args={[foliageGeometry, birchFoliageMaterial, birches.length]}
+                frustumCulled={false}
+                customDepthMaterial={birchFoliageDepthMaterial}
+                castShadow
+            />
+            <instancedMesh
+                ref={barkRef}
+                args={[
+                    nodes.Mesh_1007.geometry,
+                    birchBarkMaterial,
+                    birches.length,
+                ]}
+                frustumCulled={false}
+                customDepthMaterial={birchBarkDepthMaterial}
                 castShadow
                 receiveShadow
-                limit={count}
-            >
-                <StripeInstances
-                    geometry={nodes.Mesh_1007_1.geometry}
-                    material={materials['Black.001']}
-                    limit={count}
-                >
-                    {trees.map((tree) => (
-                        <group
-                            key={tree.id}
-                            position={tree.position}
-                            scale={2.3}
-                            rotation-y={-Math.PI / 2}
-                        >
-                            <FoliageInstance position={[0, 3.284, 0.054]} />
-                            <BarkInstance />
-                            <StripeInstance />
-                        </group>
-                    ))}
-                </StripeInstances>
-            </BarkInstances>
-        </FoliageInstances>
+            />
+            <instancedMesh
+                ref={stripesRef}
+                args={[
+                    nodes.Mesh_1007_1.geometry,
+                    birchBarkDarkMaterial,
+                    birches.length,
+                ]}
+                frustumCulled={false}
+                customDepthMaterial={birchBarkDepthMaterial}
+                castShadow
+                receiveShadow
+            />
+        </>
     );
 }
+
+useGLTF.preload('./models/trees/BirchFlat.glb');
+useTexture.preload('./textures/foliage/birch.png');
+useTexture.preload('./textures/perlinNoise/perlin.png');
