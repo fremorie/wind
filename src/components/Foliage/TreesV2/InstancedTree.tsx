@@ -1,0 +1,137 @@
+import { useLayoutEffect, useMemo, useRef } from 'react';
+import * as THREE from 'three';
+import { useFrame } from '@react-three/fiber';
+import { useGLTF } from '@react-three/drei';
+import { type GLTF } from 'three-stdlib';
+import type CustomShaderMaterial from 'three-custom-shader-material/vanilla';
+
+import {
+    barkDepthMaterial,
+    canopyDepthMaterial,
+} from '../../../materials/foliage/foliageMaterials';
+import useGame from '../../../store/useGame';
+import { writeInstanceMatrices } from '../../../utils/instances';
+import { getTreeAttributes, type TreePlacement } from '../../../utils/treesV2';
+import { recycleInstances } from '../../../utils/foliageField';
+
+/**
+ * Everything that differs between a birch, a maple and an oak. The shared
+ * component below turns one of these into a set of grounded, recycling
+ * InstancedMeshes -- one per part.
+ */
+export type TreeSpecies = {
+    /** Path to the .glb. */
+    model: string;
+    /** The leafy part: swayed by the wind shader, cut out by its own mask. */
+    canopy: {
+        /** Mesh name inside the .glb. */
+        node: string;
+        material: CustomShaderMaterial;
+    };
+    /** The woody parts. A birch has two (pale bark, dark stripes); others one. */
+    bark: Array<{
+        node: string;
+        material: CustomShaderMaterial;
+    }>;
+    placement: TreePlacement;
+};
+
+// The species supplies the node names, so the loader's exact typing buys us
+// nothing here -- but a missing name should fail loudly rather than as
+// "cannot read property geometry of undefined".
+type GLTFResult = GLTF & {
+    nodes: Record<string, THREE.Mesh | undefined>;
+};
+
+type Props = {
+    count: number;
+    species: TreeSpecies;
+};
+
+export function InstancedTree({ count, species }: Props) {
+    const meshRefs = useRef<Array<THREE.InstancedMesh | null>>([]);
+    const playerPosition = useGame((state) => state.playerPosition);
+
+    const { nodes } = useGLTF(species.model) as unknown as GLTFResult;
+
+    // Every part is baked into one instance matrix per tree, so a part's own
+    // node transform has to move into its geometry. Without that, the shader
+    // would ground a canopy by its own raised origin and snap it to the floor.
+    const parts = useMemo(() => {
+        const bake = (nodeName: string) => {
+            const node = nodes[nodeName];
+
+            if (!node) {
+                throw new Error(
+                    `${species.model} has no mesh named "${nodeName}"`,
+                );
+            }
+
+            node.updateMatrix();
+
+            return node.geometry.clone().applyMatrix4(node.matrix);
+        };
+
+        return [
+            {
+                node: species.canopy.node,
+                geometry: bake(species.canopy.node),
+                material: species.canopy.material,
+                depthMaterial: canopyDepthMaterial,
+                receiveShadow: false,
+            },
+            ...species.bark.map((part) => ({
+                node: part.node,
+                geometry: bake(part.node),
+                material: part.material,
+                depthMaterial: barkDepthMaterial,
+                receiveShadow: true,
+            })),
+        ];
+    }, [nodes, species]);
+
+    // One transform list for the whole tree, written into every part, so canopy
+    // and trunk can never drift apart.
+    const trees = useMemo(
+        () => getTreeAttributes(species.placement, count),
+        [species, count],
+    );
+
+    useLayoutEffect(() => {
+        for (const mesh of meshRefs.current) {
+            if (mesh) writeInstanceMatrices(mesh, trees);
+        }
+    }, [trees, parts]);
+
+    useFrame(() => {
+        const moved = recycleInstances(
+            trees,
+            playerPosition.x,
+            playerPosition.z,
+        );
+
+        if (!moved) return;
+
+        for (const mesh of meshRefs.current) {
+            if (mesh) writeInstanceMatrices(mesh, trees);
+        }
+    });
+
+    return (
+        <>
+            {parts.map((part, index) => (
+                <instancedMesh
+                    key={part.node}
+                    ref={(mesh) => {
+                        meshRefs.current[index] = mesh;
+                    }}
+                    args={[part.geometry, part.material, trees.length]}
+                    frustumCulled={false}
+                    customDepthMaterial={part.depthMaterial}
+                    castShadow
+                    receiveShadow={part.receiveShadow}
+                />
+            ))}
+        </>
+    );
+}

@@ -16,7 +16,7 @@ import { Bicycle } from '../Bicycle';
 import { waterSurfaceMaterial } from '../../materials/waterSurfaceMaterial';
 import { treeMaterial } from '../../materials/treeMaterial';
 import { bushMaterial } from '../../materials/bushMaterial';
-import { birchUniforms } from '../../materials/foliage/birchMaterial';
+import { foliageUniforms } from '../../materials/foliage/foliageMaterials';
 
 export function Player() {
     const playerMeshRef = useRef<Mesh>(null);
@@ -79,7 +79,7 @@ export function Player() {
             playerPosition.z,
         );
 
-        birchUniforms.uPlayerPosition.value.set(
+        foliageUniforms.uPlayerPosition.value.set(
             playerPosition.x,
             playerPosition.z,
         );

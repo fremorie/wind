@@ -1,0 +1,9 @@
+import { createBarkMaterial, createCanopyMaterial } from './foliageMaterials';
+
+// Bark colour is OakFlat.glb's own Tree_Wood, converted from glTF's linear
+// values to sRGB. The canopy is tinted by hand, not by the model.
+export const oakCanopyMaterial = createCanopyMaterial(
+    '#597932',
+    './textures/foliage/oak.png',
+);
+export const oakBarkMaterial = createBarkMaterial('#493a29');

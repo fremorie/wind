@@ -30,8 +30,14 @@ export const WIND_FARM_RADIUS = 300;
 export const TREES_COUNT = 10;
 export const TREE_BASE_SCALE = 2.5;
 
-// Birches
+// Trees v2
+export const BIRCHES_COUNT = 10;
+export const MAPLES_COUNT = 10;
+export const OAKS_COUNT = 10;
+
 export const BIRCH_BASE_SCALE = 2.3;
+export const MAPLE_BASE_SCALE = 2.5;
+export const OAK_BASE_SCALE = 2.4;
 
 // Bushes
 export const BUSHES_COUNT = 20;
