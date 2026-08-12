@@ -32,8 +32,8 @@ export const TREE_BASE_SCALE = 2.5;
 
 // Trees v2
 export const BIRCHES_COUNT = 10;
-export const MAPLES_COUNT = 10;
-export const OAKS_COUNT = 10;
+export const MAPLES_COUNT = 5;
+export const OAKS_COUNT = 5;
 
 export const BIRCH_BASE_SCALE = 2.3;
 export const MAPLE_BASE_SCALE = 2.5;
