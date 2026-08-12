@@ -10,6 +10,7 @@ import { WaterSurface } from '../components/WaterSurface';
 import { Foliage } from '../components/Foliage/Foliage';
 import { BUSHES_COUNT, TREES_COUNT } from '../utils/constants';
 import { useDebug } from '../hooks/useDebug';
+import { Birches } from '../components/Foliage/TreesV2';
 
 export function Experience() {
     const debug = useDebug();
@@ -28,6 +29,7 @@ export function Experience() {
             <WaterSurface />
             <Cow />
             <WindFarm />
+            <Birches count={3} />
 
             <Foliage bushesCount={BUSHES_COUNT} treesCount={TREES_COUNT} />
         </>
