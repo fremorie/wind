@@ -5,7 +5,7 @@ import { createBarkMaterial, createCanopyMaterial } from './foliageMaterials';
 const BARK_FINISH = { metalness: 0.4, roughness: 0.415 };
 
 export const birchCanopyMaterial = createCanopyMaterial(
-    '#A87834',
+    '#719149',
     './textures/foliage/birch.png',
 );
 export const birchBarkMaterial = createBarkMaterial('#c0c3bc', BARK_FINISH);
