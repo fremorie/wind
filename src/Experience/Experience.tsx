@@ -40,8 +40,6 @@ export function Experience() {
                 maplesCount={MAPLES_COUNT}
                 oaksCount={OAKS_COUNT}
             />
-
-            <Foliage bushesCount={BUSHES_COUNT} treesCount={TREES_COUNT} />
         </>
     );
 }

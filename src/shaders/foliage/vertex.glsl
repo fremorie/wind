@@ -9,8 +9,8 @@ uniform float uLakeCenterZ;
 #include "../includes/groundInstance.glsl"
 
 void main() {
-    float uWorldNoiseScale = 0.7;
-    float uSpeed = 0.04;
+    float uWorldNoiseScale = 2.0;
+    float uSpeed = 0.05;
 
     mat4 worldMatrix = modelMatrix * instanceMatrix;
     vec2 groundXZ = instanceGroundXZ(worldMatrix);
