@@ -15,7 +15,7 @@ import { type Instance } from './instances';
 // every x -- which is what lets a recycled instance wrap freely along x without
 // ever landing on the road.
 const ROAD_CENTER_Z = GRID_TOTAL_WIDTH / 2;
-const ROAD_MARGIN = 5;
+const ROAD_MARGIN = 1;
 const ROAD_CLEARANCE = uRoadWidth + uRoadAmplitude + ROAD_MARGIN;
 
 export function isNearRoad(z: number): boolean {
