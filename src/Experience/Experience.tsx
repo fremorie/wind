@@ -7,11 +7,7 @@ import { Grass } from '../components/Grass';
 import { WindFarm } from '../components/WindFarm';
 import { Cow } from '../components/Cow';
 import { WaterSurface } from '../components/WaterSurface';
-import {
-    BIRCHES_COUNT,
-    MAPLES_COUNT,
-    OAKS_COUNT,
-} from '../utils/constants';
+import { BIRCHES_COUNT, MAPLES_COUNT, OAKS_COUNT } from '../utils/constants';
 import { useDebug } from '../hooks/useDebug';
 import { TreesV2 } from '../components/Foliage/TreesV2';
 

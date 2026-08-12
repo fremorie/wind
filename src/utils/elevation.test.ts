@@ -74,7 +74,7 @@ describe('getElevation', () => {
     // Characterisation values, recorded from this implementation. They detect
     // drift in the port; they do not prove it matches the GLSL.
     it.each([
-        [140, 140, -0.7670590698435514], // on the road
+        [140, 140, -0.0767059069843552], // on the road
         [140, 152, 0.5919929316839729], // just off the road
         [560, 140, -19.143907262304058], // lake centre
         [560, 205, 0.021687921546187483], // lake edge

@@ -36,9 +36,10 @@ float getLakeDepth(vec2 position) {
 }
 
 float getRoadElevation(vec2 position) {
+    float roadFlatness = 0.1;
     return getElevation(
         vec2(position.x, roadCenterZ(position.x))
-    );
+    ) * roadFlatness;
 }
 
 float getFinalElevation(vec2 position) {

@@ -57,7 +57,8 @@ function getRoadMask(x: number, z: number): number {
 }
 
 function getRoadElevation(x: number): number {
-    return getBaseElevation(x, roadCenterZ(x));
+    const roadFlatness = 0.1;
+    return getBaseElevation(x, roadCenterZ(x)) * roadFlatness;
 }
 
 function getLakeDepth(x: number, z: number): number {
