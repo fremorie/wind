@@ -6,6 +6,7 @@ import { getElevation } from './elevation';
 
 const PITCH_DELTA = 1;
 const SPEED = 20;
+const JOYSTICK_DEADZONE = 0.15;
 const SPHERE_RADIUS = 1;
 const STIFFNESS = 10;
 
@@ -28,11 +29,35 @@ export function updatePlayerDirection(
         leftward: boolean;
         rightward: boolean;
     },
+    joystick: THREE.Vector2,
 ) {
-    const xDirection = (keys.forward ? 1 : 0) + (keys.backward ? -1 : 0);
-    const zDirection = (keys.rightward ? 1 : 0) + (keys.leftward ? -1 : 0);
+    let xDirection: number;
+    let zDirection: number;
 
-    playerDirection.set(xDirection, 0, zDirection).normalize();
+    const tilt = joystick.length();
+
+    if (tilt > JOYSTICK_DEADZONE) {
+        // Rescale [deadzone, 1] onto [0, 1] so the bike pulls away from a
+        // standstill instead of jumping to deadzone speed. Dividing by tilt
+        // turns the factor into a per-component scale.
+        const scale =
+            Math.min((tilt - JOYSTICK_DEADZONE) / (1 - JOYSTICK_DEADZONE), 1) /
+            tilt;
+
+        xDirection = joystick.y * scale;
+        zDirection = joystick.x * scale;
+    } else {
+        xDirection = (keys.forward ? 1 : 0) + (keys.backward ? -1 : 0);
+        zDirection = (keys.rightward ? 1 : 0) + (keys.leftward ? -1 : 0);
+    }
+
+    playerDirection.set(xDirection, 0, zDirection);
+
+    // Keys give a length of 1 or sqrt(2), so this still normalizes them the way
+    // it always did. The stick stays analog: shorter vector, slower ride.
+    if (playerDirection.lengthSq() > 1) {
+        playerDirection.normalize();
+    }
 }
 
 export function updateCamera(

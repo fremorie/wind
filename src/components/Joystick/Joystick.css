@@ -1,0 +1,40 @@
+.joystick {
+    position: fixed;
+    right: 32px;
+    bottom: 32px;
+    z-index: 100;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 120px;
+    height: 120px;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.15);
+
+    /* Without this the browser claims the gesture for scroll/zoom and we stop
+       getting pointermove events halfway through a drag. */
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+}
+
+.joystick-knob {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.75);
+
+    /* The base owns every pointer event; the knob is just something to look at. */
+    pointer-events: none;
+}
+
+/* Mouse-driven devices have the keyboard, so keep the canvas clear there. */
+@media (hover: hover) and (pointer: fine) {
+    .joystick {
+        display: none;
+    }
+}

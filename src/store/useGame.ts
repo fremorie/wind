@@ -6,6 +6,9 @@ import { CHUNK_SIZE, GRID_SIZE_Z } from '../utils/constants';
 
 interface GameState {
     playerPosition: THREE.Vector3;
+    // Analog stick input, mutated in place every pointer move. x = right,
+    // y = forward (already flipped out of screen space). Length is 0..1.
+    joystick: THREE.Vector2;
 }
 
 export default create<GameState>()(
@@ -13,6 +16,7 @@ export default create<GameState>()(
         const center = ((GRID_SIZE_Z - 1) * CHUNK_SIZE) / 2;
         return {
             playerPosition: new THREE.Vector3(0, 0, center + 10),
+            joystick: new THREE.Vector2(0, 0),
         };
     }),
 );

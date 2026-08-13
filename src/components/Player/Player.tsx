@@ -23,6 +23,7 @@ export function Player() {
     const [, getKeys] = useKeyboardControls();
 
     const playerPosition = useGame((state) => state.playerPosition);
+    const joystick = useGame((state) => state.joystick);
     const playerDirection = useRef<THREE.Vector3>(null);
 
     useFrame((state, delta) => {
@@ -38,12 +39,16 @@ export function Player() {
             playerDirection.current = new THREE.Vector3(0, 0, 0);
         }
 
-        updatePlayerDirection(playerDirection.current, {
-            forward,
-            backward,
-            leftward,
-            rightward,
-        });
+        updatePlayerDirection(
+            playerDirection.current,
+            {
+                forward,
+                backward,
+                leftward,
+                rightward,
+            },
+            joystick,
+        );
 
         updatePlayerPosition(
             playerPosition,

@@ -4,6 +4,7 @@ import { KeyboardControls } from '@react-three/drei';
 import { Leva } from 'leva';
 
 import { Experience } from './Experience/Experience';
+import { Joystick } from './components/Joystick';
 import { useDebug } from './hooks/useDebug';
 import './App.css';
 
@@ -40,6 +41,9 @@ function App() {
 
                 {debug && <Perf position="top-left" />}
             </Canvas>
+
+            <Joystick />
+
             <div
                 style={{
                     position: 'fixed',
