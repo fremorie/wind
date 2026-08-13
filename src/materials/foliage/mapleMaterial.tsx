@@ -4,6 +4,7 @@ import { createBarkMaterial, createCanopyMaterial } from './foliageMaterials';
 // linear values to sRGB. The canopy is tinted by hand, not by the model.
 export const mapleCanopyMaterial = createCanopyMaterial(
     '#567019',
+    '#96702a',
     './textures/foliage/maple.png',
 );
 export const mapleBarkMaterial = createBarkMaterial('#4f3920');

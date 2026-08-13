@@ -6,6 +6,8 @@ uniform vec3 uRoadCenter;
 uniform float uLakeCenterX;
 uniform float uLakeCenterZ;
 
+varying vec3 vLocalPosition;
+
 #include "../includes/groundInstance.glsl"
 
 void main() {
@@ -30,4 +32,7 @@ void main() {
 
     // Final position
     csm_Position.y += groundingOffsetY(worldMatrix, uPlayerPosition);
+
+    // Varyings
+    vLocalPosition = position.xyz;
 }

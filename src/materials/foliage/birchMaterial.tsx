@@ -6,6 +6,7 @@ const BARK_FINISH = { metalness: 0.4, roughness: 0.415 };
 
 export const birchCanopyMaterial = createCanopyMaterial(
     '#719149',
+    '#b09a3a',
     './textures/foliage/birch.png',
 );
 export const birchBarkMaterial = createBarkMaterial('#c0c3bc', BARK_FINISH);

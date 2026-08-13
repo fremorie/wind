@@ -4,6 +4,7 @@ import CustomShaderMaterial, {
 import * as THREE from 'three';
 
 import foliageVertexShader from '../../shaders/foliage/vertex.glsl';
+import foliageFragmentShader from '../../shaders/foliage/fragment.glsl';
 import treeVertexShader from '../../shaders/tree/vertex.glsl';
 import { GRID_TOTAL_WIDTH, LAKE_CENTER } from '../../utils/constants';
 
@@ -68,7 +69,11 @@ export const barkDepthMaterial = new CustomShaderMaterial({
  * the texture is a cutout mask, so pixels above alphaTest are kept and the rest
  * are dropped.
  */
-export function createCanopyMaterial(color: string, leafMask: string) {
+export function createCanopyMaterial(
+    color: string,
+    tint: string,
+    leafMask: string,
+) {
     return new CustomShaderMaterial({
         // MeshStandardMaterial props
         metalness: 0,
@@ -80,7 +85,11 @@ export function createCanopyMaterial(color: string, leafMask: string) {
 
         // Shader (CSM props)
         vertexShader: foliageVertexShader,
-        uniforms: foliageUniforms,
+        fragmentShader: foliageFragmentShader,
+        uniforms: {
+            ...foliageUniforms,
+            uTintColor: new THREE.Uniform(new THREE.Color(tint)),
+        },
         baseMaterial: THREE.MeshStandardMaterial,
     }) as CSMProxy<typeof THREE.MeshStandardMaterial>;
 }
