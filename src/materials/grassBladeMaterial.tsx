@@ -7,8 +7,10 @@ import {
     GRASS_TILE_SIZE,
     LAKE_CENTER,
 } from '../utils/constants';
-import vertexShader from '../shaders/grass/vertex.glsl';
-import fragmentShader from '../shaders/grass/fragment.glsl';
+import {
+    grassFragmentShader as fragmentShader,
+    grassVertexShader as vertexShader,
+} from '../shaders';
 
 export const GrassBladeMaterial = shaderMaterial(
     {

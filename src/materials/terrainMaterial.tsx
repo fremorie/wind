@@ -1,8 +1,7 @@
 import CustomShaderMaterial from 'three-custom-shader-material/vanilla';
 import * as THREE from 'three';
 
-import terrainVertexShader from '../shaders/terrain/vertex.glsl';
-import terrainFragmentShader from '../shaders/terrain/fragment.glsl';
+import { terrainFragmentShader, terrainVertexShader } from '../shaders';
 import { GRID_TOTAL_WIDTH, LAKE_CENTER } from '../utils/constants';
 
 export const terrainUniforms = {

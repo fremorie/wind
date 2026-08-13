@@ -1,8 +1,10 @@
 import CustomShaderMaterial from 'three-custom-shader-material/vanilla';
 import * as THREE from 'three';
 
-import waterSurfaceVertexShader from '../shaders/waterSurface/vertex.glsl';
-import waterSurfaceFragmentShader from '../shaders/waterSurface/fragment.glsl';
+import {
+    waterSurfaceFragmentShader,
+    waterSurfaceVertexShader,
+} from '../shaders';
 import { GRID_TOTAL_WIDTH, LAKE_CENTER } from '../utils/constants';
 
 export const waterSurfaceUniforms = {

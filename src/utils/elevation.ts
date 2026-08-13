@@ -1,8 +1,8 @@
 import { simplexNoise2d } from './simplexNoise';
 import { terrainUniforms } from '../materials/terrainMaterial';
 import {
-    CURVATURE,
     uBeachWidth,
+    uCurvature,
     uLakeDepth,
     uLakeRadius,
     uPositionFrequency,
@@ -84,7 +84,7 @@ export function curveOffset(
     z: number,
     playerX: number,
     playerZ: number,
-    curvature: number = CURVATURE,
+    curvature: number = uCurvature,
 ): number {
     const dx = x - playerX;
     const dz = z - playerZ;

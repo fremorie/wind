@@ -12,7 +12,6 @@ attribute float aBladeRandom;
 
 varying vec2 vUv;
 
-#include "../includes/worldSettings.glsl"
 #include "../includes/perlinNoise.glsl"
 #include "../includes/elevation.glsl"
 #include "../includes/curveWorld.glsl"

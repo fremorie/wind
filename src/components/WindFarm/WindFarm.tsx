@@ -5,9 +5,9 @@ import { useFrame } from '@react-three/fiber';
 
 import { Turbine, type TurbineInstance, type TurbineParts } from './Turbine';
 import {
-    CURVATURE,
     WIND_TURBINE_COUNT,
     WIND_FARM_RADIUS,
+    uCurvature,
 } from '../../utils/constants';
 import useGame from '../../store/useGame';
 import { getWindTurbineInstancesParams } from '../../utils/decorations';
@@ -59,7 +59,7 @@ export function WindFarm({
     });
 
     return (
-        <group ref={groupRef} position-y={-radius * radius * CURVATURE}>
+        <group ref={groupRef} position-y={-radius * radius * uCurvature}>
             <Merged
                 meshes={meshes}
                 limit={128}

@@ -7,7 +7,6 @@ varying vec3 vPosition;
 varying float vUpDot;
 varying float vRoadMask;
 
-#include "../includes/worldSettings.glsl"
 #include "../includes/curveWorld.glsl"
 #include "../includes/elevation.glsl"
 

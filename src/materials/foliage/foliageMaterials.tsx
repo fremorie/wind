@@ -3,9 +3,11 @@ import CustomShaderMaterial, {
 } from 'three-custom-shader-material/vanilla';
 import * as THREE from 'three';
 
-import foliageVertexShader from '../../shaders/foliage/vertex.glsl';
-import foliageFragmentShader from '../../shaders/foliage/fragment.glsl';
-import treeVertexShader from '../../shaders/tree/vertex.glsl';
+import {
+    foliageFragmentShader,
+    foliageVertexShader,
+    treeVertexShader,
+} from '../../shaders';
 import { GRID_TOTAL_WIDTH, LAKE_CENTER } from '../../utils/constants';
 
 // These textures are fixed assets with no React state behind them, so they are

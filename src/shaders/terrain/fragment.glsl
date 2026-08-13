@@ -9,8 +9,6 @@ varying vec3 vPosition;
 varying float vUpDot;
 varying float vRoadMask;
 
-#include "../includes/worldSettings.glsl"
-
 void main() {
     // Color
     vec3 color = vec3(uColorGrass);

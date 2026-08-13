@@ -11,16 +11,11 @@ export const GRID_TOTAL_DEPTH = GRID_SIZE_X * CHUNK_SIZE;
 export const RECYCLING_RADIUS_Z = Math.floor(GRID_SIZE_Z / 2);
 
 export const GRASS_TILE_SIZE = GRID_TOTAL_WIDTH / 2 + 20;
-export const CURVATURE = 0.0007;
 
 export const FINISH_LINE_X = GRID_TOTAL_WIDTH * 2;
 
-// Lake
+// Lake. Size and depth are in WORLD_SETTINGS; only the position is CPU-side.
 export const LAKE_CENTER = [GRID_TOTAL_WIDTH * 2, GRID_TOTAL_WIDTH / 2];
-export const LAKE_RADIUS = 70;
-export const BEACH_WIDTH = 1;
-export const LAKE_DEPTH = 20;
-export const LAKE_SURFACE_LEVEL = -2;
 
 // Wind farm
 export const WIND_TURBINE_COUNT = 6;
@@ -42,20 +37,42 @@ export const OAK_BASE_SCALE = 2.4;
 // Bushes
 export const BUSHES_COUNT = 20;
 
-/* Mirrored from GLSL! */
-// World settings
-export const uPositionFrequency = 0.03;
-export const uStrength = 10.0;
-export const uCurvature = 0.0007;
+/**
+ * The only copy of the world's shape, read by both terrains: the CPU one in
+ * utils/elevation.ts and the GPU one in shaders/includes/elevation.glsl.
+ * shaders/worldSettings.ts compiles it into the constants the shaders get.
+ * Names match the GLSL spelling so a value is greppable in both languages.
+ */
+export const WORLD_SETTINGS = {
+    // Terrain
+    uPositionFrequency: 0.03,
+    uStrength: 10,
+    uCurvature: 0.0007,
 
-// Road
-export const uRoadWidth = 12.0;
-export const uRoadAmplitude = 3.46;
-export const uRoadWaviness = 0.16;
-export const uRoadFalloff = 5.0;
+    // Road
+    uRoadWidth: 12,
+    uRoadAmplitude: 3.46,
+    uRoadWaviness: 0.16,
+    uRoadFalloff: 5,
 
-// Lake
-export const uLakeRadius = 70.0;
-export const uLakeDepth = 20.0;
-export const uBeachWidth = 1.0;
-export const uLakeSurfaceLevel = -2.0;
+    // Lake
+    uLakeRadius: 70,
+    uLakeDepth: 20,
+    uBeachWidth: 1,
+    uLakeSurfaceLevel: -2,
+} as const;
+
+// Unpacked so call sites can import a single value.
+export const {
+    uPositionFrequency,
+    uStrength,
+    uCurvature,
+    uRoadWidth,
+    uRoadAmplitude,
+    uRoadWaviness,
+    uRoadFalloff,
+    uLakeRadius,
+    uLakeDepth,
+    uBeachWidth,
+    uLakeSurfaceLevel,
+} = WORLD_SETTINGS;

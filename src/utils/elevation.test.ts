@@ -2,15 +2,15 @@ import { describe, expect, it } from 'vitest';
 
 import { curveOffset, getElevation } from './elevation';
 import {
-    CURVATURE,
     LAKE_CENTER,
-    LAKE_SURFACE_LEVEL,
+    uCurvature,
+    uLakeSurfaceLevel,
     uStrength,
 } from './constants';
 
 // getElevation is the CPU twin of getFinalElevation in
-// shaders/includes/elevation.glsl. These tests pin the CPU side; the constants
-// shared with the GPU are checked in glslParity.test.ts.
+// shaders/includes/elevation.glsl. These tests pin the CPU side; the GLSL both
+// halves share is checked in shaders/worldSettings.test.ts.
 //
 // The golden values below assume the default terrainUniforms (uRoadCenter,
 // uLakeCenterX/Z). Those are mutable module state, so a change to LAKE_CENTER
@@ -29,7 +29,7 @@ describe('curveOffset', () => {
         const dz = 50 - 20;
 
         expect(curveOffset(100, 50, 10, 20)).toBeCloseTo(
-            (dx * dx + dz * dz) * CURVATURE,
+            (dx * dx + dz * dz) * uCurvature,
             10,
         );
     });
@@ -52,7 +52,7 @@ describe('getElevation', () => {
     it('carves the lake well below the water surface at its centre', () => {
         const elevation = getElevation(lakeCenterX, lakeCenterZ);
 
-        expect(elevation).toBeLessThan(LAKE_SURFACE_LEVEL - 10);
+        expect(elevation).toBeLessThan(uLakeSurfaceLevel - 10);
     });
 
     it('rises back to terrain height far outside the lake', () => {

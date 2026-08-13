@@ -7,7 +7,6 @@
 // The including shader must declare the world uniforms first: uPlayerPosition,
 // uRoadCenter, uLakeCenterX, uLakeCenterZ.
 
-#include "../includes/worldSettings.glsl"
 #include "../includes/elevation.glsl"
 
 vec2 instanceGroundXZ(mat4 worldMatrix) {

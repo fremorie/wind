@@ -3,8 +3,7 @@ import CustomShaderMaterial, {
 } from 'three-custom-shader-material/vanilla';
 import * as THREE from 'three';
 
-import bushVertexShader from '../shaders/bush/vertex.glsl';
-import bushFragmentShader from '../shaders/bush/fragment.glsl';
+import { bushFragmentShader, bushVertexShader } from '../shaders';
 import { GRID_TOTAL_WIDTH, LAKE_CENTER } from '../utils/constants';
 
 export const bushUniforms = {

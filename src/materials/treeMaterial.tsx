@@ -3,8 +3,7 @@ import CustomShaderMaterial, {
 } from 'three-custom-shader-material/vanilla';
 import * as THREE from 'three';
 
-import treeVertexShader from '../shaders/tree/vertex.glsl';
-import treeFragmentShader from '../shaders/tree/fragment.glsl';
+import { treeFragmentShader, treeVertexShader } from '../shaders';
 import { GRID_TOTAL_WIDTH, LAKE_CENTER } from '../utils/constants';
 
 export const treeUniforms = {

@@ -9,7 +9,6 @@ varying vec3 vWorldNormal;
 varying vec2 vUv;
 varying float vLakeDepth;
 
-#include "../includes/worldSettings.glsl"
 #include "../includes/curveWorld.glsl"
 #include "../includes/elevation.glsl"
 

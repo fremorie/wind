@@ -3,7 +3,6 @@ uniform vec3 uRoadCenter;
 uniform float uLakeCenterX;
 uniform float uLakeCenterZ;
 
-#include "../includes/worldSettings.glsl"
 #include "../includes/curveWorld.glsl"
 #include "../includes/elevation.glsl"
 
