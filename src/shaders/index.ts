@@ -12,6 +12,7 @@ import treeFragment from './tree/fragment.glsl';
 import treeVertex from './tree/vertex.glsl';
 import waterSurfaceFragment from './waterSurface/fragment.glsl';
 import waterSurfaceVertex from './waterSurface/vertex.glsl';
+import farmVertex from './farm/vertex.glsl';
 
 // Every shader that draws the world, with WORLD_SETTINGS prepended, so none can
 // be compiled without its constants. Materials import from here, not from the
@@ -40,3 +41,5 @@ export const treeFragmentShader = withWorldSettings(treeFragment);
 export const waterSurfaceVertexShader = withWorldSettings(waterSurfaceVertex);
 export const waterSurfaceFragmentShader =
     withWorldSettings(waterSurfaceFragment);
+
+export const farmVertexShader = withWorldSettings(farmVertex);

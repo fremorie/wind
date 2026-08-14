@@ -50,7 +50,7 @@ const FARM_X = SIDE_ROAD_X + ROAD_WIDTH;
 
 export const FARM_BOUNDS = [
     // bottom left
-    [FARM_X,  FARM_Z],
+    [FARM_X, FARM_Z],
     // bottom right
     [FARM_X, FARM_Z + FARM_WIDTH],
     // top left

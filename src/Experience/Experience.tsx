@@ -11,7 +11,7 @@ import { BIRCHES_COUNT, MAPLES_COUNT, OAKS_COUNT } from '../utils/constants';
 import { useDebug } from '../hooks/useDebug';
 import { TreesV2 } from '../components/Foliage/TreesV2';
 import { RoadSign } from '../components/RoadSign';
-import {Farm} from "../components/Farm";
+import { Farm } from '../components/Farm';
 
 export function Experience() {
     const debug = useDebug();
