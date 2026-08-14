@@ -39,24 +39,24 @@ export const OAK_BASE_SCALE = 2.4;
 
 // Side road: straight line along x = 400
 export const SIDE_ROAD_X = 400;
-
-// Farm
-const FARM_Z = GRID_TOTAL_WIDTH / 2 + 100;
-
 const ROAD_WIDTH = 12;
 
-const FARM_WIDTH = 226;
-const FARM_DEPTH = 113;
+// Farm
+export const FARM_WIDTH = 226;
+export const FARM_DEPTH = 113;
+
+const FARM_Z = GRID_TOTAL_WIDTH + 100 + FARM_WIDTH / 2;
+const FARM_X = SIDE_ROAD_X + ROAD_WIDTH;
 
 export const FARM_BOUNDS = [
     // bottom left
-    [SIDE_ROAD_X + ROAD_WIDTH,  FARM_Z],
+    [FARM_X,  FARM_Z],
     // bottom right
-    [SIDE_ROAD_X + ROAD_WIDTH, FARM_Z + FARM_WIDTH],
+    [FARM_X, FARM_Z + FARM_WIDTH],
     // top left
-    [SIDE_ROAD_X + ROAD_WIDTH + FARM_DEPTH, FARM_Z],
+    [FARM_X + FARM_DEPTH, FARM_Z],
     // top right
-    [SIDE_ROAD_X + ROAD_WIDTH + FARM_DEPTH, FARM_Z + FARM_WIDTH],
+    [FARM_X + FARM_DEPTH, FARM_Z + FARM_WIDTH],
 ];
 
 /**
@@ -85,6 +85,13 @@ export const WORLD_SETTINGS = {
     uLakeDepth: 20,
     uBeachWidth: 0.5,
     uLakeSurfaceLevel: -2,
+
+    // Farm
+    uFarmBottomLeftX: FARM_BOUNDS[0][0],
+    uFarmBottomLeftZ: FARM_BOUNDS[0][1],
+    uFarmWidth: FARM_WIDTH,
+    uFarmDepth: FARM_DEPTH,
+    uFarmFalloff: 10,
 } as const;
 
 // Unpacked so call sites can import a single value.

@@ -38,6 +38,35 @@ float getRoadMask(vec2 position) {
     return clamp(roadMask + getSideRoadMask(position), 0.0, 1.0);
 }
 
+float getFarmMask(vec2 position) {
+    float x0 = uFarmBottomLeftX;
+    float x1 = uFarmBottomLeftX + uFarmDepth;
+    float z0 = uFarmBottomLeftZ;
+    float z1 = uFarmBottomLeftZ + uFarmWidth;
+
+    // Positive inside, negative outside
+    float insideX = min(position.x - x0, x1 - position.x);
+    float insideZ = min(position.y - z0, z1 - position.y);
+
+    return smoothstep(-uFarmFalloff, 0.0, insideX) *
+        smoothstep(-uFarmFalloff, 0.0, insideZ);
+}
+
+float getFarmElevation(vec2 position) {
+    float x0 = uFarmBottomLeftX;
+    float x1 = uFarmBottomLeftX + uFarmDepth;
+    float z0 = uFarmBottomLeftZ;
+    float z1 = uFarmBottomLeftZ + uFarmWidth;
+
+    float farmFlatness = 0.2;
+    vec2 farmCenter = vec2(
+        uFarmBottomLeftX + uFarmDepth / 2.0,
+        uFarmBottomLeftZ + uFarmWidth / 2.0
+    );
+
+    return getElevation(farmCenter) * farmFlatness;
+}
+
 float getLakeDepth(vec2 position) {
     vec2 lakeCenter = vec2(uLakeCenterX, uLakeCenterZ);
     float dist = length(position - lakeCenter);
@@ -58,6 +87,12 @@ float getFinalElevation(vec2 position) {
         getElevation(position),
         getRoadElevation(position),
         getRoadMask(position)
+    );
+
+    elevation = mix(
+        elevation,
+        getFarmElevation(position),
+        getFarmMask(position)
     );
 
     float lakeDepth = getLakeDepth(position);
