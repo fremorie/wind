@@ -74,6 +74,10 @@ void main() {
     float lakeCull = smoothstep(grassLine, grassLine - 5.0, distanceToLake);
     localPosition *= (1.0 - lakeCull);
 
+    // No grass on the farm
+    float farmMask = getFarmMask(wrappedTile);
+    localPosition *= (1.0 - farmMask);
+
     vec4 worldPosition = modelMatrix * instanceMatrix * vec4(localPosition, 1.0);
     worldPosition.xz += shift;
 

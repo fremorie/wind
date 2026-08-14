@@ -44,7 +44,7 @@ export const FARM_WIDTH = 226;
 export const FARM_DEPTH = 113;
 
 const FARM_Z = GRID_TOTAL_WIDTH + 100 + FARM_WIDTH / 2;
-const FARM_X = SIDE_ROAD_X + ROAD_WIDTH;
+const FARM_X = SIDE_ROAD_X + ROAD_WIDTH + 20;
 
 export const FARM_BOUNDS = [
     // bottom left
@@ -89,7 +89,7 @@ export const WORLD_SETTINGS = {
     uFarmBottomLeftZ: FARM_BOUNDS[0][1],
     uFarmWidth: FARM_WIDTH,
     uFarmDepth: FARM_DEPTH,
-    uFarmFalloff: 10,
+    uFarmFalloff: 5,
 } as const;
 
 // Unpacked so call sites can import a single value.

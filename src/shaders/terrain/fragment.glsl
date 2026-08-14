@@ -8,11 +8,15 @@ uniform vec3 uColorWaterDeep;
 varying vec3 vPosition;
 varying float vUpDot;
 varying float vRoadMask;
+varying float vFarmMask;
 
 void main() {
     // Color
     vec3 color = vec3(uColorGrass);
     color = mix(color, uColorDirt, vRoadMask);
+
+    // Farm
+    color = mix(color, uColorDirt, vFarmMask);
 
     // Beach
     float distanceToLake = length(vPosition.xz - vec2(uLakeCenterX, uLakeCenterZ));
