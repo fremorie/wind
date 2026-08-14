@@ -1,5 +1,3 @@
-import * as THREE from 'three';
-
 export const CHUNK_SIZE = 40;
 export const GRID_SIZE_X = 7;
 export const GRID_SIZE_Z = 7;
