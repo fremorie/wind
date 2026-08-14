@@ -106,4 +106,9 @@ export const {
     uLakeDepth,
     uBeachWidth,
     uLakeSurfaceLevel,
+    uFarmBottomLeftX,
+    uFarmBottomLeftZ,
+    uFarmWidth,
+    uFarmDepth,
+    uFarmFalloff,
 } = WORLD_SETTINGS;

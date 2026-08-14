@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { curveOffset, getElevation } from './elevation';
+import { curveOffset, getElevation, getFarmElevation } from './elevation';
 import {
+    FARM_BOUNDS,
+    FARM_DEPTH,
+    FARM_WIDTH,
     GRID_TOTAL_WIDTH,
     LAKE_CENTER,
     uCurvature,
@@ -92,6 +95,40 @@ describe('getElevation', () => {
 
         expect(spread(uSideRoadX)).toBeLessThan(spread(uSideRoadX + 40) / 2);
         expect(spread(uSideRoadX)).toBeLessThan(spread(uSideRoadX - 40) / 2);
+    });
+
+    // The farm pad is the one region that must be perfectly level: the farm is
+    // a single merged mesh, so it cannot follow a slope.
+    describe('farm pad', () => {
+        const [farmX, farmZ] = FARM_BOUNDS[0];
+
+        it('is level everywhere inside the bounds', () => {
+            const heights = [
+                [farmX + 1, farmZ + 1],
+                [farmX + FARM_DEPTH / 2, farmZ + FARM_WIDTH / 2],
+                [farmX + FARM_DEPTH - 1, farmZ + FARM_WIDTH - 1],
+                [farmX + 1, farmZ + FARM_WIDTH - 1],
+            ].map(([x, z]) => getElevation(x, z));
+
+            for (const height of heights) {
+                expect(height).toBeCloseTo(heights[0], 10);
+            }
+        });
+
+        it('sits at the height getFarmElevation reports', () => {
+            expect(
+                getElevation(farmX + FARM_DEPTH / 2, farmZ + FARM_WIDTH / 2),
+            ).toBeCloseTo(getFarmElevation(), 10);
+        });
+
+        // Guards the mask: a pad that never returns to the terrain would mean
+        // the falloff is not doing its job.
+        it('gives way to open terrain beyond the falloff', () => {
+            const near = getElevation(farmX - 60, farmZ + 40);
+            const far = getElevation(farmX - 60, farmZ + 160);
+
+            expect(near).not.toBeCloseTo(far, 3);
+        });
     });
 
     // Characterisation values, recorded from this implementation. They detect
