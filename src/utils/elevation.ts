@@ -10,8 +10,16 @@ import {
     uRoadFalloff,
     uRoadWaviness,
     uRoadWidth,
+    uSideRoadX,
     uStrength,
 } from './constants';
+
+function clamp(value: number, minVal: number, maxVal: number) {
+    if (value < minVal) return minVal;
+    if (value > maxVal) return maxVal;
+
+    return value;
+}
 
 function smoothstep(edge0: number, edge1: number, x: number): number {
     const t = Math.min(Math.max((x - edge0) / (edge1 - edge0), 0), 1);
@@ -41,6 +49,18 @@ function roadCenterZ(x: number): number {
     );
 }
 
+function sideRoadCenterX(z: number): number {
+    return uSideRoadX + Math.sin(z * uRoadWaviness * 0.5);
+}
+
+function getSideRoadMask(x: number, z: number) {
+    const distanceToRoad = Math.abs(x - sideRoadCenterX(z));
+    const roadMask =
+        1 - smoothstep(uRoadWidth - uRoadFalloff, uRoadWidth, distanceToRoad);
+
+    return roadMask;
+}
+
 function getRoadMask(x: number, z: number): number {
     const distanceToRoad = Math.abs(z - roadCenterZ(x));
     let roadMask =
@@ -52,6 +72,8 @@ function getRoadMask(x: number, z: number): number {
     );
     const grassLine = uLakeRadius + uBeachWidth;
     roadMask *= smoothstep(grassLine - 10, grassLine, distToLake);
+    roadMask += getSideRoadMask(x, z);
+    roadMask = clamp(roadMask, 0, 1);
 
     return roadMask;
 }

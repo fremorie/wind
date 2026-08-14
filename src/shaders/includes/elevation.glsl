@@ -15,6 +15,17 @@ float roadCenterZ(float x) {
     return uRoadCenter.z + uRoadAmplitude * sin(x * uRoadWaviness);
 }
 
+float sideRoadCenterX(float z) {
+    return uSideRoadX + sin(z * uRoadWaviness * 0.5);
+}
+
+float getSideRoadMask(vec2 position) {
+    float distanceToRoad = abs(position.x - sideRoadCenterX(position.y));
+    float roadMask = 1.0 - smoothstep(uRoadWidth - uRoadFalloff, uRoadWidth, distanceToRoad);
+
+    return roadMask;
+}
+
 float getRoadMask(vec2 position) {
     float distanceToRoad = abs(position.y - roadCenterZ(position.x));
     float roadMask = 1.0 - smoothstep(uRoadWidth - uRoadFalloff, uRoadWidth, distanceToRoad);
@@ -24,7 +35,7 @@ float getRoadMask(vec2 position) {
     float grassLine  = uLakeRadius + uBeachWidth;
     roadMask *= smoothstep(grassLine - 10.0, grassLine, distToLake);
 
-    return roadMask;
+    return clamp(roadMask + getSideRoadMask(position), 0.0, 1.0);
 }
 
 float getLakeDepth(vec2 position) {

@@ -15,7 +15,7 @@ export const GRASS_TILE_SIZE = GRID_TOTAL_WIDTH / 2 + 20;
 export const FINISH_LINE_X = GRID_TOTAL_WIDTH * 2;
 
 // Lake. Size and depth are in WORLD_SETTINGS; only the position is CPU-side.
-export const LAKE_CENTER = [GRID_TOTAL_WIDTH * 2, GRID_TOTAL_WIDTH / 2];
+export const LAKE_CENTER = [GRID_TOTAL_WIDTH * 3, GRID_TOTAL_WIDTH / 2];
 
 // Wind farm
 export const WIND_TURBINE_COUNT = 6;
@@ -49,21 +49,25 @@ export const WORLD_SETTINGS = {
     uStrength: 10,
     uCurvature: 0.0007,
 
-    // Road
+    // Main road
     uRoadWidth: 12,
     uRoadAmplitude: 3.46,
-    uRoadWaviness: 0.16,
+    uRoadWaviness: 0.06,
     uRoadFalloff: 5,
+
+    // Side road
+    uSideRoadX: 400,
 
     // Lake
     uLakeRadius: 70,
     uLakeDepth: 20,
-    uBeachWidth: 1,
+    uBeachWidth: 0.5,
     uLakeSurfaceLevel: -2,
 } as const;
 
 // Unpacked so call sites can import a single value.
 export const {
+    uSideRoadX,
     uPositionFrequency,
     uStrength,
     uCurvature,

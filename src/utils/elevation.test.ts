@@ -2,9 +2,11 @@ import { describe, expect, it } from 'vitest';
 
 import { curveOffset, getElevation } from './elevation';
 import {
+    GRID_TOTAL_WIDTH,
     LAKE_CENTER,
     uCurvature,
     uLakeSurfaceLevel,
+    uSideRoadX,
     uStrength,
 } from './constants';
 
@@ -21,6 +23,9 @@ import {
 const MAX_BASE_ELEVATION = uStrength * 0.25;
 
 const [lakeCenterX, lakeCenterZ] = LAKE_CENTER;
+
+// Mirrors terrainUniforms.uRoadCenter.z, the main road's centreline.
+const ROAD_CENTER_Z = GRID_TOTAL_WIDTH / 2;
 
 describe('curveOffset', () => {
     // Not a golden: this is the definition, asserted independently.
@@ -71,13 +76,33 @@ describe('getElevation', () => {
         }
     });
 
+    // The side road runs along z at a fixed x, so it is flattened where the
+    // main road is not: a band in x rather than a band in z.
+    it('flattens the terrain along the side road', () => {
+        // Sampled clear of the main road, which crosses every x at ROAD_Z.
+        const zs: number[] = [];
+        for (let z = 0; z <= GRID_TOTAL_WIDTH; z += 10) {
+            if (Math.abs(z - ROAD_CENTER_Z) > 30) zs.push(z);
+        }
+
+        const spread = (x: number) => {
+            const elevations = zs.map((z) => getElevation(x, z));
+            return Math.max(...elevations) - Math.min(...elevations);
+        };
+
+        expect(spread(uSideRoadX)).toBeLessThan(spread(uSideRoadX + 40) / 2);
+        expect(spread(uSideRoadX)).toBeLessThan(spread(uSideRoadX - 40) / 2);
+    });
+
     // Characterisation values, recorded from this implementation. They detect
     // drift in the port; they do not prove it matches the GLSL.
     it.each([
-        [140, 140, -0.0767059069843552], // on the road
-        [140, 152, 0.5919929316839729], // just off the road
-        [560, 140, -19.143907262304058], // lake centre
-        [560, 205, 0.021687921546187483], // lake edge
+        [140, 140, -0.10540970630189606], // on the main road
+        [140, 152, 0.14876046872525944], // just off the main road
+        [400, 60, -0.05840997075868071], // on the side road
+        [430, 60, -0.8244391481087165], // just off the side road
+        [840, 140, -19.972753068655347], // lake centre
+        [840, 205, -0.4568767993281747], // lake edge
         [-37.5, 212.25, 0.770677486454744], // negative x, open terrain
         [140, 300, -1.2850733897797157], // open terrain
     ])('getElevation(%s, %s) === %s', (x, z, expected) => {
