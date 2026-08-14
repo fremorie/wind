@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import { ConstructionSignModel } from './constructionSignModel';
 import { CHUNK_SIZE, GRID_SIZE_Z } from '../../utils/constants';
 import useGame from '../../store/useGame';
-import { getWindTurbinePosition } from '../../utils/decorations';
+import { getSurfaceY } from '../../utils/elevation';
 
 export function ConstructionSign() {
     const groupRef = useRef<THREE.Group>(null);
@@ -20,8 +20,7 @@ export function ConstructionSign() {
         if (!groupRef.current) return;
 
         groupRef.current.position.y =
-            getWindTurbinePosition(groupRef.current.position, playerPosition) +
-            2;
+            getSurfaceY(groupRef.current.position, playerPosition) + 2;
     });
 
     return (

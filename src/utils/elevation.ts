@@ -1,3 +1,5 @@
+import type { Vector3 } from 'three';
+
 import { simplexNoise2d } from './simplexNoise';
 import { terrainUniforms } from '../materials/terrainMaterial';
 import {
@@ -112,4 +114,15 @@ export function curveOffset(
     const dz = z - playerZ;
 
     return (dx * dx + dz * dz) * curvature;
+}
+
+// Plants decorations on the ground
+export function getSurfaceY(
+    position: Vector3,
+    playerPosition: Vector3,
+): number {
+    return (
+        getElevation(position.x, position.z) -
+        curveOffset(position.x, position.z, playerPosition.x, playerPosition.z)
+    );
 }

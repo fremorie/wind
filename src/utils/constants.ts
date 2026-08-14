@@ -20,6 +20,9 @@ export const LAKE_CENTER = [GRID_TOTAL_WIDTH * 3, GRID_TOTAL_WIDTH / 2];
 // Wind farm
 export const WIND_TURBINE_COUNT = 6;
 export const WIND_FARM_RADIUS = 300;
+export const WIND_FARM_CENTER_Z = WIND_FARM_RADIUS / 2;
+// Past this X the farm stops following the player, so it can be walked up to.
+export const WIND_FARM_REACHABLE_X = GRID_TOTAL_DEPTH * 5;
 
 // Trees
 export const TREES_COUNT = 10;

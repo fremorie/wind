@@ -1,15 +1,9 @@
 import { Merged, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
-import { useMemo, useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useMemo } from 'react';
 
 import { Turbine, type TurbineInstance, type TurbineParts } from './Turbine';
-import {
-    WIND_TURBINE_COUNT,
-    WIND_FARM_RADIUS,
-    uCurvature,
-} from '../../utils/constants';
-import useGame from '../../store/useGame';
+import { WIND_TURBINE_COUNT, WIND_FARM_RADIUS } from '../../utils/constants';
 import { getWindTurbineInstancesParams } from '../../utils/decorations';
 
 type GLTFNodes = {
@@ -32,9 +26,6 @@ export function WindFarm({
     count = WIND_TURBINE_COUNT,
     radius = WIND_FARM_RADIUS,
 }: Props) {
-    const groupRef = useRef<THREE.Group>(null);
-    const playerPosition = useGame((state) => state.playerPosition);
-
     const { nodes } = useGLTF('./windTurbine.glb') as unknown as GLTFNodes;
 
     const meshes = {
@@ -51,33 +42,24 @@ export function WindFarm({
         [count, radius],
     );
 
-    useFrame(() => {
-        if (!groupRef.current) return;
-
-        groupRef.current.position.x = playerPosition.x;
-        groupRef.current.position.z = playerPosition.z;
-    });
-
     return (
-        <group ref={groupRef} position-y={-radius * radius * uCurvature}>
-            <Merged
-                meshes={meshes}
-                limit={128}
-                castShadow
-                receiveShadow
-                frustumCulled={false}
-            >
-                {(parts) =>
-                    turbines.map((data) => (
-                        <Turbine
-                            key={data.key}
-                            data={data}
-                            parts={parts as unknown as TurbineParts}
-                        />
-                    ))
-                }
-            </Merged>
-        </group>
+        <Merged
+            meshes={meshes}
+            limit={128}
+            castShadow
+            receiveShadow
+            frustumCulled={false}
+        >
+            {(parts) =>
+                turbines.map((data) => (
+                    <Turbine
+                        key={data.key}
+                        data={data}
+                        parts={parts as unknown as TurbineParts}
+                    />
+                ))
+            }
+        </Merged>
     );
 }
 

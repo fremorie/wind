@@ -8,7 +8,7 @@ import * as THREE from 'three';
 import { useGLTF, useAnimations } from '@react-three/drei';
 
 import useGame from '../../store/useGame';
-import { getWindTurbinePosition } from '../../utils/decorations';
+import { getSurfaceY } from '../../utils/elevation';
 
 export function CowModel(props: ThreeElements['group']) {
     const cowRef = useRef<THREE.Group>(null);
@@ -51,7 +51,7 @@ export function CowModel(props: ThreeElements['group']) {
         if (!cowRef.current) return;
 
         // Place on terrain surface
-        cowRef.current.position.y = getWindTurbinePosition(
+        cowRef.current.position.y = getSurfaceY(
             cowRef.current.position,
             playerPosition,
         );

@@ -9,7 +9,7 @@ import { useFrame } from '@react-three/fiber';
 import { useControls } from 'leva';
 import * as THREE from 'three';
 import type { GLTF } from 'three-stdlib';
-import { getWindTurbinePosition } from '../../utils/decorations';
+import { getSurfaceY } from '../../utils/elevation';
 import useGame from '../../store/useGame';
 
 type GLTFResult = GLTF & {
@@ -71,7 +71,7 @@ export function WindTurbine(props: ThreeElements['group']) {
         }
 
         // Place on terrain surface
-        groupRef.current.position.y = getWindTurbinePosition(
+        groupRef.current.position.y = getSurfaceY(
             groupRef.current.position,
             playerPosition,
         );
