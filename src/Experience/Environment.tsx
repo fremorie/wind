@@ -42,9 +42,9 @@ export function Environment() {
 
         // keep the light at a fixed offset above/beside the player...
         lightRef.current.position.set(
-            playerPosition.x + 1,
-            playerPosition.y + 2,
-            playerPosition.z + 3,
+            playerPosition.x + sky.sunPosition[0],
+            playerPosition.y + sky.sunPosition[1],
+            playerPosition.z + sky.sunPosition[2],
         );
         // ...and aim its shadow box at the player
         lightRef.current.target.position.copy(playerPosition);
