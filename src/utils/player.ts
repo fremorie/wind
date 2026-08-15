@@ -68,7 +68,7 @@ export function updateCamera(
     const margin = 2;
     const groundAtCamera =
         getElevation(camera.position.x, camera.position.z) + margin;
-    const desiredCameraY = playerPosition.y + 7;
+    const desiredCameraY = playerPosition.y + 8;
 
     const cameraY = Math.max(desiredCameraY, groundAtCamera);
 

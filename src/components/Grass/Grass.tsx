@@ -7,7 +7,7 @@ import { GRID_TOTAL_WIDTH, GRASS_TILE_SIZE } from '../../utils/constants';
 
 export function Grass() {
     const { density } = useControls('Grass', {
-        density: { value: 10, min: 1, max: 40, step: 0.5 },
+        density: { value: 6, min: 1, max: 40, step: 0.5 },
     });
 
     const clamps = useMemo(() => {
