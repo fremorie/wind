@@ -38,7 +38,22 @@ float getRoadMask(vec2 position) {
     return clamp(roadMask + getSideRoadMask(position), 0.0, 1.0);
 }
 
+// For grass and terrain color: slightly smaller than the farm itself
 float getFarmMask(vec2 position) {
+    float x0 = uFarmBottomLeftX + 5.0;
+    float x1 = uFarmBottomLeftX + uFarmDepth - 5.0;
+    float z0 = uFarmBottomLeftZ + 5.0;
+    float z1 = uFarmBottomLeftZ + uFarmWidth - 5.0;
+
+    // Positive inside, negative outside
+    float insideX = min(position.x - x0, x1 - position.x);
+    float insideZ = min(position.y - z0, z1 - position.y);
+
+    return smoothstep(-uFarmFalloff, 0.0, insideX) *
+        smoothstep(-uFarmFalloff, 0.0, insideZ);
+}
+
+float getFarmElevationMask(vec2 position) {
     float x0 = uFarmBottomLeftX;
     float x1 = uFarmBottomLeftX + uFarmDepth;
     float z0 = uFarmBottomLeftZ;
@@ -92,7 +107,7 @@ float getFinalElevation(vec2 position) {
     elevation = mix(
         elevation,
         getFarmElevation(position),
-        getFarmMask(position)
+        getFarmElevationMask(position)
     );
 
     float lakeDepth = getLakeDepth(position);

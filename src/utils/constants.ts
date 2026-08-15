@@ -44,7 +44,7 @@ export const FARM_WIDTH = 226;
 export const FARM_DEPTH = 113;
 
 const FARM_Z = GRID_TOTAL_WIDTH + 100 + FARM_WIDTH / 2;
-const FARM_X = SIDE_ROAD_X + ROAD_WIDTH + 20;
+const FARM_X = SIDE_ROAD_X + ROAD_WIDTH;
 
 export const FARM_BOUNDS = [
     // bottom left
