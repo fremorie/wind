@@ -15,6 +15,7 @@ import {
     uPositionFrequency,
     uRoadAmplitude,
     uRoadFalloff,
+    uRoadPeriod,
     uRoadWaviness,
     uRoadWidth,
     uSideRoadX,
@@ -35,6 +36,10 @@ function smoothstep(edge0: number, edge1: number, x: number): number {
 
 function mix(a: number, b: number, t: number): number {
     return a + (b - a) * t;
+}
+
+function mod(x: number, y: number): number {
+    return x - y * Math.floor(x / y);
 }
 
 function getBaseElevation(x: number, z: number): number {
@@ -69,7 +74,10 @@ function getSideRoadMask(x: number, z: number) {
 }
 
 function getRoadMask(x: number, z: number): number {
-    const distanceToRoad = Math.abs(z - roadCenterZ(x));
+    const distanceToRoad = Math.abs(
+        mod(z - roadCenterZ(x) + uRoadPeriod / 2, uRoadPeriod) -
+            uRoadPeriod / 2,
+    );
     let roadMask =
         1 - smoothstep(uRoadWidth - uRoadFalloff, uRoadWidth, distanceToRoad);
 

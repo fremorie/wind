@@ -27,7 +27,10 @@ float getSideRoadMask(vec2 position) {
 }
 
 float getRoadMask(vec2 position) {
-    float distanceToRoad = abs(position.y - roadCenterZ(position.x));
+    float distanceToRoad = abs(
+        mod(position.y - roadCenterZ(position.x) + uRoadPeriod / 2.0, uRoadPeriod)
+        - uRoadPeriod / 2.0
+    );
     float roadMask = 1.0 - smoothstep(uRoadWidth - uRoadFalloff, uRoadWidth, distanceToRoad);
 
     // No roads under water!
