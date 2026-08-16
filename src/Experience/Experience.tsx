@@ -1,7 +1,7 @@
 import { OrbitControls } from '@react-three/drei';
 
 import { Terrain } from '../components/Terrain';
-import { Player } from '../components/Player';
+import { DebugPlayer, Player } from '../components/Player';
 import { Environment } from './Environment';
 import { Grass } from '../components/Grass';
 import { WindFarm } from '../components/WindFarm';
@@ -23,7 +23,7 @@ export function Experience() {
 
             {debug && <axesHelper />}
 
-            <Player />
+            {debug ? <DebugPlayer /> : <Player />}
 
             <Terrain />
             <Grass />
