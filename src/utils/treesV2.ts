@@ -1,7 +1,7 @@
 import { alea } from 'seedrandom';
 
 import { type Instance } from './instances';
-import { scatterPositions } from './foliageField';
+import { scatterPositionsSpaced } from './foliageField';
 
 /** How a species is sown across the field. */
 export type TreePlacement = {
@@ -22,7 +22,7 @@ export function getTreeAttributes(
 ): Instance[] {
     const rng = alea(seed);
 
-    return scatterPositions(count, rng).map(([x, z]) => ({
+    return scatterPositionsSpaced(count, rng).map(([x, z]) => ({
         // y is left at 0: the shader lifts each tree onto the terrain.
         position: [x, 0, z],
         rotation,
