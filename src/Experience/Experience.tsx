@@ -2,7 +2,8 @@ import { OrbitControls } from '@react-three/drei';
 import { Physics } from '@react-three/rapier';
 
 import { Terrain, TerrainCollider } from '../components/Terrain';
-import { DebugPlayer, Player } from '../components/Player';
+import { Player } from '../components/Player';
+import { BicycleVehicle } from '../components/BicycleVehicle';
 import { Environment } from './Environment';
 import { Grass } from '../components/Grass';
 import { WindFarm } from '../components/WindFarm';
@@ -21,12 +22,12 @@ export function Experience() {
         <>
             <OrbitControls makeDefault />
 
-            <Physics debug={debug}>
+            <Physics debug={debug} gravity={[0, -24.5, 0]} timeStep={1 / 60}>
                 <Environment />
 
                 {debug && <axesHelper />}
 
-                {debug ? <DebugPlayer /> : <Player />}
+                {debug ? <BicycleVehicle /> : <Player />}
 
                 <Terrain />
                 <TerrainCollider />

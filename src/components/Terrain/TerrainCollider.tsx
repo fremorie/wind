@@ -43,6 +43,7 @@ export function TerrainCollider() {
             type="fixed"
             colliders={false}
             position={[centerX, 0, centerZ]}
+            restitution={0}
         >
             <HeightfieldCollider args={[SUBDIVS, SUBDIVS, heights, scale]} />
         </RigidBody>
