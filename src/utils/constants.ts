@@ -24,16 +24,9 @@ export const WIND_FARM_REACHABLE_X = GRID_TOTAL_DEPTH * 5;
 
 // Trees
 export const TREES_COUNT = 10;
-export const TREE_BASE_SCALE = 2.5;
+export const TREE_BASE_SCALE = 2.3;
 
-// Trees v2
-export const BIRCHES_COUNT = 10;
-export const MAPLES_COUNT = 5;
-export const OAKS_COUNT = 5;
-
-export const BIRCH_BASE_SCALE = 2.3;
-export const MAPLE_BASE_SCALE = 2.5;
-export const OAK_BASE_SCALE = 2.4;
+export const TREES_V2_COUNT = 20;
 
 // Side road: straight line along x = 400
 export const SIDE_ROAD_X = 400;

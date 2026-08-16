@@ -11,7 +11,7 @@ void main() {
 
     // No trees over the lake or beach. Done before the grounding offset so
     // every vertex lands on the same point and the triangles drop out.
-    csm_Position.xyz *= (1.0 - lakeCull(groundXZ));
+    csm_Position.xyz *= (1.0 - step(0.99, lakeCull(groundXZ)));
 
     // No trees on the road
     float roadMask = getRoadMask(groundXZ);

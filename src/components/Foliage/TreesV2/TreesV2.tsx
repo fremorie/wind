@@ -1,32 +1,34 @@
+import { useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 
 import { foliageUniforms } from '../../../materials/foliage/foliageMaterials';
-import { InstancedBirches } from './birches/InstancedBirches';
-import { InstancedMaples } from './maples/InstancedMaples';
-import { InstancedOaks } from './oaks/InstancedOaks';
+import { getTreeAttributes } from '../../../utils/treesV2';
+import { InstancedTree } from './InstancedTree';
+import { TREE_SPECIES } from './species';
 import { useTreesV2Controls } from './useTreesV2Controls';
 
 type Props = {
-    birchesCount: number;
-    maplesCount: number;
-    oaksCount: number;
+    count: number;
 };
 
-export function TreesV2({ birchesCount, maplesCount, oaksCount }: Props) {
+export function TreesV2({ count }: Props) {
     useTreesV2Controls();
 
-    // All three species read one uTime, so it is advanced here rather than in
-    // each of them -- three components each adding delta would run the wind at
-    // triple speed.
     useFrame((_, delta) => {
         foliageUniforms.uTime.value += delta;
     });
 
+    const treesBySpecies = useMemo(() => getTreeAttributes(count), [count]);
+
     return (
         <>
-            <InstancedBirches count={birchesCount} />
-            <InstancedMaples count={maplesCount} />
-            <InstancedOaks count={oaksCount} />
+            {TREE_SPECIES.map((species) => (
+                <InstancedTree
+                    key={species.name}
+                    trees={treesBySpecies[species.name]}
+                    species={species}
+                />
+            ))}
         </>
     );
 }

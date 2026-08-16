@@ -10,8 +10,8 @@ import {
     canopyDepthMaterial,
 } from '../../../materials/foliage/foliageMaterials';
 import useGame from '../../../store/useGame';
-import { writeInstanceMatrices } from '../../../utils/instances';
-import { getTreeAttributes, type TreePlacement } from '../../../utils/treesV2';
+import { type Instance, writeInstanceMatrices } from '../../../utils/instances';
+import { type TreeSpeciesName } from '../../../utils/treesV2';
 import { recycleInstances } from '../../../utils/foliageField';
 
 /**
@@ -20,6 +20,7 @@ import { recycleInstances } from '../../../utils/foliageField';
  * InstancedMeshes -- one per part.
  */
 export type TreeSpecies = {
+    name: TreeSpeciesName;
     /** Path to the .glb. */
     model: string;
     /** The leafy part: swayed by the wind shader, cut out by its own mask. */
@@ -33,22 +34,18 @@ export type TreeSpecies = {
         node: string;
         material: CustomShaderMaterial;
     }>;
-    placement: TreePlacement;
 };
 
-// The species supplies the node names, so the loader's exact typing buys us
-// nothing here -- but a missing name should fail loudly rather than as
-// "cannot read property geometry of undefined".
 type GLTFResult = GLTF & {
     nodes: Record<string, THREE.Mesh | undefined>;
 };
 
 type Props = {
-    count: number;
+    trees: Instance[];
     species: TreeSpecies;
 };
 
-export function InstancedTree({ count, species }: Props) {
+export function InstancedTree({ trees, species }: Props) {
     const meshRefs = useRef<Array<THREE.InstancedMesh | null>>([]);
     const playerPosition = useGame((state) => state.playerPosition);
 
@@ -89,13 +86,6 @@ export function InstancedTree({ count, species }: Props) {
             })),
         ];
     }, [nodes, species]);
-
-    // One transform list for the whole tree, written into every part, so canopy
-    // and trunk can never drift apart.
-    const trees = useMemo(
-        () => getTreeAttributes(species.placement, count),
-        [species, count],
-    );
 
     useLayoutEffect(() => {
         for (const mesh of meshRefs.current) {
