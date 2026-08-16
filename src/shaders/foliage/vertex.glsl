@@ -30,6 +30,10 @@ void main() {
     // every vertex lands on the same point and the triangles drop out.
     csm_Position.xyz *= (1.0 - lakeCull(groundXZ));
 
+    // No trees on the road
+    float roadMask = getRoadMask(groundXZ);
+    csm_Position.xyz *= (1.0 - step(0.5, roadMask));
+
     // Final position
     csm_Position.y += groundingOffsetY(worldMatrix, uPlayerPosition);
 

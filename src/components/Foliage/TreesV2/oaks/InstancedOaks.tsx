@@ -15,7 +15,7 @@ const oak: TreeSpecies = {
     },
     bark: [{ node: 'oak', material: oakBarkMaterial }],
     placement: {
-        seed: 'oaks3',
+        seed: 'oaks4',
         baseScale: OAK_BASE_SCALE,
         rotation: -Math.PI / 2,
     },

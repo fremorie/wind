@@ -15,7 +15,7 @@ const maple: TreeSpecies = {
     },
     bark: [{ node: 'maple', material: mapleBarkMaterial }],
     placement: {
-        seed: 'maples',
+        seed: 'maples2',
         baseScale: MAPLE_BASE_SCALE,
         rotation: -Math.PI / 2,
     },

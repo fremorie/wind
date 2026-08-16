@@ -8,19 +8,8 @@ import {
 } from './constants';
 import { type Instance } from './instances';
 
-// The road centreline sits at z = ROAD_CENTER_Z and only ever wavers
-// +/- uRoadAmplitude along it (see roadCenterZ in elevation.ts), so the strip
-// it can ever occupy is a fixed band in z that does not depend on x. Clearing
-// that whole band once is therefore enough to keep foliage off the road for
-// every x -- which is what lets a recycled instance wrap freely along x without
-// ever landing on the road.
-const ROAD_CENTER_Z = GRID_TOTAL_WIDTH / 2;
 const ROAD_MARGIN = 1;
 const ROAD_CLEARANCE = uRoadWidth + uRoadAmplitude + ROAD_MARGIN;
-
-export function isNearRoad(z: number): boolean {
-    return Math.abs(z - ROAD_CENTER_Z) < ROAD_CLEARANCE;
-}
 
 // The lake, unlike the road, is a fixed point in the world (not an x-invariant
 // band) and does not tile, so it can't be cleared from the base scatter -- the
@@ -41,8 +30,6 @@ export function scatterPositions(
     while (positions.length < count) {
         const x = rng() * GRID_TOTAL_DEPTH;
         const z = rng() * GRID_TOTAL_WIDTH;
-
-        if (isNearRoad(z)) continue;
 
         positions.push([x, z]);
     }
@@ -237,7 +224,6 @@ function poissonDiskPass(
             const x = rng() * width;
             const z = rng() * depth;
 
-            if (isNearRoad(z)) continue;
             if (isFarEnough(x, z)) return [x, z];
         }
 
@@ -270,7 +256,6 @@ function poissonDiskPass(
                     depth,
                 );
 
-                if (isNearRoad(z)) continue;
                 if (!isFarEnough(x, z)) continue;
 
                 active.push(accept(x, z));

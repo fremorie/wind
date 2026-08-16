@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { alea } from 'seedrandom';
 
-import { isNearRoad, scatterPositionsSpaced } from './foliageField';
+import { scatterPositionsSpaced } from './foliageField';
 import { GRID_TOTAL_DEPTH, GRID_TOTAL_WIDTH } from './constants';
 
 // The tile wraps, so spacing has to be measured the way the world sees it.
@@ -45,7 +45,6 @@ describe('scatterPositionsSpaced', () => {
             expect(x).toBeLessThan(GRID_TOTAL_DEPTH);
             expect(z).toBeGreaterThanOrEqual(0);
             expect(z).toBeLessThan(GRID_TOTAL_WIDTH);
-            expect(isNearRoad(z)).toBe(false);
         }
     });
 
