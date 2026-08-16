@@ -1,9 +1,12 @@
+uniform float uTime;
+
 uniform vec2 uPlayerPosition;
 uniform vec3 uRoadCenter;
 uniform float uLakeCenterX;
 uniform float uLakeCenterZ;
 
 #include "../includes/groundInstance.glsl"
+#include "../includes/growth.glsl"
 
 void main() {
     mat4 worldMatrix = modelMatrix * instanceMatrix;
@@ -16,6 +19,8 @@ void main() {
     // No trees on the road
     float roadMask = getRoadMask(groundXZ);
     csm_Position.xyz *= (1.0 - step(0.5, roadMask));
+
+    csm_Position.xyz *= instanceGrowth(uTime);
 
     // Final position
     csm_Position.y += groundingOffsetY(worldMatrix, uPlayerPosition);

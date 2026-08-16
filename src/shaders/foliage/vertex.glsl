@@ -9,6 +9,7 @@ uniform float uLakeCenterZ;
 varying vec3 vLocalPosition;
 
 #include "../includes/groundInstance.glsl"
+#include "../includes/growth.glsl"
 
 void main() {
     float uWorldNoiseScale = 2.0;
@@ -33,6 +34,8 @@ void main() {
     // No trees on the road
     float roadMask = getRoadMask(groundXZ);
     csm_Position.xyz *= (1.0 - step(0.5, roadMask));
+
+    csm_Position.xyz *= instanceGrowth(uTime);
 
     // Final position
     csm_Position.y += groundingOffsetY(worldMatrix, uPlayerPosition);

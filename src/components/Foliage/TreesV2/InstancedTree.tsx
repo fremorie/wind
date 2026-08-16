@@ -8,9 +8,15 @@ import type CustomShaderMaterial from 'three-custom-shader-material/vanilla';
 import {
     barkDepthMaterial,
     canopyDepthMaterial,
+    foliageUniforms,
 } from '../../../materials/foliage/foliageMaterials';
 import useGame from '../../../store/useGame';
-import { type Instance, writeInstanceMatrices } from '../../../utils/instances';
+import {
+    createSpawnTimes,
+    stampSpawnTime,
+    type Instance,
+    writeInstanceMatrices,
+} from '../../../utils/instances';
 import { type TreeSpeciesName } from '../../../utils/treesV2';
 import { recycleInstances } from '../../../utils/foliageField';
 
@@ -87,6 +93,18 @@ export function InstancedTree({ trees, species }: Props) {
         ];
     }, [nodes, species]);
 
+    // One attribute per species: every part of a tree has to grow in step.
+    const spawnTimes = useMemo(
+        () => createSpawnTimes(trees.length),
+        [trees.length],
+    );
+
+    useLayoutEffect(() => {
+        for (const part of parts) {
+            part.geometry.setAttribute('aSpawnTime', spawnTimes);
+        }
+    }, [parts, spawnTimes]);
+
     useLayoutEffect(() => {
         for (const mesh of meshRefs.current) {
             if (mesh) writeInstanceMatrices(mesh, trees);
@@ -98,6 +116,8 @@ export function InstancedTree({ trees, species }: Props) {
             trees,
             playerPosition.x,
             playerPosition.z,
+            (index) =>
+                stampSpawnTime(spawnTimes, index, foliageUniforms.uTime.value),
         );
 
         if (!moved) return;

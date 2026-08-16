@@ -80,15 +80,20 @@ function recycleXZ(
     return true;
 }
 
+// `onRecycled` reports each wrapped index: InstancedTree stamps a spawn time.
 export function recycleInstances(
     instances: Instance[],
     playerX: number,
     playerZ: number,
+    onRecycled?: (index: number) => void,
 ): boolean {
     let changed = false;
 
-    for (const instance of instances) {
-        if (recycleXZ(instance.position, playerX, playerZ)) changed = true;
+    for (let i = 0; i < instances.length; i++) {
+        if (!recycleXZ(instances[i].position, playerX, playerZ)) continue;
+
+        onRecycled?.(i);
+        changed = true;
     }
 
     return changed;

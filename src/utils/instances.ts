@@ -40,3 +40,24 @@ export function writeInstanceMatrices(
     }
     mesh.instanceMatrix.needsUpdate = true;
 }
+
+/** Long enough ago that the shader's growth has finished by the first frame. */
+const FULLY_GROWN = -1000;
+
+/** Per-instance spawn times, read by includes/growth.glsl. All start grown. */
+export function createSpawnTimes(count: number) {
+    return new THREE.InstancedBufferAttribute(
+        new Float32Array(count).fill(FULLY_GROWN),
+        1,
+    );
+}
+
+/** Restarts one instance's growth, as of `time` on the shader's clock. */
+export function stampSpawnTime(
+    spawnTimes: THREE.InstancedBufferAttribute,
+    index: number,
+    time: number,
+) {
+    spawnTimes.setX(index, time);
+    spawnTimes.needsUpdate = true;
+}
