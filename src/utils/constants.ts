@@ -74,7 +74,7 @@ export const WORLD_SETTINGS = {
     uRoadAmplitude: 3.46,
     uRoadWaviness: 0.06,
     uRoadFalloff: 5,
-    uRoadPeriod: GRID_TOTAL_WIDTH * 2,
+    uRoadPeriod: GRID_TOTAL_WIDTH * 2.5,
 
     // Side road
     uSideRoadX: SIDE_ROAD_X,
