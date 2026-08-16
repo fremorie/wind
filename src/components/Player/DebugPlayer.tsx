@@ -1,37 +1,41 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
+import { RigidBody, type RapierRigidBody } from '@react-three/rapier';
 import { useKeyboardControls } from '@react-three/drei';
-import { type Mesh } from 'three';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 import useGame from '../../store/useGame';
 import { terrainMaterial } from '../../materials/terrainMaterial';
-import {
-    updateCamera,
-    updatePlayerDirection,
-    updatePlayerPitchAndYaw,
-    updatePlayerPosition,
-} from '../../utils/player';
+import { updateCamera, updatePlayerDirection } from '../../utils/player';
 import { waterSurfaceMaterial } from '../../materials/waterSurfaceMaterial';
 import { treeMaterial } from '../../materials/treeMaterial';
 import { bushMaterial } from '../../materials/bushMaterial';
 import { foliageUniforms } from '../../materials/foliage/foliageMaterials';
 import { farmUniforms } from '../../materials/farmMaterial';
 
+const TORQUE_STRENGTH = 50;
+const IMPULSE_STRENGTH = 10;
+
 export function DebugPlayer() {
-    const playerMeshRef = useRef<Mesh>(null);
     const [, getKeys] = useKeyboardControls();
 
     const playerPosition = useGame((state) => state.playerPosition);
     const joystick = useGame((state) => state.joystick);
     const playerDirection = useRef<THREE.Vector3>(null);
 
+    const playerBodyRef = useRef<RapierRigidBody>(null);
+
+    const [spawnPosition] = useState<[number, number, number]>(() => [
+        playerPosition.x,
+        10,
+        playerPosition.z,
+    ]);
+
     useFrame((state, delta) => {
-        if (!playerMeshRef.current) {
+        const body = playerBodyRef.current;
+        if (!body) {
             return;
         }
-
-        playerMeshRef.current.rotation.order = 'YXZ';
 
         const { forward, backward, leftward, rightward } = getKeys();
 
@@ -41,28 +45,32 @@ export function DebugPlayer() {
 
         updatePlayerDirection(
             playerDirection.current,
-            {
-                forward,
-                backward,
-                leftward,
-                rightward,
-            },
+            { forward, backward, leftward, rightward },
             joystick,
         );
 
-        updatePlayerPosition(
-            playerPosition,
-            playerDirection,
-            playerMeshRef,
-            delta,
+        const direction = playerDirection.current;
+
+        body.applyTorqueImpulse(
+            {
+                x: direction.z * TORQUE_STRENGTH * delta,
+                y: 0,
+                z: -direction.x * TORQUE_STRENGTH * delta,
+            },
+            true,
         );
 
-        updatePlayerPitchAndYaw(
-            playerDirection,
-            playerMeshRef,
-            playerPosition,
-            delta,
+        body.applyImpulse(
+            {
+                x: direction.x * IMPULSE_STRENGTH * delta,
+                y: 0,
+                z: direction.z * IMPULSE_STRENGTH * delta,
+            },
+            true,
         );
+
+        const { x, y, z } = body.translation();
+        playerPosition.set(x, y, z);
 
         terrainMaterial.uniforms.uPlayerPosition.value.set(
             playerPosition.x,
@@ -98,11 +106,20 @@ export function DebugPlayer() {
     });
 
     return (
-        <group ref={playerMeshRef} position={playerPosition}>
+        <RigidBody
+            ref={playerBodyRef}
+            linearDamping={0.5}
+            angularDamping={0.5}
+            canSleep={false}
+            colliders="ball"
+            position={spawnPosition}
+            restitution={0.2}
+            friction={1}
+        >
             <mesh castShadow receiveShadow>
                 <icosahedronGeometry args={[1, 1]} />
                 <meshStandardMaterial color="mediumpurple" />
             </mesh>
-        </group>
+        </RigidBody>
     );
 }

@@ -1,6 +1,7 @@
 import { OrbitControls } from '@react-three/drei';
+import { Physics } from '@react-three/rapier';
 
-import { Terrain } from '../components/Terrain';
+import { Terrain, TerrainCollider } from '../components/Terrain';
 import { DebugPlayer, Player } from '../components/Player';
 import { Environment } from './Environment';
 import { Grass } from '../components/Grass';
@@ -19,22 +20,27 @@ export function Experience() {
     return (
         <>
             <OrbitControls makeDefault />
-            <Environment />
 
-            {debug && <axesHelper />}
+            <Physics debug={debug}>
+                <Environment />
 
-            {debug ? <DebugPlayer /> : <Player />}
+                {debug && <axesHelper />}
 
-            <Terrain />
-            <Grass />
-            <WaterSurface />
-            <Cow />
-            <WindFarm />
-            <TreesV2 count={TREES_V2_COUNT} />
+                {debug ? <DebugPlayer /> : <Player />}
 
-            <Farm />
+                <Terrain />
+                <TerrainCollider />
 
-            <RoadSign />
+                <Grass />
+                <WaterSurface />
+                <Cow />
+                <WindFarm />
+                <TreesV2 count={TREES_V2_COUNT} />
+
+                <Farm />
+
+                <RoadSign />
+            </Physics>
         </>
     );
 }
