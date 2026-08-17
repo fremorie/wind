@@ -1,7 +1,7 @@
 import { getElevation } from '../../utils/elevation';
 
-export const PATCH_SIZE = 16;
-export const SUBDIVS = 16;
+export const PATCH_SIZE = 32;
+export const SUBDIVS = 8;
 export const RECENTER_STEP = 4;
 
 export const SAMPLES_PER_AXIS = SUBDIVS + 1;
