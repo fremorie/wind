@@ -16,14 +16,53 @@ import {
     CHASSIS_HALF_EXTENTS,
     CHASSIS_LINEAR_DAMPING,
     CHASSIS_MASS_PROPERTIES,
+    CRANK_PIVOT,
+    FRAME_POSITION,
+    FRONT_WHEEL_OFFSET,
     MODEL_PATH,
-    MODEL_YAW,
+    MODEL_SCALE,
+    PEDAL_LEFT_OFFSET,
+    PEDAL_RIGHT_OFFSET,
+    REAR_WHEEL_POSITION,
+    STEER_PIVOT,
 } from './constants';
 import { type BicycleGLTF } from './types';
+import { useBicycleVisuals } from './useBicycleVisuals';
 import { useVehicleController } from './useVehicleController';
 import { useVehicleDrive } from './useVehicleDrive';
-import { useWheelVisuals } from './useWheelVisuals';
 import { spawnPositionFor } from './utils';
+
+type WheelProps = Pick<BicycleGLTF, 'nodes' | 'materials'> & {
+    part: 'WheelFront' | 'WheelRear';
+};
+
+function Wheel({ nodes, materials, part }: WheelProps) {
+    return (
+        <>
+            <mesh
+                castShadow
+                receiveShadow
+                scale={MODEL_SCALE}
+                geometry={nodes[`${part}_1`].geometry}
+                material={materials.TireInner}
+            />
+            <mesh
+                castShadow
+                receiveShadow
+                scale={MODEL_SCALE}
+                geometry={nodes[`${part}_2`].geometry}
+                material={materials.Tire}
+            />
+            <mesh
+                castShadow
+                receiveShadow
+                scale={MODEL_SCALE}
+                geometry={nodes[`${part}_3`].geometry}
+                material={materials.Metal}
+            />
+        </>
+    );
+}
 
 export function BicycleVehicle() {
     const { nodes, materials } = useGLTF(MODEL_PATH) as unknown as BicycleGLTF;
@@ -35,8 +74,16 @@ export function BicycleVehicle() {
 
     const controllerRef = useVehicleController(chassisRef);
     const steerAngle = useVehicleDrive(controllerRef, chassisRef);
-    const { frontWheelRef, rearWheelRef, updateWheelVisuals } =
-        useWheelVisuals();
+    const {
+        bikeRef,
+        steeringRef,
+        frontWheelRef,
+        rearWheelRef,
+        crankRef,
+        pedalLeftRef,
+        pedalRightRef,
+        updateBicycleVisuals,
+    } = useBicycleVisuals();
 
     const [spawn] = useState(() =>
         spawnPositionFor(playerPosition.x, playerPosition.z),
@@ -62,7 +109,7 @@ export function BicycleVehicle() {
         const controller = controllerRef.current;
 
         if (controller) {
-            updateWheelVisuals(controller, steerAngle.current, delta);
+            updateBicycleVisuals(controller, steerAngle.current, delta);
         }
     });
 
@@ -82,32 +129,95 @@ export function BicycleVehicle() {
 
             <object3D ref={chassisObjectRef} />
 
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={nodes.Cube.geometry}
-                material={nodes.Cube.material}
-                rotation-y={MODEL_YAW}
-            />
+            {/* the whole bike drops by the current suspension length */}
+            <group ref={bikeRef}>
+                <group position={FRAME_POSITION}>
+                    <mesh
+                        castShadow
+                        receiveShadow
+                        scale={MODEL_SCALE}
+                        geometry={nodes.Frame_1.geometry}
+                        material={materials.Handle}
+                    />
+                    <mesh
+                        castShadow
+                        receiveShadow
+                        scale={MODEL_SCALE}
+                        geometry={nodes.Frame_2.geometry}
+                        material={materials.Rim}
+                    />
+                    <mesh
+                        castShadow
+                        receiveShadow
+                        scale={MODEL_SCALE}
+                        geometry={nodes.Frame_3.geometry}
+                        material={materials.Metal}
+                    />
+                </group>
 
-            <group ref={frontWheelRef}>
-                <mesh
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.WheelFront.geometry}
-                    material={materials.PlaceholderFront}
-                    rotation-y={MODEL_YAW}
-                />
-            </group>
+                <group ref={crankRef} position={CRANK_PIVOT}>
+                    <mesh
+                        castShadow
+                        receiveShadow
+                        scale={MODEL_SCALE}
+                        geometry={nodes.Crank.geometry}
+                        material={materials.Metal}
+                    />
 
-            <group ref={rearWheelRef}>
-                <mesh
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.WheelRear.geometry}
-                    material={materials.PlaceholderRear}
-                    rotation-y={MODEL_YAW}
-                />
+                    <group ref={pedalLeftRef} position={PEDAL_LEFT_OFFSET}>
+                        <mesh
+                            castShadow
+                            receiveShadow
+                            scale={MODEL_SCALE}
+                            geometry={nodes.PedalLeft.geometry}
+                            material={materials.Pedal}
+                        />
+                    </group>
+
+                    <group ref={pedalRightRef} position={PEDAL_RIGHT_OFFSET}>
+                        <mesh
+                            castShadow
+                            receiveShadow
+                            scale={MODEL_SCALE}
+                            geometry={nodes.PedalRight.geometry}
+                            material={materials.Pedal}
+                        />
+                    </group>
+                </group>
+
+                {/* fork, stem and bar, with the front wheel hanging off them */}
+                <group ref={steeringRef} position={STEER_PIVOT}>
+                    <mesh
+                        castShadow
+                        receiveShadow
+                        scale={MODEL_SCALE}
+                        geometry={nodes.HandleBar_1.geometry}
+                        material={materials.Handle}
+                    />
+                    <mesh
+                        castShadow
+                        receiveShadow
+                        scale={MODEL_SCALE}
+                        geometry={nodes.HandleBar_2.geometry}
+                        material={materials.Rim}
+                    />
+
+                    <group ref={frontWheelRef} position={FRONT_WHEEL_OFFSET}>
+                        <Wheel
+                            nodes={nodes}
+                            materials={materials}
+                            part="WheelFront"
+                        />
+                    </group>
+                </group>
+
+                <group ref={rearWheelRef} position={REAR_WHEEL_POSITION}>
+                    <Wheel
+                        nodes={nodes}
+                        materials={materials}
+                        part="WheelRear"
+                    />
+                </group>
             </group>
         </RigidBody>
     );

@@ -1,11 +1,61 @@
-export const MODEL_PATH = './models/bicyclePlaceholder/BicyclePlaceholder.glb';
-export const MODEL_YAW = Math.PI / 2;
+export const MODEL_PATH = './models/bicycle/MyVeryOwnBicycle.glb';
 
 export const PHYSICS_TIME_STEP = 1 / 60;
 
 export const WHEEL_RADIUS = 1;
-export const WHEELBASE_HALF = 1.15;
 export const TRACK_HALF = 0.6;
+
+/**
+ * Where each part sits in the .glb, straight from its node translation. The
+ * model is already in chassis space - forward +X, up +Y, axle +Z, origin midway
+ * between the axles at axle height - so no yaw correction is needed, only a
+ * uniform scale to bring its 1.377 wheel radius down to WHEEL_RADIUS.
+ */
+const MODEL_WHEEL_RADIUS = 1.377;
+const MODEL_FRONT_AXLE_X = 2.1046;
+const MODEL_REAR_AXLE_X = -2.0868;
+const MODEL_FRAME: Position = [-0.7379, 1.9249, 0];
+const MODEL_HANDLE_BAR: Position = [1.6436, 2.4293, 0.001];
+const MODEL_CRANK: Position = [-0.28, -0.1091, -0.0016];
+const MODEL_PEDAL_LEFT: Position = [-0.28, -0.5127, -0.7784];
+const MODEL_PEDAL_RIGHT: Position = [-0.28, 0.2919, 0.7746];
+
+type Position = [number, number, number];
+
+export const MODEL_SCALE = WHEEL_RADIUS / MODEL_WHEEL_RADIUS;
+
+export const WHEELBASE_HALF =
+    ((MODEL_FRONT_AXLE_X - MODEL_REAR_AXLE_X) / 2) * MODEL_SCALE;
+
+function scaled([x, y, z]: Position): Position {
+    return [x * MODEL_SCALE, y * MODEL_SCALE, z * MODEL_SCALE];
+}
+
+function relativeTo(part: Position, pivot: Position): Position {
+    return scaled([part[0] - pivot[0], part[1] - pivot[1], part[2] - pivot[2]]);
+}
+
+export const FRAME_POSITION = scaled(MODEL_FRAME);
+export const STEER_PIVOT = scaled(MODEL_HANDLE_BAR);
+export const CRANK_PIVOT = scaled(MODEL_CRANK);
+export const PEDAL_LEFT_OFFSET = relativeTo(MODEL_PEDAL_LEFT, MODEL_CRANK);
+export const PEDAL_RIGHT_OFFSET = relativeTo(MODEL_PEDAL_RIGHT, MODEL_CRANK);
+
+/**
+ * The front wheel hangs off the steering group so it swings with the fork, so
+ * its offset is measured from the steer pivot rather than from the chassis. Both
+ * axles are pinned to WHEELBASE_HALF, which absorbs the 0.009 the modelled axles
+ * are off centre.
+ */
+export const FRONT_WHEEL_OFFSET: Position = [
+    WHEELBASE_HALF - STEER_PIVOT[0],
+    -STEER_PIVOT[1],
+    -STEER_PIVOT[2],
+];
+export const REAR_WHEEL_POSITION: Position = [-WHEELBASE_HALF, 0, 0];
+
+/** Crank turns per wheel turn - a bicycle pedals far slower than it rolls. */
+export const CRANK_GEAR_RATIO = 0.4;
 
 export const FRONT_WHEELS = [0, 1];
 export const REAR_WHEELS = [2, 3];

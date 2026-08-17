@@ -96,12 +96,6 @@ export function Bicycle(props: ThreeElements['group']) {
                     geometry={nodes.WheelFront_3.geometry}
                     material={materials.Metal}
                 />
-                <mesh
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.WheelFront_4.geometry}
-                    material={nodes.WheelFront_4.material}
-                />
             </group>
             <group position={[-2.087, 0, 0]}>
                 <mesh
@@ -121,12 +115,6 @@ export function Bicycle(props: ThreeElements['group']) {
                     receiveShadow
                     geometry={nodes.WheelRear_3.geometry}
                     material={materials.Metal}
-                />
-                <mesh
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.WheelRear_4.geometry}
-                    material={nodes.WheelRear_4.material}
                 />
             </group>
         </group>
