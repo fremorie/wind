@@ -17,48 +17,120 @@ type GLTFResult = {
 
 export function Bicycle(props: ThreeElements['group']) {
     const { nodes, materials } = useGLTF(
-        './models/bicycle/Bicycle.glb',
+        './models/bicycle/MyVeryOwnBicycle.glb',
     ) as unknown as GLTFResult;
+
     return (
         <group {...props} dispose={null}>
             <mesh
                 castShadow
                 receiveShadow
-                geometry={nodes['Null1-Mesh'].geometry}
-                material={materials.default_Mat}
+                geometry={nodes.Crank.geometry}
+                material={materials.Metal}
+                position={[-0.28, -0.109, -0.002]}
+            />
+            <group position={[-0.738, 1.925, 0]}>
+                <mesh
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.Frame_1.geometry}
+                    material={materials.Handle}
+                />
+                <mesh
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.Frame_2.geometry}
+                    material={materials.Rim}
+                />
+                <mesh
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.Frame_3.geometry}
+                    material={materials.Metal}
+                />
+            </group>
+            <group position={[1.644, 2.429, 0.001]}>
+                <mesh
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.HandleBar_1.geometry}
+                    material={materials.Handle}
+                />
+                <mesh
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.HandleBar_2.geometry}
+                    material={materials.Rim}
+                />
+            </group>
+            <mesh
+                castShadow
+                receiveShadow
+                geometry={nodes.PedalLeft.geometry}
+                material={materials.Pedal}
+                position={[-0.28, -0.513, -0.778]}
             />
             <mesh
                 castShadow
                 receiveShadow
-                geometry={nodes['Null1-Mesh_1'].geometry}
-                material={materials['Mat.4']}
+                geometry={nodes.PedalRight.geometry}
+                material={materials.Pedal}
+                position={[-0.28, 0.292, 0.775]}
             />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={nodes['Null1-Mesh_2'].geometry}
-                material={materials['Mat.3']}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={nodes['Null1-Mesh_3'].geometry}
-                material={materials['Mat.1']}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={nodes['Null1-Mesh_4'].geometry}
-                material={materials.Mat}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={nodes['Null1-Mesh_5'].geometry}
-                material={materials['Mat.2']}
-            />
+            <group position={[2.105, 0, 0]}>
+                <mesh
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.WheelFront_1.geometry}
+                    material={materials.TireInner}
+                />
+                <mesh
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.WheelFront_2.geometry}
+                    material={materials.Tire}
+                />
+                <mesh
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.WheelFront_3.geometry}
+                    material={materials.Metal}
+                />
+                <mesh
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.WheelFront_4.geometry}
+                    material={nodes.WheelFront_4.material}
+                />
+            </group>
+            <group position={[-2.087, 0, 0]}>
+                <mesh
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.WheelRear_1.geometry}
+                    material={materials.TireInner}
+                />
+                <mesh
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.WheelRear_2.geometry}
+                    material={materials.Tire}
+                />
+                <mesh
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.WheelRear_3.geometry}
+                    material={materials.Metal}
+                />
+                <mesh
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.WheelRear_4.geometry}
+                    material={nodes.WheelRear_4.material}
+                />
+            </group>
         </group>
     );
 }
 
-useGLTF.preload('./models/bicycle/Bicycle.glb');
+useGLTF.preload('./models/bicycle/MyVeryOwnBicycle.glb');

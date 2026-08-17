@@ -100,7 +100,7 @@ export function Player() {
 
     return (
         <group ref={playerMeshRef} position={playerPosition}>
-            <Bicycle scale={0.005} position-y={0.2} />
+            <Bicycle position-y={0.35} scale={0.8} rotation-y={-Math.PI / 2} />
         </group>
     );
 }
