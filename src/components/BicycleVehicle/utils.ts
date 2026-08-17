@@ -9,7 +9,7 @@ import {
     WHEEL_RADIUS,
 } from './constants';
 
-export function wrapAngle(angle: number): number {
+function wrapAngle(angle: number): number {
     return Math.atan2(Math.sin(angle), Math.cos(angle));
 }
 

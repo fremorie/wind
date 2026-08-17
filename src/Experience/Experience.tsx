@@ -2,7 +2,6 @@ import { OrbitControls } from '@react-three/drei';
 import { Physics } from '@react-three/rapier';
 
 import { Terrain, TerrainCollider } from '../components/Terrain';
-import { Player } from '../components/Player';
 import { BicycleVehicle } from '../components/BicycleVehicle';
 import { Environment } from './Environment';
 import { Grass } from '../components/Grass';
@@ -27,7 +26,7 @@ export function Experience() {
 
                 {debug && <axesHelper />}
 
-                {debug ? <BicycleVehicle /> : <Player />}
+                <BicycleVehicle />
 
                 <Terrain />
                 <TerrainCollider />

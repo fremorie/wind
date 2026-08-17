@@ -36,7 +36,7 @@ Controls: **WASD** / arrow keys to ride. The camera follows the bicycle; drag to
 
 The two copies must agree or objects float. `src/utils/glslParity.test.ts` guards the shared constants by parsing `worldSettings.glsl` and comparing it against `constants.ts` — that's what the `/* Mirrored from GLSL! */` comment is asking for.
 
-**The horizon curves.** `curveWorld.glsl` bends the world down quadratically with distance from the player, so the landscape falls away like a small planet. Every displaced material applies it, which is why they all take a `uPlayerPosition` uniform (updated once per frame in `Player.tsx`).
+**The horizon curves.** `curveWorld.glsl` bends the world down quadratically with distance from the player, so the landscape falls away like a small planet. Every displaced material applies it, which is why they all take a `uPlayerPosition` uniform (updated once per frame in `BicycleVehicle.tsx`).
 
 **Grass, trees and bushes are instanced** and animated in the vertex shader — wind sway, curvature and terrain displacement all happen on the GPU. Materials are built with [three-custom-shader-material](https://github.com/FarazzShaikh/THREE-CustomShaderMaterial) so they keep Three.js lighting while injecting custom vertex work.
 
@@ -45,7 +45,7 @@ The two copies must agree or objects float. `src/utils/glslParity.test.ts` guard
 ```
 src/
   Experience/     scene root, sky and lighting
-  components/     one folder per world entity (Terrain, Grass, Foliage, WindFarm, Player, …)
+  components/     one folder per world entity (Terrain, Grass, Foliage, WindFarm, BicycleVehicle, …)
   materials/      CustomShaderMaterial instances, shared as module singletons
   shaders/        GLSL, with reusable chunks in shaders/includes/
   utils/          elevation, noise, instancing and placement math (+ tests)
