@@ -8,7 +8,6 @@ import { useGLTF } from '@react-three/drei';
 import { type GLTF } from 'three-stdlib';
 import CustomShaderMaterial from 'three-custom-shader-material/vanilla';
 
-import { FARM_BOUNDS, FARM_WIDTH } from '../../utils/constants';
 import {
     farmDepthMaterialMaterial,
     farmUniforms,
@@ -45,14 +44,7 @@ export function FarmModel() {
     }, [farmMaterial]);
 
     return (
-        <group
-            position={[
-                FARM_BOUNDS[0][0],
-                0,
-                FARM_BOUNDS[0][1] + FARM_WIDTH / 2,
-            ]}
-            dispose={null}
-        >
+        <group dispose={null}>
             <mesh
                 castShadow
                 receiveShadow

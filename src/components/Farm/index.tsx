@@ -1,1 +1,1 @@
-export { FarmModel as Farm } from './FarmModel';
+export { Farm } from './Farm';
