@@ -79,7 +79,17 @@ export const SUSPENSION_SMOOTHING = 10;
 export const FRICTION_SLIP = 10.5;
 export const SIDE_FRICTION_STIFFNESS = 1;
 
-export const CHASSIS_HALF_EXTENTS: [number, number, number] = [1, 0.25, 0.3];
+/**
+ * Long enough to reach past the wheels. The wheels are raycasts with no volume,
+ * so nothing but this box can block the bike horizontally - and the front wheel
+ * sits at WHEELBASE_HALF, so a shorter box would let the ray find the top of an
+ * obstacle before the bike could be stopped by it.
+ */
+export const CHASSIS_HALF_EXTENTS: [number, number, number] = [
+    WHEELBASE_HALF + 1.2,
+    0.25,
+    0.3,
+];
 export const CHASSIS_LINEAR_DAMPING = 0.05;
 export const CHASSIS_ANGULAR_DAMPING = 0.3;
 export const CHASSIS_MASS_PROPERTIES = {

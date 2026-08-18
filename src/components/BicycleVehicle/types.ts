@@ -5,6 +5,8 @@ export type VehicleController = ReturnType<
     RapierContext['world']['createVehicleController']
 >;
 
+export type Collider = ReturnType<RapierContext['world']['getCollider']>;
+
 export type BicycleGLTF = {
     nodes: {
         [key: string]: THREE.Mesh;

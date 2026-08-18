@@ -6,7 +6,7 @@ import { FARM_BOUNDS, FARM_WIDTH } from '../../utils/constants';
 export function Farm() {
     return (
         <RigidBody
-            restitution={0.2}
+            restitution={1}
             friction={0}
             type="fixed"
             colliders="cuboid"

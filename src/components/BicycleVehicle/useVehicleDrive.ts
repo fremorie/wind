@@ -2,6 +2,7 @@ import { useMemo, useRef, type RefObject } from 'react';
 import { useKeyboardControls } from '@react-three/drei';
 import {
     useBeforePhysicsStep,
+    useRapier,
     type RapierRigidBody,
 } from '@react-three/rapier';
 import * as THREE from 'three';
@@ -19,7 +20,7 @@ import {
     STEER_RESPONSE,
     UPRIGHT_EPSILON,
 } from './constants';
-import { type VehicleController } from './types';
+import { type Collider, type VehicleController } from './types';
 import { steerTowards } from './utils';
 
 const FORWARD = new THREE.Vector3(1, 0, 0);
@@ -78,6 +79,19 @@ export function useVehicleDrive(
 ) {
     const [, getKeys] = useKeyboardControls();
     const joystick = useGame((state) => state.joystick);
+    const { rapier } = useRapier();
+
+    /**
+     * The wheels ride on the terrain and on nothing else. A raycast wheel has no
+     * front face, so left unfiltered the suspension happily reads the top of the
+     * farm fence as ground and lifts the bike onto it - the bike climbs whatever
+     * it drives into instead of being stopped by it.
+     */
+    const ridesOn = useMemo(
+        () => (collider: Collider) =>
+            collider.shape.type === rapier.ShapeType.HeightField,
+        [rapier],
+    );
 
     const playerDirection = useMemo(() => new THREE.Vector3(), []);
     const steerAngle = useRef(0);
@@ -134,7 +148,12 @@ export function useVehicleDrive(
             controller.setWheelSteering(index, steerAngle.current);
         }
 
-        controller.updateVehicle(PHYSICS_TIME_STEP);
+        controller.updateVehicle(
+            PHYSICS_TIME_STEP,
+            undefined,
+            undefined,
+            ridesOn,
+        );
     });
 
     return steerAngle;
