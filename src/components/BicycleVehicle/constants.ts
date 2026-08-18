@@ -3,7 +3,6 @@ export const MODEL_PATH = './models/bicycle/MyVeryOwnBicycle.glb';
 export const PHYSICS_TIME_STEP = 1 / 60;
 
 export const WHEEL_RADIUS = 1;
-export const TRACK_HALF = 0.6;
 
 /**
  * Where each part sits in the .glb, straight from its node translation. The
@@ -57,8 +56,9 @@ export const REAR_WHEEL_POSITION: Position = [-WHEELBASE_HALF, 0, 0];
 /** Crank turns per wheel turn - a bicycle pedals far slower than it rolls. */
 export const CRANK_GEAR_RATIO = 0.4;
 
-export const FRONT_WHEELS = [0, 1];
-export const REAR_WHEELS = [2, 3];
+/** A bicycle has one wheel at each axle, added front first by the controller. */
+export const FRONT_WHEELS = [0];
+export const REAR_WHEELS = [1];
 export const WHEEL_COUNT = FRONT_WHEELS.length + REAR_WHEELS.length;
 
 export const SUSPENSION_DIRECTION = { x: 0, y: -1, z: 0 };
@@ -66,7 +66,12 @@ export const WHEEL_AXLE = { x: 0, y: 0, z: 1 };
 
 export const SUSPENSION_REST_LENGTH = 0.4;
 export const SUSPENSION_TRAVEL = 0.15;
-export const SUSPENSION_STIFFNESS = 90;
+/**
+ * Ride height and bump response both follow the total spring rate - wheel count
+ * times stiffness - so dropping from four wheels to two doubled this to keep the
+ * bike sitting and reacting exactly as it did before.
+ */
+export const SUSPENSION_STIFFNESS = 180;
 export const SUSPENSION_COMPRESSION_RATIO = 0.3;
 export const SUSPENSION_RELAXATION_RATIO = 1;
 export const SUSPENSION_SMOOTHING = 10;
@@ -83,6 +88,9 @@ export const CHASSIS_MASS_PROPERTIES = {
     principalAngularInertia: { x: 40, y: 60, z: 60 },
     angularInertiaLocalFrame: { x: 0, y: 0, z: 0, w: 1 },
 };
+
+/** Below this the chassis points too steeply to tell which way "upright" is. */
+export const UPRIGHT_EPSILON = 1e-4;
 
 export const ENGINE_FORCE = 400;
 export const BRAKE_FORCE = 60;

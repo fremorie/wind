@@ -10,7 +10,6 @@ import {
     SUSPENSION_REST_LENGTH,
     SUSPENSION_STIFFNESS,
     SUSPENSION_TRAVEL,
-    TRACK_HALF,
     WHEELBASE_HALF,
     WHEEL_AXLE,
     WHEEL_COUNT,
@@ -35,15 +34,13 @@ export function useVehicleController(
         const controller = world.createVehicleController(chassis);
 
         for (const x of [WHEELBASE_HALF, -WHEELBASE_HALF]) {
-            for (const z of [TRACK_HALF, -TRACK_HALF]) {
-                controller.addWheel(
-                    { x, y: 0, z },
-                    SUSPENSION_DIRECTION,
-                    WHEEL_AXLE,
-                    SUSPENSION_REST_LENGTH,
-                    WHEEL_RADIUS,
-                );
-            }
+            controller.addWheel(
+                { x, y: 0, z: 0 },
+                SUSPENSION_DIRECTION,
+                WHEEL_AXLE,
+                SUSPENSION_REST_LENGTH,
+                WHEEL_RADIUS,
+            );
         }
 
         const damping = suspensionDampingFor(SUSPENSION_STIFFNESS);
