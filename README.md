@@ -4,6 +4,9 @@ An endless bike ride across a procedurally generated landscape — grass, trees,
 
 Live: https://fremorie.github.io/wind/
 
+<img width="5005" height="2643" alt="Screenshot from 2026-08-18 22-42-57" src="https://github.com/user-attachments/assets/0f7eb27b-4f14-4771-b977-98239839387f" />
+
+
 ## Running it
 
 Requires Node (see `.nvmrc`).
