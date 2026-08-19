@@ -21,6 +21,10 @@ import { farmUniforms } from '../../materials/farmMaterial';
 
 export function Player() {
     const playerMeshRef = useRef<Mesh>(null);
+    const steeringRef = useRef<Mesh>(null);
+    const frontWheelRef = useRef<Mesh>(null);
+    const rearWheelRef = useRef<Mesh>(null);
+
     const [, getKeys] = useKeyboardControls();
 
     const playerPosition = useGame((state) => state.playerPosition);
@@ -100,7 +104,16 @@ export function Player() {
 
     return (
         <group ref={playerMeshRef} position={playerPosition}>
-            <Bicycle position-y={0.1} scale={0.8} rotation-y={-Math.PI / 2} />
+            <Bicycle
+                steeringRef={steeringRef}
+                frontWheelRef={frontWheelRef}
+                rearWheelRef={rearWheelRef}
+
+                // Group props
+                position-y={0.1}
+                scale={0.8}
+                rotation-y={-Math.PI / 2}
+            />
         </group>
     );
 }
