@@ -1,15 +1,9 @@
-import { RigidBody } from '@react-three/rapier';
-
 import { FarmModel } from './FarmModel';
 import { FARM_BOUNDS, FARM_WIDTH } from '../../utils/constants';
 
 export function Farm() {
     return (
-        <RigidBody
-            restitution={1}
-            friction={0}
-            type="fixed"
-            colliders="cuboid"
+        <group
             position={[
                 FARM_BOUNDS[0][0],
                 0,
@@ -17,6 +11,6 @@ export function Farm() {
             ]}
         >
             <FarmModel />
-        </RigidBody>
+        </group>
     );
 }
