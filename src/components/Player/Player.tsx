@@ -12,6 +12,7 @@ import {
     updatePlayerDirection,
     updatePlayerPitchAndYaw,
     updatePlayerPosition,
+    updatePlayerSpeed,
 } from '../../utils/player';
 import { Bicycle } from '../Bicycle';
 import { waterSurfaceMaterial } from '../../materials/waterSurfaceMaterial';
@@ -56,23 +57,19 @@ export function Player() {
             joystick,
         );
 
+        updatePlayerSpeed(playerDirection, delta);
+
         const steerAngle = getSteerAngle(playerDirection, playerMeshRef);
         steeringRef.current.rotation.y = steerAngle;
 
         updatePlayerPitchAndYaw(
-            playerDirection,
             playerMeshRef,
             playerPosition,
             steerAngle,
             delta,
         );
 
-        updatePlayerPosition(
-            playerPosition,
-            playerDirection,
-            playerMeshRef,
-            delta,
-        );
+        updatePlayerPosition(playerPosition, playerMeshRef, delta);
 
         terrainMaterial.uniforms.uPlayerPosition.value.set(
             playerPosition.x,

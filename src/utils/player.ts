@@ -8,6 +8,11 @@ const PITCH_DELTA = 1;
 const SPEED = 20;
 const JOYSTICK_DEADZONE = 0.15;
 
+const ACCELERATION = 8;
+const DECELERATION = 12;
+
+let currentSpeed = 0;
+
 const WHEELBASE = 4.191 * 0.8; // front axle to rear axle, times the <Bicycle> scale
 let currentYaw = 0;
 
@@ -25,6 +30,22 @@ const pitchQuaternion = new THREE.Quaternion();
 // Camera
 const cameraTargetPosition = new THREE.Vector3(0, 0, 0);
 const CAMERA_STIFFNESS = 10;
+
+export function updatePlayerSpeed(
+    playerDirection: RefObject<THREE.Vector3 | null>,
+    delta: number,
+) {
+    if (!playerDirection.current) return;
+
+    const targetSpeed = playerDirection.current.length() * SPEED;
+    const rate = targetSpeed > currentSpeed ? ACCELERATION : DECELERATION;
+
+    currentSpeed += THREE.MathUtils.clamp(
+        targetSpeed - currentSpeed,
+        -rate * delta,
+        rate * delta,
+    );
+}
 
 export function updatePlayerDirection(
     playerDirection: THREE.Vector3,
@@ -92,14 +113,13 @@ export function updateCamera(
 
 export function updatePlayerPosition(
     playerPosition: THREE.Vector3,
-    playerDirection: RefObject<THREE.Vector3 | null>,
     playerMeshRef: RefObject<THREE.Mesh | null>,
     delta: number,
 ) {
-    if (!playerMeshRef.current || !playerDirection.current) return;
+    if (!playerMeshRef.current) return;
 
     const yaw = playerMeshRef.current.rotation.y;
-    const speed = playerDirection.current.length() * SPEED;
+    const speed = currentSpeed;
 
     playerPosition.x += Math.sin(yaw) * speed * delta;
     playerPosition.z += Math.cos(yaw) * speed * delta;
@@ -145,17 +165,16 @@ export function getPlayerPitch(
 }
 
 export function updatePlayerPitchAndYaw(
-    playerDirection: RefObject<THREE.Vector3 | null>,
     playerMeshRef: RefObject<THREE.Mesh | null>,
     playerPosition: THREE.Vector3,
     steerAngle: number,
     delta: number,
 ) {
-    if (!playerMeshRef.current || !playerDirection.current) return;
+    if (!playerMeshRef.current) return;
 
     const pitch = getPlayerPitch(playerMeshRef, playerPosition);
 
-    const speed = playerDirection.current.length() * SPEED;
+    const speed = currentSpeed;
     currentYaw += ((speed * Math.tan(steerAngle)) / WHEELBASE) * delta;
     yawQuaternion.setFromAxisAngle(UP, currentYaw);
 
