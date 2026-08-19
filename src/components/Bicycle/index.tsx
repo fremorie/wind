@@ -17,7 +17,7 @@ type GLTFResult = {
 
 export function Bicycle(props: ThreeElements['group']) {
     const { nodes, materials } = useGLTF(
-        './models/bicycle/MyVeryOwnBicycle.glb',
+        './models/bicycle/BicycleDecimated.glb',
     ) as unknown as GLTFResult;
 
     return (
@@ -25,100 +25,54 @@ export function Bicycle(props: ThreeElements['group']) {
             <mesh
                 castShadow
                 receiveShadow
-                geometry={nodes.Crank.geometry}
-                material={materials.Metal}
-                position={[-0.28, -0.109, -0.002]}
-            />
-            <group position={[-0.738, 1.925, 0]}>
-                <mesh
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.Frame_1.geometry}
-                    material={materials.Handle}
-                />
-                <mesh
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.Frame_2.geometry}
-                    material={materials.Rim}
-                />
-                <mesh
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.Frame_3.geometry}
-                    material={materials.Metal}
-                />
-            </group>
-            <group position={[1.644, 2.429, 0.001]}>
-                <mesh
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.HandleBar_1.geometry}
-                    material={materials.Handle}
-                />
-                <mesh
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.HandleBar_2.geometry}
-                    material={materials.Rim}
-                />
-            </group>
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={nodes.PedalLeft.geometry}
-                material={materials.Pedal}
-                position={[-0.28, -0.513, -0.778]}
+                geometry={nodes.BackWheel.geometry}
+                material={materials.BicyclePalette}
+                position={[-2.086, 0, 0]}
             />
             <mesh
                 castShadow
                 receiveShadow
-                geometry={nodes.PedalRight.geometry}
-                material={materials.Pedal}
-                position={[-0.28, 0.292, 0.775]}
+                geometry={nodes.Frame.geometry}
+                material={materials.BicyclePalette}
+                position={[-0.279, -0.109, 0]}
             />
-            <group position={[2.105, 0, 0]}>
-                <mesh
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.WheelFront_1.geometry}
-                    material={materials.TireInner}
-                />
-                <mesh
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.WheelFront_2.geometry}
-                    material={materials.Tire}
-                />
-                <mesh
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.WheelFront_3.geometry}
-                    material={materials.Metal}
-                />
-            </group>
-            <group position={[-2.087, 0, 0]}>
-                <mesh
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.WheelRear_1.geometry}
-                    material={materials.TireInner}
-                />
-                <mesh
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.WheelRear_2.geometry}
-                    material={materials.Tire}
-                />
-                <mesh
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.WheelRear_3.geometry}
-                    material={materials.Metal}
-                />
-            </group>
+            <mesh
+                castShadow
+                receiveShadow
+                geometry={nodes.FrontWheel.geometry}
+                material={materials.BicyclePalette}
+                position={[2.105, 0, 0]}
+            />
+            <mesh
+                castShadow
+                receiveShadow
+                geometry={nodes.HandleBar.geometry}
+                material={materials.BicyclePalette}
+                position={[2.105, 0, 0.338]}
+            />
+            <mesh
+                castShadow
+                receiveShadow
+                geometry={nodes.LeftPedal.geometry}
+                material={materials.BicyclePalette}
+                position={[-0.279, -0.513, -0.778]}
+            />
+            <mesh
+                castShadow
+                receiveShadow
+                geometry={nodes.PedalRotor.geometry}
+                material={materials.BicyclePalette}
+                position={[-0.279, -0.109, -0.002]}
+            />
+            <mesh
+                castShadow
+                receiveShadow
+                geometry={nodes.RightPedal.geometry}
+                material={materials.BicyclePalette}
+                position={[-0.279, 0.292, 0.775]}
+            />
         </group>
     );
 }
 
-useGLTF.preload('./models/bicycle/MyVeryOwnBicycle.glb');
+useGLTF.preload('./models/bicycle/BicycleDecimated.glb');
