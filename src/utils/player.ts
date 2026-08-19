@@ -11,6 +11,9 @@ const JOYSTICK_DEADZONE = 0.15;
 const ACCELERATION = 8;
 const DECELERATION = 12;
 
+const STEER_SMOOTHING = 12;
+let currentSteer = 0;
+
 let currentSpeed = 0;
 
 const WHEELBASE = 4.191 * 0.8; // front axle to rear axle, times the <Bicycle> scale
@@ -203,4 +206,12 @@ export function getSteerAngle(
     const error = Math.atan2(Math.sin(difference), Math.cos(difference));
 
     return THREE.MathUtils.clamp(error * STEER_GAIN, -MAX_STEER, MAX_STEER);
+}
+
+export function updateSteerAngle(targetSteerAngle: number, delta: number) {
+    currentSteer +=
+        (targetSteerAngle - currentSteer) *
+        (1 - Math.exp(-STEER_SMOOTHING * delta));
+
+    return currentSteer;
 }

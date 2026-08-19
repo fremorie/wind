@@ -13,6 +13,7 @@ import {
     updatePlayerPitchAndYaw,
     updatePlayerPosition,
     updatePlayerSpeed,
+    updateSteerAngle,
 } from '../../utils/player';
 import { Bicycle } from '../Bicycle';
 import { waterSurfaceMaterial } from '../../materials/waterSurfaceMaterial';
@@ -60,7 +61,7 @@ export function Player() {
         updatePlayerSpeed(playerDirection, delta);
 
         const steerAngle = getSteerAngle(playerDirection, playerMeshRef);
-        steeringRef.current.rotation.y = steerAngle;
+        steeringRef.current.rotation.y = updateSteerAngle(steerAngle, delta);
 
         updatePlayerPitchAndYaw(
             playerMeshRef,
