@@ -69,8 +69,11 @@ export function Player() {
         frontWheelRef.current.rotation.z = spin;
         rearWheelRef.current.rotation.z = spin;
 
-        const steerAngle = getSteerAngle(playerDirection, playerMeshRef);
-        steeringRef.current.rotation.y = updateSteerAngle(steerAngle, delta);
+        const steerAngle = updateSteerAngle(
+            getSteerAngle(playerDirection, playerMeshRef),
+            delta,
+        );
+        steeringRef.current.rotation.y = steerAngle;
 
         updatePlayerPitchAndYaw(
             playerMeshRef,
@@ -123,6 +126,7 @@ export function Player() {
 
                 // Group props
                 position-y={0.1}
+                //position-z={1.669}
                 scale={0.8}
                 rotation-y={-Math.PI / 2}
             />

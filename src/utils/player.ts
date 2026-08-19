@@ -14,7 +14,7 @@ const JOYSTICK_DEADZONE = 0.15;
 const ACCELERATION = 8;
 const DECELERATION = 12;
 
-const STEER_SMOOTHING = 12;
+const STEER_SMOOTHING = 10;
 let currentSteer = 0;
 
 let currentSpeed = 0;
@@ -22,7 +22,7 @@ let currentSpeed = 0;
 const WHEELBASE = 4.191 * 0.8; // front axle to rear axle, times the <Bicycle> scale
 let currentYaw = 0;
 
-const MAX_STEER = 0.5;
+const MAX_STEER = 0.35;
 const STEER_GAIN = 1.5;
 
 const SPHERE_RADIUS = 1;
