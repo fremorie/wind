@@ -40,7 +40,7 @@ export function Bicycle({
                 receiveShadow
                 geometry={nodes.HandleBar.geometry}
                 material={materials.BicyclePalette}
-                position={[1.751, 1.499, 0]}
+                position={[1.546, 1.822, -0.001]}
             >
                 <mesh
                     ref={frontWheelRef}
@@ -48,7 +48,7 @@ export function Bicycle({
                     receiveShadow
                     geometry={nodes.FrontWheel.geometry}
                     material={materials.BicyclePalette}
-                    position={[0.354, -1.499, 0]}
+                    position={[0.559, -1.822, 0]}
                 />
             </mesh>
 

@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import useGame from '../../store/useGame';
 import { terrainMaterial } from '../../materials/terrainMaterial';
 import {
+    getSteerAngle,
     updateCamera,
     updatePlayerDirection,
     updatePlayerPitchAndYaw,
@@ -32,7 +33,7 @@ export function Player() {
     const playerDirection = useRef<THREE.Vector3>(null);
 
     useFrame((state, delta) => {
-        if (!playerMeshRef.current) {
+        if (!playerMeshRef.current || !steeringRef.current) {
             return;
         }
 
@@ -60,6 +61,11 @@ export function Player() {
             playerDirection,
             playerMeshRef,
             delta,
+        );
+
+        steeringRef.current.rotation.y = getSteerAngle(
+            playerDirection,
+            playerMeshRef,
         );
 
         updatePlayerPitchAndYaw(

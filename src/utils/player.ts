@@ -8,6 +8,9 @@ const PITCH_DELTA = 1;
 const SPEED = 20;
 const JOYSTICK_DEADZONE = 0.15;
 
+const MAX_STEER = 0.5;
+const STEER_GAIN = 1.5;
+
 const SPHERE_RADIUS = 1;
 const STIFFNESS = 10;
 
@@ -157,4 +160,23 @@ export function updatePlayerPitchAndYaw(
         yawQuaternion,
         pitchQuaternion,
     );
+}
+
+export function getSteerAngle(
+    playerDirection: RefObject<THREE.Vector3 | null>,
+    playerMeshRef: RefObject<THREE.Mesh | null>,
+) {
+    if (!playerMeshRef.current) return 0;
+
+    const targetSteerAngle = getPlayerDirectionAngle(
+        playerDirection,
+        playerMeshRef,
+    );
+    const currentSteerAngle = playerMeshRef.current.rotation.y;
+    const difference = targetSteerAngle - currentSteerAngle;
+
+    // [-PI, PI]
+    const error = Math.atan2(Math.sin(difference), Math.cos(difference));
+
+    return THREE.MathUtils.clamp(error * STEER_GAIN, -MAX_STEER, MAX_STEER);
 }
