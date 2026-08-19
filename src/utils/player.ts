@@ -4,6 +4,9 @@ import { type Camera } from '@react-three/fiber';
 
 import { getElevation } from './elevation';
 
+const WHEEL_RADIUS = 1.377 * 0.8; // model radius, times the <Bicycle> scale
+let currentSpin = 0;
+
 const PITCH_DELTA = 1;
 const SPEED = 20;
 const JOYSTICK_DEADZONE = 0.15;
@@ -214,4 +217,11 @@ export function updateSteerAngle(targetSteerAngle: number, delta: number) {
         (1 - Math.exp(-STEER_SMOOTHING * delta));
 
     return currentSteer;
+}
+
+export function updateWheelSpin(delta: number) {
+    currentSpin =
+        (currentSpin - (currentSpeed * delta) / WHEEL_RADIUS) % (Math.PI * 2);
+
+    return currentSpin;
 }

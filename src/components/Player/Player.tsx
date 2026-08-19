@@ -14,6 +14,7 @@ import {
     updatePlayerPosition,
     updatePlayerSpeed,
     updateSteerAngle,
+    updateWheelSpin,
 } from '../../utils/player';
 import { Bicycle } from '../Bicycle';
 import { waterSurfaceMaterial } from '../../materials/waterSurfaceMaterial';
@@ -35,7 +36,12 @@ export function Player() {
     const playerDirection = useRef<THREE.Vector3>(null);
 
     useFrame((state, delta) => {
-        if (!playerMeshRef.current || !steeringRef.current) {
+        if (
+            !playerMeshRef.current ||
+            !steeringRef.current ||
+            !frontWheelRef.current ||
+            !rearWheelRef.current
+        ) {
             return;
         }
 
@@ -59,6 +65,9 @@ export function Player() {
         );
 
         updatePlayerSpeed(playerDirection, delta);
+        const spin = updateWheelSpin(delta);
+        frontWheelRef.current.rotation.z = spin;
+        rearWheelRef.current.rotation.z = spin;
 
         const steerAngle = getSteerAngle(playerDirection, playerMeshRef);
         steeringRef.current.rotation.y = updateSteerAngle(steerAngle, delta);
