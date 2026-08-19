@@ -56,22 +56,21 @@ export function Player() {
             joystick,
         );
 
-        updatePlayerPosition(
-            playerPosition,
-            playerDirection,
-            playerMeshRef,
-            delta,
-        );
-
-        steeringRef.current.rotation.y = getSteerAngle(
-            playerDirection,
-            playerMeshRef,
-        );
+        const steerAngle = getSteerAngle(playerDirection, playerMeshRef);
+        steeringRef.current.rotation.y = steerAngle;
 
         updatePlayerPitchAndYaw(
             playerDirection,
             playerMeshRef,
             playerPosition,
+            steerAngle,
+            delta,
+        );
+
+        updatePlayerPosition(
+            playerPosition,
+            playerDirection,
+            playerMeshRef,
             delta,
         );
 

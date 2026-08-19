@@ -8,17 +8,18 @@ const PITCH_DELTA = 1;
 const SPEED = 20;
 const JOYSTICK_DEADZONE = 0.15;
 
+const WHEELBASE = 4.191 * 0.8; // front axle to rear axle, times the <Bicycle> scale
+let currentYaw = 0;
+
 const MAX_STEER = 0.5;
 const STEER_GAIN = 1.5;
 
 const SPHERE_RADIUS = 1;
-const STIFFNESS = 10;
 
 const UP = new THREE.Vector3(0, 1, 0);
 const RIGHT = new THREE.Vector3(1, 0, 0);
 
 const yawQuaternion = new THREE.Quaternion();
-const targetYawQuaternion = new THREE.Quaternion();
 const pitchQuaternion = new THREE.Quaternion();
 
 // Camera
@@ -97,8 +98,12 @@ export function updatePlayerPosition(
 ) {
     if (!playerMeshRef.current || !playerDirection.current) return;
 
-    playerPosition.x += playerDirection.current.x * SPEED * delta;
-    playerPosition.z += playerDirection.current.z * SPEED * delta;
+    const yaw = playerMeshRef.current.rotation.y;
+    const speed = playerDirection.current.length() * SPEED;
+
+    playerPosition.x += Math.sin(yaw) * speed * delta;
+    playerPosition.z += Math.cos(yaw) * speed * delta;
+
     playerPosition.y =
         getElevation(playerPosition.x, playerPosition.z) + SPHERE_RADIUS;
     playerMeshRef.current.position.copy(playerPosition);
@@ -143,16 +148,16 @@ export function updatePlayerPitchAndYaw(
     playerDirection: RefObject<THREE.Vector3 | null>,
     playerMeshRef: RefObject<THREE.Mesh | null>,
     playerPosition: THREE.Vector3,
+    steerAngle: number,
     delta: number,
 ) {
-    if (!playerMeshRef.current) return;
+    if (!playerMeshRef.current || !playerDirection.current) return;
 
-    const yaw = getPlayerDirectionAngle(playerDirection, playerMeshRef);
     const pitch = getPlayerPitch(playerMeshRef, playerPosition);
 
-    targetYawQuaternion.setFromAxisAngle(UP, yaw);
-    const t = 1 - Math.exp(-STIFFNESS * delta);
-    yawQuaternion.slerp(targetYawQuaternion, t);
+    const speed = playerDirection.current.length() * SPEED;
+    currentYaw += ((speed * Math.tan(steerAngle)) / WHEELBASE) * delta;
+    yawQuaternion.setFromAxisAngle(UP, currentYaw);
 
     pitchQuaternion.setFromAxisAngle(RIGHT, pitch);
 
