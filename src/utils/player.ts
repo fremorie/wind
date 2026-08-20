@@ -25,6 +25,8 @@ let currentYaw = 0;
 const MAX_STEER = 0.35;
 const STEER_GAIN = 1.5;
 
+export const CRANK_GEAR_RATIO = 0.4;
+
 const SPHERE_RADIUS = 1;
 
 const UP = new THREE.Vector3(0, 1, 0);
@@ -220,8 +222,7 @@ export function updateSteerAngle(targetSteerAngle: number, delta: number) {
 }
 
 export function updateWheelSpin(delta: number) {
-    currentSpin =
-        (currentSpin - (currentSpeed * delta) / WHEEL_RADIUS) % (Math.PI * 2);
+    currentSpin = currentSpin - (currentSpeed * delta) / WHEEL_RADIUS;
 
     return currentSpin;
 }

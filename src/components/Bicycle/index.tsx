@@ -20,12 +20,18 @@ type Props = {
     steeringRef: RefObject<THREE.Mesh | null>;
     frontWheelRef: RefObject<THREE.Mesh | null>;
     rearWheelRef: RefObject<THREE.Mesh | null>;
+    crankRef: RefObject<THREE.Mesh | null>;
+    leftPedalRef: RefObject<THREE.Mesh | null>;
+    rightPedalRef: RefObject<THREE.Mesh | null>;
 } & ThreeElements['group'];
 
 export function Bicycle({
     steeringRef,
     frontWheelRef,
     rearWheelRef,
+    crankRef,
+    leftPedalRef,
+    rightPedalRef,
     ...props
 }: Props) {
     const { nodes, materials } = useGLTF(
@@ -69,26 +75,30 @@ export function Bicycle({
             />
 
             <mesh
-                castShadow
-                receiveShadow
-                geometry={nodes.LeftPedal.geometry}
-                material={materials.BicyclePalette}
-                position={[-0.279, -0.513, -0.778]}
-            />
-            <mesh
+                ref={crankRef}
                 castShadow
                 receiveShadow
                 geometry={nodes.PedalRotor.geometry}
                 material={materials.BicyclePalette}
                 position={[-0.279, -0.109, -0.002]}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={nodes.RightPedal.geometry}
-                material={materials.BicyclePalette}
-                position={[-0.279, 0.292, 0.775]}
-            />
+            >
+                <mesh
+                    ref={leftPedalRef}
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.LeftPedal.geometry}
+                    material={materials.BicyclePalette}
+                    position={[0, -0.404, -0.777]}
+                />
+                <mesh
+                    ref={rightPedalRef}
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.RightPedal.geometry}
+                    material={materials.BicyclePalette}
+                    position={[0, 0.402, 0.776]}
+                />
+            </mesh>
         </group>
     );
 }

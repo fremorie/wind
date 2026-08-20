@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import useGame from '../../store/useGame';
 import { terrainMaterial } from '../../materials/terrainMaterial';
 import {
+    CRANK_GEAR_RATIO,
     getSteerAngle,
     updateCamera,
     updatePlayerDirection,
@@ -28,6 +29,9 @@ export function Player() {
     const steeringRef = useRef<Mesh>(null);
     const frontWheelRef = useRef<Mesh>(null);
     const rearWheelRef = useRef<Mesh>(null);
+    const crankRef = useRef<Mesh>(null);
+    const leftPedalRef = useRef<Mesh>(null);
+    const rightPedalRef = useRef<Mesh>(null);
 
     const [, getKeys] = useKeyboardControls();
 
@@ -40,7 +44,10 @@ export function Player() {
             !playerMeshRef.current ||
             !steeringRef.current ||
             !frontWheelRef.current ||
-            !rearWheelRef.current
+            !rearWheelRef.current ||
+            !crankRef.current ||
+            !leftPedalRef.current ||
+            !rightPedalRef.current
         ) {
             return;
         }
@@ -84,6 +91,12 @@ export function Player() {
 
         updatePlayerPosition(playerPosition, playerMeshRef, delta);
 
+        const crankAngle = spin * CRANK_GEAR_RATIO;
+
+        crankRef.current.rotation.z = crankAngle;
+        leftPedalRef.current.rotation.z = -crankAngle;
+        rightPedalRef.current.rotation.z = -crankAngle;
+
         terrainMaterial.uniforms.uPlayerPosition.value.set(
             playerPosition.x,
             playerPosition.z,
@@ -123,6 +136,9 @@ export function Player() {
                 steeringRef={steeringRef}
                 frontWheelRef={frontWheelRef}
                 rearWheelRef={rearWheelRef}
+                crankRef={crankRef}
+                leftPedalRef={leftPedalRef}
+                rightPedalRef={rightPedalRef}
 
                 // Group props
                 position-y={0.1}
