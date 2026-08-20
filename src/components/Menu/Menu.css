@@ -1,0 +1,375 @@
+/* A sheet of school exercise-book paper, shown as a centred modal.
+   
+   The whole illusion rests on one invariant: the ruled-line gradient period
+   must exactly equal the body line-height, and both must be in px. Anything
+   unitless or em-based drifts as soon as the font metrics change, and the
+   text starts floating off the lines. */
+
+.menu {
+    /* Design space. Everything inside the sheet is authored in px at this
+       size and the entire sheet is then scaled to fit. Paper does not
+       reflow, so neither do we - the line count is identical everywhere. */
+    --paper-w: 420px;
+    --paper-h: 560px;
+
+    --rule: 28px; /* == body line-height. Keep these two in lockstep. */
+    --margin-x: 56px;
+    --tab-w: 46px;
+
+    /* Tuned by eye for Patrick Hand at 19px: shifts the text down so its
+       baseline lands on the rule instead of hovering above it. Re-tune if
+       the body font or size changes. */
+    --baseline-nudge: 9px;
+
+    --paper: #fffdf5;
+    --ink: #2c3e6b;
+    --ink-soft: #6b7ba3;
+    --rule-blue: #a9c9e6;
+    --rule-blue-fade: #a9c9e600;
+    --margin-red: #e08a84;
+    --margin-red-fade: #e08a8400;
+
+    /* Ratio of available space to design size, clamped so the sheet never
+       scales *up* past its design size on a big monitor - it would only look
+       blurry and oversized. The 48px is breathing room at the edges.
+
+       tan(atan2(a, b)) is the CSS-native way to divide one length by another
+       and get back a plain number: calc() refuses to cancel units, and a
+       min() that mixes a number with lengths is invalid, which silently
+       drops the whole transform rather than just this value. */
+    --sheet-w: calc(var(--paper-w) + var(--tab-w));
+    --paper-scale: min(
+        1,
+        tan(atan2(calc(100vh - 48px), var(--paper-h))),
+        tan(atan2(calc(100vw - 48px), var(--sheet-w)))
+    );
+
+    /* The UA stylesheet fights every one of these: a dialog ships with a
+       border, padding, a white background and a max-width of
+       calc(100% - 6px). Strip them and let the sheet inside own the looks.
+       margin: auto is what centres a top-layer dialog in the viewport. */
+    margin: auto;
+    padding: 0;
+    border: none;
+    background: none;
+    max-width: none;
+    max-height: none;
+    overflow: visible;
+
+    /* display and overlay are discrete properties, so they normally flip on
+       the first frame - allow-discrete holds them until the fade finishes,
+       which is the only reason the closing animation is ever seen. */
+    opacity: 0;
+    scale: 0.96;
+    transition:
+        opacity 220ms ease,
+        scale 220ms ease,
+        display 220ms allow-discrete,
+        overlay 220ms allow-discrete;
+}
+
+.menu[open] {
+    opacity: 1;
+    scale: 1;
+}
+
+/* The open styles already apply on the frame the dialog enters the top
+   layer, so without a starting style there is nothing to transition *from*
+   and the sheet just appears. */
+@starting-style {
+    .menu[open] {
+        opacity: 0;
+        scale: 0.96;
+    }
+}
+
+/* ---------------------------------------------------------------- backdrop */
+
+/* ::backdrop is the dialog's own layer - no overlay div, and it always sits
+   directly beneath this dialog in the top layer whatever else is on screen. */
+.menu::backdrop {
+    background: rgba(24, 28, 40, 0.4);
+
+    opacity: 0;
+    transition:
+        opacity 220ms ease,
+        display 220ms allow-discrete,
+        overlay 220ms allow-discrete;
+}
+
+.menu[open]::backdrop {
+    opacity: 1;
+}
+
+@starting-style {
+    .menu[open]::backdrop {
+        opacity: 0;
+    }
+}
+
+/* ------------------------------------------------------------------- sheet */
+
+.menu-sheet {
+    display: flex;
+    align-items: flex-start;
+
+    /* A degree off square, so it reads as a sheet lying on the screen rather
+       than a rectangle painted onto it. */
+    transform: scale(var(--paper-scale)) rotate(-1.2deg);
+    transform-origin: center;
+}
+
+/* -------------------------------------------------------------------- tabs */
+
+.menu-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    margin-top: 42px;
+}
+
+.menu-tab {
+    width: var(--tab-w);
+    padding: 18px 0;
+
+    border: none;
+    border-radius: 10px 0 0 10px;
+    background: #f0e6cf;
+    box-shadow: -2px 2px 5px rgba(40, 40, 60, 0.18);
+
+    font-family: 'Caveat', cursive;
+    font-size: 21px;
+    color: var(--ink-soft);
+    cursor: pointer;
+
+    /* Divider tabs read bottom-to-top. vertical-rl alone reads top-to-bottom,
+       hence the extra half turn. */
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+
+    transition:
+        background 160ms ease,
+        color 160ms ease,
+        translate 160ms ease;
+}
+
+.menu-tab:hover {
+    color: var(--ink);
+}
+
+/* The active tab is part of the sheet: same paper, and nudged right so it
+   tucks under the page edge with no seam. */
+.menu-tab[aria-selected='true'] {
+    background: var(--paper);
+    color: var(--ink);
+    translate: 2px 0;
+    box-shadow: -3px 3px 6px rgba(40, 40, 60, 0.2);
+}
+
+/* ------------------------------------------------------------------- paper */
+
+.menu-paper {
+    position: relative;
+
+    width: var(--paper-w);
+    height: var(--paper-h);
+    box-sizing: border-box;
+    padding: calc(var(--rule) + var(--baseline-nudge)) 28px 0 72px;
+
+    box-shadow: 3px 6px 18px rgba(40, 40, 60, 0.28);
+
+    /* Layer order is paint order - first listed sits on top.
+       1. the red margin rule, a vertical band 2px wide (a 1px hairline
+          breaks into dashes once the sheet is scaled by a fraction)
+       2. the blue horizontal rules, one per --rule
+       3. the paper itself
+
+       Every edge here ramps over half a pixel rather than stopping hard.
+       The sheet is rotated, and a gradient is evaluated per pixel with no
+       partial coverage - at a hard stop each pixel comes out either fully
+       coloured or fully transparent, so a near-horizontal edge snaps to
+       pixel centres and staircases. The ramp restores the in-between values
+       that read as antialiasing. Text is unaffected either way: glyph
+       rasterisation does its own coverage-based antialiasing. */
+    background-image:
+        linear-gradient(
+            to right,
+            var(--margin-red-fade) 0 calc(var(--margin-x) - 0.5px),
+            var(--margin-red) var(--margin-x) calc(var(--margin-x) + 1.5px),
+            var(--margin-red-fade) calc(var(--margin-x) + 2px)
+        ),
+        repeating-linear-gradient(
+            to bottom,
+            var(--rule-blue-fade) 0 calc(var(--rule) - 1.5px),
+            var(--rule-blue) calc(var(--rule) - 1px) calc(var(--rule) - 0.5px),
+            var(--rule-blue-fade) var(--rule)
+        );
+    background-color: var(--paper);
+
+    font-family: 'Patrick Hand', 'Comic Sans MS', cursive;
+    font-size: 19px;
+    line-height: var(--rule);
+    color: var(--ink);
+}
+
+/* Torn-looking top edge would be nice here later; a plain sheet reads fine. */
+
+.menu-close {
+    position: absolute;
+    top: 6px;
+    right: 10px;
+
+    border: none;
+    background: none;
+    padding: 4px 8px;
+
+    font-family: 'Caveat', cursive;
+    font-size: 26px;
+    line-height: 1;
+    color: var(--ink-soft);
+    cursor: pointer;
+}
+
+.menu-close:hover {
+    color: var(--margin-red);
+}
+
+/* ----------------------------------------------------------------- section */
+
+.menu-section {
+    animation: menu-section-in 200ms ease both;
+}
+
+@keyframes menu-section-in {
+    from {
+        opacity: 0;
+        translate: 6px 0;
+    }
+}
+
+/* Exactly two rules tall so everything below it stays on the lines. The
+   title itself straddles them, which is what real handwriting does anyway. */
+.menu-title {
+    margin: 0 0 var(--rule);
+
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+    font-size: 38px;
+    line-height: calc(var(--rule) * 2);
+    color: var(--ink);
+}
+
+.menu-section p {
+    margin: 0 0 var(--rule);
+}
+
+.menu-section p:last-child {
+    margin-bottom: 0;
+}
+
+.menu-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.menu-list li::before {
+    content: '— ';
+    color: var(--ink-soft);
+}
+
+.menu-note {
+    color: var(--ink-soft);
+}
+
+.menu-link {
+    color: var(--ink);
+    text-decoration-color: var(--margin-red);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+}
+
+/* ---------------------------------------------------------------- controls */
+
+.menu-binding {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+/* The classic irregular-radius trick: four wildly different corner radii
+   read as a box someone drew by hand rather than a rendered rectangle. */
+.menu-key {
+    padding: 0 9px;
+    border: 2px solid var(--ink);
+    border-radius: 255px 12px 225px 15px / 15px 225px 15px 255px;
+
+    font-size: 17px;
+    white-space: nowrap;
+}
+
+.menu-key + .menu-key {
+    margin-left: 6px;
+}
+
+/* ------------------------------------------------------------------ toggle */
+
+.menu-toggle {
+    position: fixed;
+    top: 24px;
+    right: 0;
+    z-index: 199;
+
+    padding: 10px 18px 10px 22px;
+    border: none;
+    border-radius: 12px 0 0 12px;
+    background: var(--paper, #fffdf5);
+    box-shadow: -2px 3px 8px rgba(40, 40, 60, 0.25);
+
+    font-family: 'Caveat', cursive;
+    font-size: 26px;
+    color: #2c3e6b;
+    cursor: pointer;
+
+    transition:
+        opacity 200ms ease,
+        translate 200ms ease;
+}
+
+.menu-toggle:hover {
+    translate: -3px 0;
+}
+
+.menu-toggle.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ------------------------------------------------------------------ motion */
+
+@media (prefers-reduced-motion: reduce) {
+    .menu,
+    .menu[open] {
+        scale: 1;
+    }
+
+    @starting-style {
+        .menu[open] {
+            scale: 1;
+        }
+    }
+
+    .menu,
+    .menu::backdrop {
+        transition:
+            opacity 120ms ease,
+            display 120ms allow-discrete,
+            overlay 120ms allow-discrete;
+    }
+
+    .menu-section {
+        animation: none;
+    }
+}
