@@ -18,6 +18,7 @@ function App() {
                 { name: 'backward', keys: ['ArrowDown', 'KeyS'] },
                 { name: 'leftward', keys: ['ArrowLeft', 'KeyA'] },
                 { name: 'rightward', keys: ['ArrowRight', 'KeyD'] },
+                { name: 'sprint', keys: ['ShiftLeft', 'ShiftRight'] },
                 { name: 'jump', keys: ['Space'] },
             ]}
         >

@@ -8,7 +8,8 @@ const WHEEL_RADIUS = 1.377 * 0.8; // model radius, times the <Bicycle> scale
 let currentSpin = 0;
 
 const PITCH_DELTA = 1;
-const SPEED = 20;
+const SPEED = 15;
+const SPRINT_SPEED = 25;
 const JOYSTICK_DEADZONE = 0.15;
 
 const ACCELERATION = 8;
@@ -41,11 +42,13 @@ const CAMERA_STIFFNESS = 10;
 
 export function updatePlayerSpeed(
     playerDirection: RefObject<THREE.Vector3 | null>,
+    sprinting: boolean,
     delta: number,
 ) {
     if (!playerDirection.current) return;
 
-    const targetSpeed = playerDirection.current.length() * SPEED;
+    const maxSpeed = sprinting ? SPRINT_SPEED : SPEED;
+    const targetSpeed = playerDirection.current.length() * maxSpeed;
     const rate = targetSpeed > currentSpeed ? ACCELERATION : DECELERATION;
 
     currentSpeed += THREE.MathUtils.clamp(

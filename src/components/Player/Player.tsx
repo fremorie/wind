@@ -54,7 +54,7 @@ export function Player() {
 
         playerMeshRef.current.rotation.order = 'YXZ';
 
-        const { forward, backward, leftward, rightward } = getKeys();
+        const { forward, backward, leftward, rightward, sprint } = getKeys();
 
         if (!playerDirection.current) {
             playerDirection.current = new THREE.Vector3(0, 0, 0);
@@ -71,7 +71,7 @@ export function Player() {
             joystick,
         );
 
-        updatePlayerSpeed(playerDirection, delta);
+        updatePlayerSpeed(playerDirection, sprint, delta);
         const spin = updateWheelSpin(delta);
         frontWheelRef.current.rotation.z = spin;
         rearWheelRef.current.rotation.z = spin;
