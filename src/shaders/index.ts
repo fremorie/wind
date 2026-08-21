@@ -13,6 +13,8 @@ import treeVertex from './tree/vertex.glsl';
 import waterSurfaceFragment from './waterSurface/fragment.glsl';
 import waterSurfaceVertex from './waterSurface/vertex.glsl';
 import farmVertex from './farm/vertex.glsl';
+import grassV2Vertex from './grassV2/vertex.glsl';
+import grassV2Fragment from './grassV2/fragment.glsl';
 
 // Every shader that draws the world, with WORLD_SETTINGS prepended, so none can
 // be compiled without its constants. Materials import from here, not from the
@@ -43,3 +45,6 @@ export const waterSurfaceFragmentShader =
     withWorldSettings(waterSurfaceFragment);
 
 export const farmVertexShader = withWorldSettings(farmVertex);
+
+export const grassV2FragmentShader = withWorldSettings(grassV2Fragment);
+export const grassV2VertexShader = withWorldSettings(grassV2Vertex);

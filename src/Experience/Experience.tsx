@@ -10,6 +10,8 @@ import { TreesV2 } from '../components/Foliage/TreesV2';
 import { RoadSign } from '../components/RoadSign';
 import { Farm } from '../components/Farm';
 import { Player } from '../components/Player';
+import { GrassV2 } from '../components/GrassV2/GrassV2';
+import { OrbitControls } from '@react-three/drei';
 
 export function Experience() {
     const debug = useDebug();
@@ -24,7 +26,7 @@ export function Experience() {
 
             <Terrain />
 
-            <Grass />
+            {debug ? <GrassV2 /> : <Grass />}
             <WaterSurface />
             <Cow />
             <WindFarm />
@@ -33,6 +35,8 @@ export function Experience() {
             <Farm />
 
             <RoadSign />
+
+            <OrbitControls makeDefault />
         </>
     );
 }
