@@ -1,55 +1,130 @@
-/* A sheet of school exercise-book paper, shown as a centred modal.
-   
-   The whole illusion rests on one invariant: the ruled-line gradient period
-   must exactly equal the body line-height, and both must be in px. Anything
-   unitless or em-based drifts as soon as the font metrics change, and the
-   text starts floating off the lines. */
+/* Self-hosted rather than fetched from Google: the sheet's line grid is tied
+   to this font's metrics, so a swap after first paint would drop every line
+   of text off its rule. One variable file covers the whole 400-700 range,
+   and font-display: block would rather hold the text back for a moment than
+   paint it in a fallback whose metrics are wrong. */
+@font-face {
+    font-family: 'Playpen Sans';
+    src: url('/fonts/Playpen_Sans/PlaypenSans-VariableFont_wght.ttf')
+        format('truetype');
+    font-weight: 100 800;
+    font-display: block;
+}
+
+/* A photographed sheet of exercise-book paper, shown as a centred modal.
+
+   The paper - tear, punch holes, rules, red margin, the drawing along the
+   bottom - is all in images/torn_page.webp. Nothing here draws paper; this
+   file only has to land the text on rules that are already printed in the
+   photograph, which makes the image's own geometry the source of truth for
+   every measurement below. */
 
 .menu {
-    /* Design space. Everything inside the sheet is authored in px at this
-       size and the entire sheet is then scaled to fit. Paper does not
-       reflow, so neither do we - the line count is identical everywhere. */
-    --paper-w: 420px;
-    --paper-h: 560px;
+    /* Geometry of torn_page.webp, measured in the image's own pixels. Every
+       length on the sheet is derived from these as a fraction, so nothing
+       has to be re-tuned if the photo is re-exported at another resolution.
 
+         --img-rule   spacing and --img-first the topmost rule, both from a
+                      least-squares fit over all 18 printed rules rather
+                      than off any single one: the photographed rules wobble
+                      by up to 3px, and picking one gap would accumulate
+                      that error down the page
+         --img-text-l right of the tear and its punch holes
+         --img-text-r where the writing stops, short of the red rule
+         --img-margin-x the red margin rule itself
+         --img-edge-r the photographed sheet's right edge; the strip beyond
+                      it is the transparent border baked into the file */
+    --img-w: 1122;
+    --img-h: 1402;
+    --img-rule: 61.1589;
+    --img-first: 173;
+    --img-text-l: 160;
+    --img-text-r: 936;
+    --img-margin-x: 962;
+    --img-edge-r: 1074;
+
+    /* Design space. The sheet is authored at the size where one printed rule
+       is exactly --rule tall, and the whole thing is then scaled to fit.
+       Paper does not reflow, so neither do we - the line count is identical
+       everywhere. */
     --rule: 28px; /* == body line-height. Keep these two in lockstep. */
-    --margin-x: 56px;
-    --tab-w: 46px;
+    --paper-h: calc(var(--rule) * var(--img-h) / var(--img-rule));
+    --paper-w: calc(var(--paper-h) * var(--img-w) / var(--img-h));
+    --first-rule: calc(var(--paper-h) * var(--img-first) / var(--img-h));
 
-    /* Tuned by eye for Patrick Hand at 19px: shifts the text down so its
-       baseline lands on the rule instead of hovering above it. Re-tune if
-       the body font or size changes. */
-    --baseline-nudge: 9px;
+    /* The gap between the bottom of a line box and the baseline sitting in
+       it - descender space, essentially - measured for Playpen Sans at 19px
+       in a --rule tall box. Lining a line box's bottom edge up with a
+       printed rule would leave the writing floating this far above it, so
+       every line is pushed down by the same amount.
 
-    --paper: #fffdf5;
-    --ink: #2c3e6b;
-    --ink-soft: #6b7ba3;
-    --rule-blue: #a9c9e6;
-    --rule-blue-fade: #a9c9e600;
+       All three nudges below are measured, not guessed: a zero-height inline
+       block appended to a line takes its baseline from its own bottom edge,
+       so its box top is exactly where that line's baseline is. Comparing
+       that against --first-rule + n * --rule gives the error per line
+       directly. They are also locked together - this one shifts the whole
+       page, so moving it means moving the other two the same amount the
+       other way. Re-measure all three if the font or its size changes. */
+    --baseline-nudge: 6px;
+
+    /* The same idea for the list, which is set larger than the body text and
+       so sits differently in its line box. Negative here, which is why the
+       list shifts itself with `top` rather than padding: the page as a whole
+       is already pushed down by --baseline-nudge, and 30px type needs a
+       little of that back. Measured, not guessed. */
+    --list-nudge: -4px;
+
+    /* --ink-soft is the same pen thinned out, so notes and secondary
+       controls read as quieter without introducing a second colour. */
+    --ink: #34609c;
+    --ink-soft: color-mix(in srgb, var(--ink) 62%, transparent);
     --margin-red: #e08a84;
-    --margin-red-fade: #e08a8400;
 
     /* Ratio of available space to design size, clamped so the sheet never
        scales *up* past its design size on a big monitor - it would only look
        blurry and oversized. The 48px is breathing room at the edges.
 
+       Dynamic viewport units, because on a phone 100vh is the height with
+       the browser's own chrome hidden - the sheet would be scaled to a
+       viewport taller than the one it is actually being shown in, and its
+       foot would sit behind the address bar.
+
        tan(atan2(a, b)) is the CSS-native way to divide one length by another
        and get back a plain number: calc() refuses to cancel units, and a
        min() that mixes a number with lengths is invalid, which silently
        drops the whole transform rather than just this value. */
-    --sheet-w: calc(var(--paper-w) + var(--tab-w));
     --paper-scale: min(
         1,
-        tan(atan2(calc(100vh - 48px), var(--paper-h))),
-        tan(atan2(calc(100vw - 48px), var(--sheet-w)))
+        tan(atan2(calc(100dvh - 48px), var(--paper-h))),
+        tan(atan2(calc(100dvw - 48px), var(--paper-w)))
     );
 
     /* The UA stylesheet fights every one of these: a dialog ships with a
        border, padding, a white background and a max-width of
        calc(100% - 6px). Strip them and let the sheet inside own the looks.
-       margin: auto is what centres a top-layer dialog in the viewport. */
-    margin: auto;
+
+       The dialog is stretched over the whole viewport and centres the sheet
+       inside itself, rather than being sheet-sized and centred by margin:
+       auto. The sheet is scaled with a transform, which leaves its layout
+       size alone, so on a narrow screen a sheet-sized dialog is wider than
+       the viewport - and auto margins do not centre a box that does not fit.
+       In the inline axis the rule is to zero the start margin and let the
+       box hang off the end instead, which pushed the whole sheet to one
+       side on a phone. The block axis has no such rule, which is why it only
+       ever looked off horizontally. */
+    inset: 0;
+    width: auto;
+    height: auto;
+    margin: 0;
     padding: 0;
+
+    /* Only `display` waits for the closing transition, and it is the only
+       one of these that has to go on [open]. Leaving the alignment there too
+       drops it the instant the menu is dismissed, while the dialog is still
+       display: flex for another fifth of a second - long enough to watch the
+       sheet snap into the corner before it fades. */
+    align-items: center;
+    justify-content: center;
     border: none;
     background: none;
     max-width: none;
@@ -58,7 +133,11 @@
 
     /* display and overlay are discrete properties, so they normally flip on
        the first frame - allow-discrete holds them until the fade finishes,
-       which is the only reason the closing animation is ever seen. */
+       which is the only reason the closing animation is ever seen.
+
+       `scale` rather than `transform`, because the sheet inside owns
+       `transform` for its fit-to-viewport scale and its tilt; keeping the
+       two on separate properties means neither has to know about the other. */
     opacity: 0;
     scale: 0.96;
     transition:
@@ -68,7 +147,12 @@
         overlay 220ms allow-discrete;
 }
 
+/* display goes on the open state alone: an author `display` on .menu itself
+   would beat the UA's `dialog:not([open]) { display: none }` and leave the
+   sheet on screen with the menu shut. */
 .menu[open] {
+    display: flex;
+
     opacity: 1;
     scale: 1;
 }
@@ -109,62 +193,12 @@
 
 /* ------------------------------------------------------------------- sheet */
 
+/* Only here to carry the fit-to-viewport scale: the dialog above it owns the
+   open/close animation, and putting both on one element would mean one of
+   them having to know the other's current value. */
 .menu-sheet {
-    display: flex;
-    align-items: flex-start;
-
-    /* A degree off square, so it reads as a sheet lying on the screen rather
-       than a rectangle painted onto it. */
-    transform: scale(var(--paper-scale)) rotate(-1.2deg);
+    transform: scale(var(--paper-scale));
     transform-origin: center;
-}
-
-/* -------------------------------------------------------------------- tabs */
-
-.menu-tabs {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-
-    margin-top: 42px;
-}
-
-.menu-tab {
-    width: var(--tab-w);
-    padding: 18px 0;
-
-    border: none;
-    border-radius: 10px 0 0 10px;
-    background: #f0e6cf;
-    box-shadow: -2px 2px 5px rgba(40, 40, 60, 0.18);
-
-    font-family: 'Caveat', cursive;
-    font-size: 21px;
-    color: var(--ink-soft);
-    cursor: pointer;
-
-    /* Divider tabs read bottom-to-top. vertical-rl alone reads top-to-bottom,
-       hence the extra half turn. */
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-
-    transition:
-        background 160ms ease,
-        color 160ms ease,
-        translate 160ms ease;
-}
-
-.menu-tab:hover {
-    color: var(--ink);
-}
-
-/* The active tab is part of the sheet: same paper, and nudged right so it
-   tucks under the page edge with no seam. */
-.menu-tab[aria-selected='true'] {
-    background: var(--paper);
-    color: var(--ink);
-    translate: 2px 0;
-    box-shadow: -3px 3px 6px rgba(40, 40, 60, 0.2);
 }
 
 /* ------------------------------------------------------------------- paper */
@@ -175,57 +209,58 @@
     width: var(--paper-w);
     height: var(--paper-h);
     box-sizing: border-box;
-    padding: calc(var(--rule) + var(--baseline-nudge)) 28px 0 72px;
 
-    box-shadow: 3px 6px 18px rgba(40, 40, 60, 0.28);
+    /* The writing area is lifted straight off the photograph: each side is
+       the fraction of the image that lies outside the column the rules are
+       meant to be written in, so the words stay clear of the tear on the
+       left and stop at the red margin on the right however the sheet is
+       scaled.
 
-    /* Layer order is paint order - first listed sits on top.
-       1. the red margin rule, a vertical band 2px wide (a 1px hairline
-          breaks into dashes once the sheet is scaled by a fraction)
-       2. the blue horizontal rules, one per --rule
-       3. the paper itself
+       padding-top drops the first line so its baseline lands on the topmost
+       printed rule. --baseline-nudge is unchanged - it compensates for where
+       the font sits inside its line box, which has nothing to do with where
+       the rule is. */
+    padding: calc(var(--first-rule) - var(--rule) + var(--baseline-nudge))
+        calc(var(--paper-w) * (var(--img-w) - var(--img-text-r)) / var(--img-w))
+        0 calc(var(--paper-w) * var(--img-text-l) / var(--img-w));
 
-       Every edge here ramps over half a pixel rather than stopping hard.
-       The sheet is rotated, and a gradient is evaluated per pixel with no
-       partial coverage - at a hard stop each pixel comes out either fully
-       coloured or fully transparent, so a near-horizontal edge snaps to
-       pixel centres and staircases. The ramp restores the in-between values
-       that read as antialiasing. Text is unaffected either way: glyph
-       rasterisation does its own coverage-based antialiasing. */
-    background-image:
-        linear-gradient(
-            to right,
-            var(--margin-red-fade) 0 calc(var(--margin-x) - 0.5px),
-            var(--margin-red) var(--margin-x) calc(var(--margin-x) + 1.5px),
-            var(--margin-red-fade) calc(var(--margin-x) + 2px)
-        ),
-        repeating-linear-gradient(
-            to bottom,
-            var(--rule-blue-fade) 0 calc(var(--rule) - 1.5px),
-            var(--rule-blue) calc(var(--rule) - 1px) calc(var(--rule) - 0.5px),
-            var(--rule-blue-fade) var(--rule)
-        );
-    background-color: var(--paper);
+    background: url('/images/torn_page.webp') no-repeat center / 100% 100%;
 
-    font-family: 'Patrick Hand', 'Comic Sans MS', cursive;
+    /* drop-shadow is filtered through the alpha channel, so the shadow comes
+       out torn-edged as well. box-shadow would trace a crisp rectangle round
+       a sheet that has not got a straight edge anywhere on it. */
+    filter: drop-shadow(3px 6px 12px rgba(40, 40, 60, 0.35));
+
+    font-family: 'Playpen Sans', 'Comic Sans MS', cursive;
     font-size: 19px;
     line-height: var(--rule);
     color: var(--ink);
 }
 
-/* Torn-looking top edge would be nice here later; a plain sheet reads fine. */
-
 .menu-close {
     position: absolute;
-    top: 6px;
-    right: 10px;
+    /* Centred in the margin strip between the red rule and the sheet's
+       edge, and sitting on the first printed rule. Anchoring the box and
+       then shifting it by half its own size puts its centre there whatever
+       the padding is - and the padding is generous, since the cross itself
+       is nowhere near a thumb-sized target.
+
+       It used to be pinned above the first rule, which on this sheet is up
+       in the torn corner: the cross ended up half off the rounded edge. */
+    top: var(--first-rule);
+    right: calc(
+        var(--paper-w) *
+            (var(--img-w) - (var(--img-margin-x) + var(--img-edge-r)) / 2) /
+            var(--img-w)
+    );
+    translate: 50% -50%;
 
     border: none;
     background: none;
-    padding: 4px 8px;
+    padding: 10px;
 
-    font-family: 'Caveat', cursive;
-    font-size: 26px;
+    font-family: 'Playpen Sans', cursive;
+    font-size: 24px;
     line-height: 1;
     color: var(--ink-soft);
     cursor: pointer;
@@ -233,6 +268,167 @@
 
 .menu-close:hover {
     color: var(--margin-red);
+}
+
+/* -------------------------------------------------------------- root list */
+
+/* The root page is centred on the sheet, unlike the pages of writing behind
+   it: the title over the middle of the paper, and the list as one centred
+   block rather than five separately centred lines, so the icons still stack
+   into a column. */
+.menu-section.is-root .menu-title {
+    text-align: center;
+
+    /* Underlined the way you would on ruled paper: a second stroke just
+       under the printed rule the word is sitting on, in the same pen. */
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+    text-underline-offset: 6px;
+
+    /* Two whole extra rules of air under the heading. Whole, so the list
+       below still starts on a printed line - the margin has to stay a
+       multiple of --rule, less the nudge that pushed the title down in the
+       first place. */
+    margin-bottom: calc(var(--rule) * 3 - var(--title-nudge));
+}
+
+.menu-section.is-root .menu-nav {
+    width: fit-content;
+    margin-inline: auto;
+}
+
+/* One rule per item with a blank rule between them, which is how anyone
+   writing a list on ruled paper would space it out. Keeping each item's line
+   box exactly --rule tall is also what keeps the writing on the lines: the
+   baseline sits at a fixed offset inside the box, so any other height would
+   need its own nudge. */
+.menu-nav {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.menu-nav li {
+    margin-bottom: var(--rule);
+}
+
+.menu-item {
+    /* Block, but only as wide as the words: the focus underline is drawn on
+       the text itself and would otherwise run off across the page. An
+       inline-block would do the same, at the cost of the line box's
+       descender space stacking up under every item and walking the whole
+       list off the rules. */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: fit-content;
+    padding: 0;
+
+    /* Relative, so the item can be nudged either way onto its rule without
+       the offset counting towards the two rules each item takes up. */
+    position: relative;
+    top: var(--list-nudge);
+
+    border: none;
+    background: none;
+    text-align: left;
+
+    font-family: 'Playpen Sans', cursive;
+    font-size: 30px;
+    line-height: var(--rule);
+    color: var(--ink);
+    text-decoration: none;
+    cursor: pointer;
+
+    transition: translate 140ms ease;
+}
+
+.menu-item:hover,
+.menu-item:focus-visible {
+    translate: 4px 0;
+}
+
+/* The default focus ring is a hard-edged rectangle in the middle of a
+   photograph of paper. Underlining in the same red as the margin rule is the
+   same information drawn in a pen the page already uses - and it is not
+   colour on its own, since focus also moves the item across the page.
+
+   On the list it goes on the label rather than the item: the item is a flex
+   container, and text-decoration set on one does not reach its children. */
+.menu-item:focus-visible,
+.menu-back:focus-visible,
+.menu-close:focus-visible {
+    outline: none;
+}
+
+.menu-item:focus-visible .menu-label,
+.menu-back:focus-visible,
+.menu-close:focus-visible {
+    text-decoration: underline;
+    text-decoration-color: var(--margin-red);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+}
+
+/* The icons are monochrome drawings whose edges live in the alpha channel,
+   so rather than painting the file, the file is used as a mask and the ink
+   colour is painted through it. Exactly the same blue as the words next to
+   it, and it follows --ink if that ever changes again.
+
+   Each drawing sits in the middle of a transparent 384x512 canvas, so the
+   box has to be a good deal taller than the drawing to bring it up to the
+   size of the words. The negative margins stop that box from stretching the
+   item past its single rule: block for the height, inline start to pull the
+   drawing's left edge back onto the text column. */
+.menu-icon {
+    --icon-h: 56px;
+
+    flex: none;
+    height: var(--icon-h);
+    width: calc(var(--icon-h) * 384 / 512);
+    margin: calc((var(--rule) - var(--icon-h)) / 2) 0
+        calc((var(--rule) - var(--icon-h)) / 2) -7px;
+
+    background-color: var(--ink);
+    mask: var(--icon) center / contain no-repeat;
+}
+
+/* Kept here rather than in the markup so the paths go through the bundler
+   and pick up the /wind/ base along with every other asset URL. */
+.menu-icon[data-icon='bicycle'] {
+    --icon: url('/images/icons/bicycle.webp');
+}
+.menu-icon[data-icon='help'] {
+    --icon: url('/images/icons/help.webp');
+}
+.menu-icon[data-icon='star'] {
+    --icon: url('/images/icons/star.webp');
+}
+.menu-icon[data-icon='info'] {
+    --icon: url('/images/icons/info.webp');
+}
+.menu-icon[data-icon='github'] {
+    --icon: url('/images/icons/github.webp');
+}
+
+/* ------------------------------------------------------------------- back */
+
+.menu-back {
+    display: block;
+    padding: 0;
+    margin: 0;
+
+    border: none;
+    background: none;
+
+    font: inherit;
+    line-height: var(--rule);
+    color: var(--ink-soft);
+    cursor: pointer;
+}
+
+.menu-back:hover {
+    color: var(--ink);
 }
 
 /* ----------------------------------------------------------------- section */
@@ -248,12 +444,19 @@
     }
 }
 
-/* Exactly two rules tall so everything below it stays on the lines. The
-   title itself straddles them, which is what real handwriting does anyway. */
-.menu-title {
-    margin: 0 0 var(--rule);
+/* Exactly two rules tall so everything below it stays on the lines.
 
-    font-family: 'Caveat', cursive;
+   At 38px the title sits high in that box and hangs between the two rules
+   rather than on the lower one; --title-nudge drops it, and
+   the same amount comes off the space underneath so the body text below is
+   still on the grid. */
+.menu-title {
+    --title-nudge: 7px;
+
+    padding-top: var(--title-nudge);
+    margin: 0 0 calc(var(--rule) - var(--title-nudge));
+
+    font-family: 'Playpen Sans', cursive;
     font-weight: 700;
     font-size: 38px;
     line-height: calc(var(--rule) * 2);
@@ -292,54 +495,141 @@
 
 /* ---------------------------------------------------------------- controls */
 
-.menu-binding {
+/* A diagram of the keys rather than a list, so it sits in the middle of the
+   page rather than against the margin. */
+.menu-keyboard {
     display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 12px;
+    justify-content: center;
+
+    margin-bottom: var(--rule);
+}
+
+/* Up over left, down, right. --cluster-rules is how many ruled lines the
+   whole thing stands on, and the key size is worked back from it: keeping
+   the cluster to a whole number of rules is what keeps everything underneath
+   on the printed lines, so resize it by changing that number rather than the
+   keys. */
+.menu-cluster {
+    --cluster-rules: 3;
+    --key-gap: 6px;
+    --key: calc((var(--rule) * var(--cluster-rules) - var(--key-gap)) / 2);
+
+    display: grid;
+    grid-template-columns: repeat(3, var(--key));
+    grid-auto-rows: var(--key);
+    gap: var(--key-gap);
+
+    /* Named cells rather than one key nudged into the middle of the top row:
+       auto-placement carries on from wherever the last item landed, so
+       moving W to the second column pushes A up alongside it. */
+    grid-template-areas:
+        '.    up   .    '
+        'left down right';
+}
+
+.menu-cluster > :nth-child(1) {
+    grid-area: up;
+}
+.menu-cluster > :nth-child(2) {
+    grid-area: left;
+}
+.menu-cluster > :nth-child(3) {
+    grid-area: down;
+}
+.menu-cluster > :nth-child(4) {
+    grid-area: right;
+}
+
+/* Caption to the diagram above it rather than a paragraph in its own right,
+   so it is centred under the keys the way the heading is over them. */
+.menu-caption {
+    text-align: center;
 }
 
 /* The classic irregular-radius trick: four wildly different corner radii
    read as a box someone drew by hand rather than a rendered rectangle. */
 .menu-key {
+    display: inline-grid;
+    place-items: center;
+
     padding: 0 9px;
     border: 2px solid var(--ink);
     border-radius: 255px 12px 225px 15px / 15px 225px 15px 255px;
 
-    font-size: 17px;
+    /* Small for a reason: an inline box is as tall as the font's em box plus
+       its padding and border, and this font's em box is half again as tall
+       as the monospace one a kbd falls back to. At the body size Shift would
+       be taller than the gap between two rules and would run into the row
+       above. */
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1;
     white-space: nowrap;
 }
 
-.menu-key + .menu-key {
-    margin-left: 6px;
+/* In a cluster the grid gives the key its size, so the padding that keeps
+   the inline Shift from hugging its letters would only make it overflow. */
+.menu-cluster .menu-key {
+    padding: 0;
+    font-size: 22px;
 }
 
 /* ------------------------------------------------------------------ toggle */
 
+/* A scrap torn off the same page with three lines scribbled on it, in place
+   of the word Menu.
+
+   images/menu.webp is mostly transparent padding with the scrap sitting in
+   the middle of it, so the button is sized to the scrap alone and the image
+   is blown up by the ratio between the two and centred. That crops the
+   padding out of the way without touching the file - and the numbers are the
+   scrap's measured bounding box, 336x299 inside a 768x512 canvas. */
 .menu-toggle {
+    --scrap-w: 78px;
+
     position: fixed;
-    top: 24px;
-    right: 0;
+    bottom: 24px;
+    left: 24px;
     z-index: 199;
 
-    padding: 10px 18px 10px 22px;
+    width: var(--scrap-w);
+    height: calc(var(--scrap-w) * 299 / 336);
+    padding: 0;
     border: none;
-    border-radius: 12px 0 0 12px;
-    background: var(--paper, #fffdf5);
-    box-shadow: -2px 3px 8px rgba(40, 40, 60, 0.25);
 
-    font-family: 'Caveat', cursive;
-    font-size: 26px;
-    color: #2c3e6b;
+    background: url('/images/menu.webp') no-repeat center /
+        calc(var(--scrap-w) * 768 / 336) auto;
+
+    /* Filtered through the image's alpha, so the shadow is scrap-shaped. */
+    filter: drop-shadow(2px 3px 6px rgba(40, 40, 60, 0.4));
     cursor: pointer;
 
     transition:
         opacity 200ms ease,
+        scale 200ms ease,
         translate 200ms ease;
 }
 
 .menu-toggle:hover {
-    translate: -3px 0;
+    scale: 1.05;
+    translate: 2px -2px;
+}
+
+/* Closing the dialog hands focus back to this button, so the first arrow key
+   pressed afterwards flips it to :focus-visible and the browser draws its
+   default ring: a hard rectangle around a picture of a torn scrap, which is
+   the one shape this button has not got. Focus lifts it the way hovering
+   does and puts a halo round it instead - drop-shadow is filtered through
+   the image's alpha, so the halo follows the tear rather than boxing it. */
+.menu-toggle:focus-visible {
+    outline: none;
+    scale: 1.05;
+    translate: 2px -2px;
+
+    /* #e08a84 is --margin-red, which marks focus inside the menu as well.
+       The variable lives on .menu, and this button is outside it. */
+    filter: drop-shadow(2px 3px 6px rgba(40, 40, 60, 0.4))
+        drop-shadow(0 0 2px #e08a84) drop-shadow(0 0 4px #e08a84);
 }
 
 .menu-toggle.is-hidden {
@@ -371,5 +661,9 @@
 
     .menu-section {
         animation: none;
+    }
+
+    .menu-item {
+        transition: none;
     }
 }

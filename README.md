@@ -1,4 +1,4 @@
-# Wind
+# Sunday ride
 
 An endless bike ride across a procedurally generated landscape — grass, trees, a lake, a farm and a wind farm — built with React Three Fiber and custom GLSL shaders.
 
@@ -76,8 +76,21 @@ Pushing to `main` triggers `.github/workflows/deploy.yml`, which builds and publ
 
 Third-party assets keep their own attribution files next to them under `public/`:
 
-- Cow, bridge and construction sign — see `public/models/*/README.md`
-- Bark texture — see `public/textures/wood/ATTRIBUTION.md`
-- Rubik Microbe font — SIL Open Font License, see `public/fonts/Rubik_Microbe/OFL.txt`
+**Models** — eight by [Quaternius](https://poly.pizza/u/Quaternius), via [Poly Pizza](https://poly.pizza):
+
+| Model | Link | Used in |
+| --- | --- | --- |
+| Small Bridge | [j4KsIuJYnq](https://poly.pizza/m/j4KsIuJYnq) | `public/models/bridge/` |
+| Big barn | [q1N3xn2SpC](https://poly.pizza/m/q1N3xn2SpC) | `public/models/farm/` |
+| Chicken Coop | [DM0F8siLam](https://poly.pizza/m/DM0F8siLam) | `public/models/farm/` |
+| Silo | [5GhLrv5Ce3](https://poly.pizza/m/5GhLrv5Ce3) | `public/models/farm/` |
+| Cow | [26zM1outCr](https://poly.pizza/m/26zM1outCr) | `public/models/cow/` |
+| Birch tree dead | [RieYOsjDj8](https://poly.pizza/m/RieYOsjDj8) | `public/models/trees/` |
+| Tree | [b0boebSV1r](https://poly.pizza/m/b0boebSV1r) | `public/models/trees/` |
+| Tree (another) | [1BkD9JnKrE](https://poly.pizza/m/1BkD9JnKrE) | `public/models/trees/` |
+
+Each of those folders keeps its own `README.md` with the same attribution next to the `.glb`. Everything else under `public/` is original work: the bicycle, the road sign and the foliage tree, along with every texture and image.
+
+**Fonts** — Playpen Sans, Edu SA Hand and Rubik Microbe, all under the SIL Open Font License; the licence text is in the `OFL.txt` beside each one under `public/fonts/`.
 
 Code is MIT licensed (see `LICENSE`); asset licenses are as attributed above.

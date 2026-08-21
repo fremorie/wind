@@ -1,34 +1,146 @@
 import type { ReactNode } from 'react';
 
-// One page per section, so every one of these has a hard budget: fifteen
-// ruled lines below the title. Adding a line to a full page pushes the last
-// one off the bottom of the sheet - there is no scrollbar to catch it.
+// One page per section, so every one of these has a hard budget: twelve
+// ruled lines below the title. The sheet is a photograph with a drawing
+// along the bottom of it, and the last rules run through the trees; adding a
+// line to a full page puts the words on top of them, and there is no
+// scrollbar to catch it.
 
 export interface Section {
     id: string;
     label: string;
     title: string;
+    // File name in public/images/icons, without the extension.
+    icon: string;
     body: ReactNode;
 }
 
-// Mirrors the KeyboardControls map in App.tsx. Space/'jump' is deliberately
-// absent: it is in the map but nothing reads it yet, and a menu that lists
-// keys which do nothing is worse than one that lists fewer.
-const BINDINGS: { keys: string[]; action: string }[] = [
-    { keys: ['W', '↑'], action: 'pedal forward' },
-    { keys: ['S', '↓'], action: 'slow down' },
-    { keys: ['A', '←'], action: 'lean left' },
-    { keys: ['D', '→'], action: 'lean right' },
-    { keys: ['Shift'], action: 'sprint' },
-];
-
 const REPO_URL = 'https://github.com/fremorie/wind';
 
+const POLY_PIZZA = 'https://poly.pizza';
+
+// Every borrowed model is a poly.pizza /m/ page, so the credits list only
+// ever varies by the id and the name. The attribution each one is taken from
+// lives in the README.md next to the .glb under public/models.
+function PolyLink({ id, children }: { id: string; children: ReactNode }) {
+    return (
+        <a
+            className="menu-link"
+            href={`${POLY_PIZZA}/m/${id}`}
+            target="_blank"
+            rel="noreferrer"
+        >
+            {children}
+        </a>
+    );
+}
+
+// Listed in the order they appear on the root menu, after Resume - which
+// closes the menu rather than opening a page, so it does not live here.
 export const SECTIONS: Section[] = [
+    {
+        id: 'controls',
+        label: 'Controls',
+        title: 'Controls',
+        icon: 'help',
+        // Drawn in the shape the keys actually sit in rather than listed one
+        // under the other: up first, then the bottom row left to right.
+        //
+        // WASD is bound too - see the KeyboardControls map in App.tsx - but
+        // showing one cluster says everything the other one would. Space is
+        // in the map as well and deliberately absent here: nothing reads it
+        // yet, and a menu that lists keys which do nothing is worse than one
+        // that lists fewer.
+        body: (
+            <>
+                <div className="menu-keyboard">
+                    <div className="menu-cluster">
+                        <kbd className="menu-key">↑</kbd>
+                        <kbd className="menu-key">←</kbd>
+                        <kbd className="menu-key">↓</kbd>
+                        <kbd className="menu-key">→</kbd>
+                    </div>
+                </div>
+
+                {/* A line each, broken on purpose rather than left to wrap:
+                    the two sentences are two separate things to know. */}
+                <p className="menu-caption">
+                    Use the arrow keys to ride.
+                    <br />
+                    Hold <kbd className="menu-key">Shift</kbd> to sprint.
+                </p>
+            </>
+        ),
+    },
+    {
+        id: 'credits',
+        label: 'Credits',
+        title: 'Credits',
+        icon: 'star',
+        // Eleven of the twelve rules: two paragraphs at two each (a line
+        // plus the blank rule after it) and seven list items at one apiece.
+        // Every line is measured to fit the 355px column at 19px, so none of
+        // them wraps - one that did would spend the last rule and put the
+        // next one through the drawing at the foot of the page.
+        //
+        // The two Quaternius models both called Tree share a line, since two
+        // items reading "Tree" would look like a mistake.
+        body: (
+            <>
+                <p>Made by Daria Borisiak.</p>
+                <p>
+                    Models by{' '}
+                    <a
+                        className="menu-link"
+                        href={`${POLY_PIZZA}/u/Quaternius`}
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        Quaternius
+                    </a>
+                    , via{' '}
+                    <a
+                        className="menu-link"
+                        href={POLY_PIZZA}
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        poly.pizza
+                    </a>
+                    :
+                </p>
+                <ul className="menu-list">
+                    <li>
+                        <PolyLink id="j4KsIuJYnq">Small Bridge</PolyLink>
+                    </li>
+                    <li>
+                        <PolyLink id="q1N3xn2SpC">Big barn</PolyLink>
+                    </li>
+                    <li>
+                        <PolyLink id="DM0F8siLam">Chicken Coop</PolyLink>
+                    </li>
+                    <li>
+                        <PolyLink id="5GhLrv5Ce3">Silo</PolyLink>
+                    </li>
+                    <li>
+                        <PolyLink id="26zM1outCr">Cow</PolyLink>
+                    </li>
+                    <li>
+                        <PolyLink id="RieYOsjDj8">Birch tree dead</PolyLink>
+                    </li>
+                    <li>
+                        <PolyLink id="b0boebSV1r">Tree</PolyLink>, and{' '}
+                        <PolyLink id="1BkD9JnKrE">another Tree</PolyLink>
+                    </li>
+                </ul>
+            </>
+        ),
+    },
     {
         id: 'about',
         label: 'About',
         title: 'About',
+        icon: 'info',
         body: (
             <>
                 <p>
@@ -41,77 +153,17 @@ export const SECTIONS: Section[] = [
                 </p>
                 <p className="menu-note">
                     Built as a way to learn three.js, one hill at a time.
-                </p>
-            </>
-        ),
-    },
-    {
-        id: 'controls',
-        label: 'Controls',
-        title: 'Controls',
-        body: (
-            <>
-                {BINDINGS.map(({ keys, action }) => (
-                    <div className="menu-binding" key={action}>
-                        <span>
-                            {keys.map((key) => (
-                                <kbd className="menu-key" key={key}>
-                                    {key}
-                                </kbd>
-                            ))}
-                        </span>
-                        <span>{action}</span>
-                    </div>
-                ))}
-                <p className="menu-note">
-                    On a phone, drag the circle in the corner instead.
-                </p>
-            </>
-        ),
-    },
-    {
-        id: 'credits',
-        label: 'Credits',
-        title: 'Credits',
-        body: (
-            <>
-                <p>Made by Daria Borisiak.</p>
-                <ul className="menu-list">
-                    <li>three.js</li>
-                    <li>React Three Fiber &amp; drei</li>
-                    <li>Rapier, for the physics</li>
-                    <li>Vite, for the fast reloads</li>
-                </ul>
-                <p className="menu-note">
-                    Fonts: Caveat and Patrick Hand, via Google Fonts.
-                </p>
-            </>
-        ),
-    },
-    {
-        id: 'bug',
-        label: 'Report a bug',
-        title: 'Found a bug?',
-        body: (
-            <>
-                <p>
-                    A wheel through the road? A cow in a tree? The horizon
-                    somewhere it should not be?
-                </p>
-                <p>
-                    Write it down here:
                     <br />
+                    The source is on{' '}
                     <a
                         className="menu-link"
-                        href={`${REPO_URL}/issues/new`}
+                        href={REPO_URL}
                         target="_blank"
                         rel="noreferrer"
                     >
-                        github.com/fremorie/wind
+                        Github
                     </a>
-                </p>
-                <p className="menu-note">
-                    What you did, what happened, what you expected instead.
+                    .
                 </p>
             </>
         ),

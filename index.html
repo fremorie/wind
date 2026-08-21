@@ -3,16 +3,18 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Wind</title>
+        <title>Sunday ride</title>
+        <link rel="icon" type="image/webp" href="/favicon.webp" sizes="256x256" />
 
         <!-- Fetched at page load rather than when the menu first opens: the paper
          is ruled on a fixed line height, so a late font swap would reflow the
-         text off the lines. By the time anyone clicks Menu these are cached. -->
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+         text off the lines. By the time anyone clicks Menu it is cached. -->
         <link
-            href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Patrick+Hand&display=swap"
-            rel="stylesheet"
+            rel="preload"
+            href="/fonts/Playpen_Sans/PlaypenSans-VariableFont_wght.ttf"
+            as="font"
+            type="font/ttf"
+            crossorigin
         />
     </head>
     <body>

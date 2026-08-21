@@ -45,7 +45,7 @@ function App() {
             </Canvas>
 
             <Joystick />
-            {debug && <Menu />}
+            <Menu />
         </KeyboardControls>
     );
 }
