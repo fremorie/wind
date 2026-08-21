@@ -61,4 +61,4 @@ export function RoadSignModel() {
     );
 }
 
-useGLTF.preload('/roadSign.glb');
+useGLTF.preload('./models/roadSign/roadSign.glb');
