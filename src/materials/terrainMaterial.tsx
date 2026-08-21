@@ -5,7 +5,7 @@ import { terrainFragmentShader, terrainVertexShader } from '../shaders';
 import { GRID_TOTAL_WIDTH, LAKE_CENTER } from '../utils/constants';
 
 export const terrainUniforms = {
-    uColorGrass: new THREE.Uniform(new THREE.Color('#3a521c')),
+    uColorGrass: new THREE.Uniform(new THREE.Color('#2B3D13')),
     uColorDirt: new THREE.Uniform(new THREE.Color('#c4bb82')),
 
     uPlayerPosition: new THREE.Uniform(new THREE.Vector2()),

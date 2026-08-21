@@ -50,7 +50,6 @@ void main() {
     const float PI = 3.1415926535;
     float angle = remap(hashVal.x, -1.0, 1.0, -PI, PI);
 
-
     // Stiffness
     float stiffness =  1.0;
     float tileGrassHeight = 1.0;
@@ -82,12 +81,9 @@ void main() {
     float windStrength = noise(vec3(grassBladeWorldPos.xz * 0.05, 0.0) + uTime);
     float windAngle = 0.0;
     vec3 windAxis = vec3(cos(windAngle), 0.0, sin(windAngle));
-    float windLeanAngle = windStrength * 1.5 * heightPercent * stiffness;
+    float windLeanAngle = windStrength * 0.25 * heightPercent * stiffness;
 
     float randomLeanAnimation = noise(vec3(grassBladeWorldPos.xz, uTime * 4.0)) * (windStrength * 0.5 + 0.125);
-//    randomLeanAnimation = 0.0;
-//    windStrength = 0.0;
-//    windLeanAngle = 0.0;
     float leanFactor = remap(hashVal.y, -1.0, 1.0, -0.5, 0.5) + randomLeanAnimation;
 
     // Debug
