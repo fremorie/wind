@@ -246,8 +246,20 @@
        is nowhere near a thumb-sized target.
 
        It used to be pinned above the first rule, which on this sheet is up
-       in the torn corner: the cross ended up half off the rounded edge. */
-    top: var(--first-rule);
+       in the torn corner: the cross ended up half off the rounded edge.
+
+       Lifted half a rule off that centre line. A quarter would have been the
+       optical match - the cross is the only mark here that is not text, and
+       a centred box puts half the glyph below the rule that Back sits its
+       baseline on - but this is a deliberate overshoot past that: the cross
+       clears the line entirely and sits in the blank strip above it rather
+       than on the writing line. Written in rules rather than pixels so it
+       keeps up if --rule ever moves.
+
+       Three quarters of a rule up, which is most of the budget: a full rule
+       is the old position that put the cross half off the rounded edge, and
+       there is about a quarter of a rule left between here and there. */
+    top: calc(var(--first-rule) - var(--rule) * 0.75);
     right: calc(
         var(--paper-w) *
             (var(--img-w) - (var(--img-margin-x) + var(--img-edge-r)) / 2) /
@@ -427,6 +439,35 @@
     cursor: pointer;
 }
 
+/* One drawing, turned. Left is the way it is drawn, so it needs no rule of
+   its own; the other three are quarter turns of it, which come out even only
+   because the box it is drawn in is square. */
+.menu-arrow[data-direction='up'] {
+    rotate: 90deg;
+}
+
+.menu-arrow[data-direction='right'] {
+    rotate: 180deg;
+}
+
+.menu-arrow[data-direction='down'] {
+    rotate: -90deg;
+}
+
+/* Sized in ex - the font's own x-height - and left sitting on the baseline,
+   which puts the arrow in exactly the band the lowercase letters occupy. It
+   lines up with the "ack" next to it by construction rather than by a tuned
+   offset, and it keeps up on its own if the type size ever changes.
+
+   1ex is well under the line box's ascent, so this cannot grow the line and
+   push the writing off its printed rule. */
+.menu-back .menu-arrow {
+    height: 1ex;
+    width: auto;
+    margin-inline-end: 0.4em;
+    vertical-align: baseline;
+}
+
 .menu-back:hover {
     color: var(--ink);
 }
@@ -457,7 +498,7 @@
     margin: 0 0 calc(var(--rule) - var(--title-nudge));
 
     font-family: 'Playpen Sans', cursive;
-    font-weight: 700;
+    font-weight: 500;
     font-size: 38px;
     line-height: calc(var(--rule) * 2);
     color: var(--ink);
@@ -572,6 +613,16 @@
 .menu-cluster .menu-key {
     padding: 0;
     font-size: 22px;
+}
+
+/* Nothing in these keys is text any more, but the size still hangs off the
+   font-size above: it stays the one knob for how big a key's contents are,
+   and Shift next door is still lettering. Centring is the key's own
+   place-items, so it is geometry now rather than a fallback font's idea of
+   where the middle of a line is. */
+.menu-cluster .menu-arrow {
+    width: 0.9em;
+    height: 0.9em;
 }
 
 /* ------------------------------------------------------------------ toggle */

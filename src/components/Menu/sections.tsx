@@ -1,5 +1,8 @@
 import type { ReactNode } from 'react';
 
+import { Arrow } from './Arrow';
+import { ExternalLink, PolyLink } from './links';
+
 // One page per section, so every one of these has a hard budget: twelve
 // ruled lines below the title. The sheet is a photograph with a drawing
 // along the bottom of it, and the last rules run through the trees; adding a
@@ -16,24 +19,6 @@ export interface Section {
 }
 
 const REPO_URL = 'https://github.com/fremorie/wind';
-
-const POLY_PIZZA = 'https://poly.pizza';
-
-// Every borrowed model is a poly.pizza /m/ page, so the credits list only
-// ever varies by the id and the name. The attribution each one is taken from
-// lives in the README.md next to the .glb under public/models.
-function PolyLink({ id, children }: { id: string; children: ReactNode }) {
-    return (
-        <a
-            className="menu-link"
-            href={`${POLY_PIZZA}/m/${id}`}
-            target="_blank"
-            rel="noreferrer"
-        >
-            {children}
-        </a>
-    );
-}
 
 // Listed in the order they appear on the root menu, after Resume - which
 // closes the menu rather than opening a page, so it does not live here.
@@ -55,10 +40,18 @@ export const SECTIONS: Section[] = [
             <>
                 <div className="menu-keyboard">
                     <div className="menu-cluster">
-                        <kbd className="menu-key">↑</kbd>
-                        <kbd className="menu-key">←</kbd>
-                        <kbd className="menu-key">↓</kbd>
-                        <kbd className="menu-key">→</kbd>
+                        <kbd className="menu-key">
+                            <Arrow direction="up" label="Up" />
+                        </kbd>
+                        <kbd className="menu-key">
+                            <Arrow direction="left" label="Left" />
+                        </kbd>
+                        <kbd className="menu-key">
+                            <Arrow direction="down" label="Down" />
+                        </kbd>
+                        <kbd className="menu-key">
+                            <Arrow direction="right" label="Right" />
+                        </kbd>
                     </div>
                 </div>
 
@@ -90,23 +83,13 @@ export const SECTIONS: Section[] = [
                 <p>Made by Daria Borisiak.</p>
                 <p>
                     Models by{' '}
-                    <a
-                        className="menu-link"
-                        href={`${POLY_PIZZA}/u/Quaternius`}
-                        target="_blank"
-                        rel="noreferrer"
-                    >
+                    <ExternalLink href="https://poly.pizza/u/Quaternius">
                         Quaternius
-                    </a>
+                    </ExternalLink>
                     , via{' '}
-                    <a
-                        className="menu-link"
-                        href={POLY_PIZZA}
-                        target="_blank"
-                        rel="noreferrer"
-                    >
+                    <ExternalLink href="https://poly.pizza">
                         poly.pizza
-                    </a>
+                    </ExternalLink>
                     :
                 </p>
                 <ul className="menu-list">
@@ -155,15 +138,7 @@ export const SECTIONS: Section[] = [
                     Built as a way to learn three.js, one hill at a time.
                     <br />
                     The source is on{' '}
-                    <a
-                        className="menu-link"
-                        href={REPO_URL}
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        Github
-                    </a>
-                    .
+                    <ExternalLink href={REPO_URL}>Github</ExternalLink>.
                 </p>
             </>
         ),
