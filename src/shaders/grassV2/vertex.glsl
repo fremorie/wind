@@ -65,7 +65,7 @@ void main() {
     float angle = remap(hashVal.x, -1.0, 1.0, -PI, PI);
 
     // Stiffness
-    float stiffness =  1.0;
+    float stiffness = 1.0 - hashVal.x;
     float tileGrassHeight = 1.0;
 
     // Figure out vertex id, > GRASS_VERTICES is other side
@@ -161,7 +161,7 @@ void main() {
     float noiseValue = noise(grassBladeWorldPos * 0.1);
 
     vColor = mix(c1, c2, smoothstep(-1.0, 1.0, noiseValue));
-    vColor = mix(vec3(1.0, 0.0, 0.0), vColor, stiffness);
+    vColor = mix(c1, vColor, stiffness);
     vGrassData = vec4(x, heightPercent, 0.0, 0.0);
     vNormal = normalize((modelMatrix * vec4(grassLocalNormal, 0.0)).xyz);
     vWorldPosition = (modelMatrix * vec4(grassLocalPosition, 1.0)).xyz;

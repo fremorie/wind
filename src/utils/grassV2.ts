@@ -1,8 +1,8 @@
-export const NUM_GRASS = 40 * 40;
+export const NUM_GRASS = 50 * 50;
 export const GRASS_SEGMENTS = 6;
 export const GRASS_VERTICES = (GRASS_SEGMENTS + 1) * 2;
 export const GRASS_PATCH_SIZE = 20;
-export const GRASS_WIDTH = 0.1;
+export const GRASS_WIDTH = 0.12;
 export const GRASS_HEIGHT = 1.7;
 
 export const GRASS_GRID_SIZE = 11;
