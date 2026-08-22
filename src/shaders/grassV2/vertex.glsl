@@ -113,11 +113,24 @@ void main() {
     // Generate grass matrix
     mat3 grassMat = rotateAxis(windAxis, windLeanAngle) * rotateY(angle);
 
+    // Road
     float roadMask = getRoadMask(grassBladeWorldPos.xz);
+
+    // Lake
+    float distanceToLake = length(grassBladeWorldPos.xz - vec2(uLakeCenterX, uLakeCenterZ));
+    float grassLine = uLakeRadius + uBeachWidth;
+    float lakeCull = smoothstep(grassLine, grassLine - 5.0, distanceToLake);
+    //localPosition *= (1.0 - lakeCull);
+
+    // No grass on the farm
+    //float farmMask = getFarmMask(wrappedTile);
+    //localPosition *= (1.0 - farmMask);
 
     vec3 grassLocalPosition = grassMat * vec3(x, y, z)
         // No grass on the road
         * (1.0 - roadMask)
+        // No grass in the lake
+        * (1.0 - lakeCull)
         + grassOffset;
     vec3 grassLocalNormal = grassMat * vec3(0.0, curveRot90 * curveGrad.yz);
 
@@ -139,19 +152,9 @@ void main() {
 
     mvPosition.x += viewSpaceThickenFactor * (xSide - 0.5) * width * 0.5 * (-zSide);
 
-    // No grass under water or on the beach
-    //float distanceToLake = length(wrappedTile - vec2(uLakeCenterX, uLakeCenterZ));
-    //float grassLine = uLakeRadius + uBeachWidth;
-    //float lakeCull = smoothstep(grassLine, grassLine - 5.0, distanceToLake);
-    //localPosition *= (1.0 - lakeCull);
-
-    // No grass on the farm
-    //float farmMask = getFarmMask(wrappedTile);
-    //localPosition *= (1.0 - farmMask);
-
     gl_Position = projectionMatrix * mvPosition;
-    // Hide microscopic grass blades at the edge of the road
-    gl_Position.w = roadMask > 0.5 ? 0.0 : gl_Position.w;
+    // Hide microscopic grass blades at the edge of the road, around the lake and the farm.
+    gl_Position.w = (roadMask + lakeCull) > 0.5 ? 0.0 : gl_Position.w;
 
     vec3 c1 = mix(uBaseColor, uTipColor, heightPercent);
     vec3 c2 = mix(uBaseColor2, uTipColor2, heightPercent);
