@@ -31,14 +31,14 @@ void main() {
     vec3 diffuseLighting = lambertLight(normal, viewDir, lightDir, lightColor);
 
     // Specular
-    vec3 specular = phongSpecular(normal, lightDir, viewDir);
+    //vec3 specular = phongSpecular(normal, lightDir, viewDir);
 
     // Fake AO
     float ao = remap(pow(grassY, 2.0), 0.0, 1.0, 0.125, 1.0);
 
     vec3 lighting = diffuseLighting * 0.5 + ambientLighting * 0.5;
 
-    vec3 color = baseColor * ambientLighting + specular * 0.25;
+    vec3 color = baseColor * ambientLighting;// + specular * 0.25;
     color *= ao;
 
     gl_FragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);

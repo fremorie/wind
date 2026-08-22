@@ -2,7 +2,7 @@ export const NUM_GRASS = 50 * 50;
 export const GRASS_SEGMENTS = 6;
 export const GRASS_VERTICES = (GRASS_SEGMENTS + 1) * 2;
 export const GRASS_PATCH_SIZE = 15;
-export const GRASS_WIDTH = 0.12;
+export const GRASS_WIDTH = 0.09;//0.12;
 export const GRASS_HEIGHT = 1.7;
 
 export const GRASS_GRID_SIZE = 11;
@@ -16,12 +16,12 @@ export const GRASS_TILES_IN_FRONT_OF_PLAYER =
 
 export const GRASS_LODS = [
     { maxDistance: 2, segments: 6, count: 1500, grassWidth: GRASS_WIDTH },
-    { maxDistance: 4, segments: 2, count: 1500, grassWidth: GRASS_WIDTH },
+    { maxDistance: 4, segments: 2, count: 1200, grassWidth: GRASS_WIDTH },
     {
         maxDistance: Infinity,
         segments: 2,
         count: 625,
-        grassWidth: GRASS_WIDTH + 0.2,
+        grassWidth: GRASS_WIDTH + 0.1,
     },
 ];
 
