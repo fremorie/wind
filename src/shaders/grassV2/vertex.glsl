@@ -4,6 +4,7 @@ uniform vec3 uTipColor;
 uniform vec3 uBaseColor;
 uniform vec3 uTipColor2;
 uniform vec3 uBaseColor2;
+uniform int uGrassCount;
 
 uniform vec2 uPlayerPosition;
 uniform vec3 uRoadCenter;
@@ -27,8 +28,23 @@ vec3 terrainHeight(vec3 worldPos) {
     return vec3(worldPos.x, noise(worldPos * 0.02) * 10.0, worldPos.z);
 }
 
-const vec3 BASE_COLOR = vec3(0.1, 0.4, 0.04);
-const vec3 TIP_COLOR = vec3(0.5, 0.7, 0.3);
+vec3 getGrassBladePosition(int instanceID, int grassCount, float grassPatchSize) {
+    float gridSize = sqrt(float(grassCount));
+    float cell = grassPatchSize / gridSize;
+
+    float x = mod(float(instanceID), gridSize);
+    float z = floor(float(instanceID) / gridSize);
+
+    vec2 cellCenter = (vec2(x, z) + 0.5) * cell - grassPatchSize * 0.5;
+    vec2 randomOffset = vec2(
+        hash21(float(instanceID)).x,
+        hash21(float(instanceID) + 123.456).x
+    ) - 0.5;
+
+    vec2 position = cellCenter + randomOffset * cell;
+
+    return vec3(position.x, 0.0, position.y);
+}
 
 void main() {
     int GRASS_SEGMENTS = int(grassParams.x);
@@ -39,9 +55,11 @@ void main() {
 
     // Figure out grass offset
     vec2 hashedInstanceID = hash21(float(gl_InstanceID)) * 2.0 - 1.0;
-    vec3 grassOffset = vec3(hashedInstanceID.x, 0.0, hashedInstanceID.y) * GRASS_PATCH_SIZE;
 
+    vec3 grassOffset = getGrassBladePosition(gl_InstanceID, uGrassCount, GRASS_PATCH_SIZE);
     grassOffset.y = getFinalElevation(grassOffset.xz);
+
+    float distanceToPlayer = distance(uPlayerPosition, grassOffset.xz);
 
     vec3 grassBladeWorldPos = (modelMatrix * vec4(grassOffset, 1.0)).xyz;
     vec3 hashVal = hash(grassBladeWorldPos);
@@ -116,7 +134,6 @@ void main() {
     grassLocalNormal = mix(grassLocalNormal, vec3(0.0, 1.0, 0.0), distanceBlend * 0.5);
     grassLocalNormal = normalize(grassLocalNormal);
 
-
     // Curve world
     vec4 worldPosition = modelMatrix * vec4(grassLocalPosition, 1.0);
     worldPosition.xyz = curveWorld(worldPosition.xyz, worldPosition.xz, uPlayerPosition, uCurvature);
@@ -131,9 +148,8 @@ void main() {
     mvPosition.x += viewSpaceThickenFactor * (xSide - 0.5) * width * 0.5 * (-zSide);
 
     gl_Position = projectionMatrix * mvPosition;
-    gl_Position.w = tileGrassHeight < 0.25 ? 0.0 : gl_Position.w;
+    //gl_Position.w = distanceToPlayer > 10.0 ? 0.0 : gl_Position.w;
 
-    //vColor = mix(BASE_COLOR, TIP_COLOR, heightPercent);
     vec3 c1 = mix(uBaseColor, uTipColor, heightPercent);
     vec3 c2 = mix(uBaseColor2, uTipColor2, heightPercent);
     float noiseValue = noise(grassBladeWorldPos * 0.1);

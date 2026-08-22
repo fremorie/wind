@@ -13,6 +13,7 @@ import {
     GRASS_PATCH_SIZE,
     GRASS_SEGMENTS,
     GRASS_WIDTH,
+    NUM_GRASS,
 } from '../utils/grassV2';
 
 export const GrassV2Material = shaderMaterial(
@@ -25,6 +26,8 @@ export const GrassV2Material = shaderMaterial(
             GRASS_WIDTH,
             GRASS_HEIGHT,
         ),
+
+        uGrassCount: NUM_GRASS,
 
         uTipColor: new THREE.Color('#608d34'),
         uBaseColor: new THREE.Color('#90d64b'),
