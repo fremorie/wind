@@ -80,24 +80,16 @@
     --ink-soft: color-mix(in srgb, var(--ink) 62%, transparent);
     --margin-red: #e08a84;
 
-    /* Ratio of available space to design size, clamped so the sheet never
-       scales *up* past its design size on a big monitor - it would only look
-       blurry and oversized. The 48px is breathing room at the edges.
+    /* Ratio of available space to design size. usePaperScale measures the
+       sheet and overwrites this on .menu-sheet; the 1 here is what shows if
+       that never runs, which leaves the sheet at its design size rather than
+       at some guess.
 
-       Dynamic viewport units, because on a phone 100vh is the height with
-       the browser's own chrome hidden - the sheet would be scaled to a
-       viewport taller than the one it is actually being shown in, and its
-       foot would sit behind the address bar.
-
-       tan(atan2(a, b)) is the CSS-native way to divide one length by another
-       and get back a plain number: calc() refuses to cancel units, and a
-       min() that mixes a number with lengths is invalid, which silently
-       drops the whole transform rather than just this value. */
-    --paper-scale: min(
-        1,
-        tan(atan2(calc(100dvh - 48px), var(--paper-h))),
-        tan(atan2(calc(100dvw - 48px), var(--paper-w)))
-    );
+       It is not computed here because CSS cannot divide one length by
+       another. The workaround for that is tan(atan2(a, b)), which this used
+       to be, and which WebKit evaluates to a negative number - scale(-n)
+       being a 180deg rotation, the whole menu came up upside down on iOS. */
+    --paper-scale: 1;
 
     /* The UA stylesheet fights every one of these: a dialog ships with a
        border, padding, a white background and a max-width of

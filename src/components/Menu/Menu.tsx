@@ -4,6 +4,7 @@ import { useModalDialog } from '../../hooks/useModalDialog';
 import { Arrow } from './Arrow';
 import { MenuItem } from './MenuItem';
 import { SECTIONS } from './sections';
+import { usePaperScale } from './usePaperScale';
 import './Menu.css';
 
 export function Menu() {
@@ -21,6 +22,10 @@ export function Menu() {
     const headingId = useId();
 
     const page = SECTIONS.find((section) => section.id === pageId);
+
+    // Fits the sheet to the viewport. Measured rather than computed in CSS -
+    // see the hook for why.
+    const { sheetRef, paperRef } = usePaperScale(open);
 
     // Gameplay keys are read by drei's KeyboardControls straight off `window`.
     // React dispatches from the root container, which sits below window in the
@@ -78,8 +83,8 @@ export function Menu() {
                 aria-labelledby={headingId}
                 onKeyDown={swallowKeyDown}
             >
-                <div className="menu-sheet">
-                    <div className="menu-paper">
+                <div className="menu-sheet" ref={sheetRef}>
+                    <div className="menu-paper" ref={paperRef}>
                         {page && (
                             <>
                                 <button
