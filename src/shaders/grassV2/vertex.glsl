@@ -24,11 +24,12 @@ varying vec3 vWorldPosition;
 #include "../includes/elevation.glsl"
 #include "../includes/curveWorld.glsl"
 
-vec3 terrainHeight(vec3 worldPos) {
-    return vec3(worldPos.x, noise(worldPos * 0.02) * 10.0, worldPos.z);
-}
-
-vec3 getGrassBladePosition(int instanceID, int grassCount, float grassPatchSize) {
+vec3 getGrassBladePosition(
+    int instanceID,
+    int grassCount,
+    float grassPatchSize,
+    vec2 tileOrigin
+) {
     float gridSize = sqrt(float(grassCount));
     float cell = grassPatchSize / gridSize;
 
@@ -36,10 +37,9 @@ vec3 getGrassBladePosition(int instanceID, int grassCount, float grassPatchSize)
     float z = floor(float(instanceID) / gridSize);
 
     vec2 cellCenter = (vec2(x, z) + 0.5) * cell - grassPatchSize * 0.5;
-    vec2 randomOffset = vec2(
-        hash21(float(instanceID)).x,
-        hash21(float(instanceID) + 123.456).x
-    ) - 0.5;
+    vec2 worldCellCenter = cellCenter + tileOrigin;
+
+    vec2 randomOffset = hash(vec3(worldCellCenter.x, 0.0, worldCellCenter.y)).xy * 0.5;
 
     vec2 position = cellCenter + randomOffset * cell;
 
@@ -54,15 +54,11 @@ void main() {
     float GRASS_HEIGHT = grassParams.w;
 
     // Figure out grass offset
-    vec2 hashedInstanceID = hash21(float(gl_InstanceID)) * 2.0 - 1.0;
-
-    vec3 grassOffset = getGrassBladePosition(gl_InstanceID, uGrassCount, GRASS_PATCH_SIZE);
-    grassOffset.y = getFinalElevation(grassOffset.xz);
-
-    float distanceToPlayer = distance(uPlayerPosition, grassOffset.xz);
-
+    vec2 tileOrigin = (modelMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xz;
+    vec3 grassOffset = getGrassBladePosition(gl_InstanceID, uGrassCount, GRASS_PATCH_SIZE, tileOrigin);
     vec3 grassBladeWorldPos = (modelMatrix * vec4(grassOffset, 1.0)).xyz;
     vec3 hashVal = hash(grassBladeWorldPos);
+    grassOffset.y = getFinalElevation(grassBladeWorldPos.xz);
 
     // Grass rotation
     const float PI = 3.1415926535;
@@ -71,10 +67,6 @@ void main() {
     // Stiffness
     float stiffness =  1.0;
     float tileGrassHeight = 1.0;
-
-    // Debug
-//    grassOffset = vec3(float(gl_InstanceID) * 0.5 - 8.0, 0.0, 0.0);
-//    angle = float(gl_InstanceID) * 0.2;
 
     // Figure out vertex id, > GRASS_VERTICES is other side
     int vertFB_ID = gl_VertexID % (GRASS_VERTICES * 2);
@@ -104,9 +96,6 @@ void main() {
     float randomLeanAnimation = noise(vec3(grassBladeWorldPos.xz, uTime * 4.0)) * (windStrength * 0.5 + 0.125);
     float leanFactor = remap(hashVal.y, -1.0, 1.0, -0.5, 0.5) + randomLeanAnimation;
 
-    // Debug
-    //leanFactor = 1.0;
-
     // Add the bezier curve for bend
     vec3 p1 = vec3(0.0);
     vec3 p2 = vec3(0.0, 0.33, 0.0);
@@ -123,8 +112,6 @@ void main() {
 
     // Generate grass matrix
     mat3 grassMat = rotateAxis(windAxis, windLeanAngle) * rotateY(angle);
-
-    float offset = float(gl_InstanceID) * 0.5;
 
     vec3 grassLocalPosition = grassMat * vec3(x, y, z) + grassOffset;
     vec3 grassLocalNormal = grassMat * vec3(0.0, curveRot90 * curveGrad.yz);
@@ -148,7 +135,6 @@ void main() {
     mvPosition.x += viewSpaceThickenFactor * (xSide - 0.5) * width * 0.5 * (-zSide);
 
     gl_Position = projectionMatrix * mvPosition;
-    //gl_Position.w = distanceToPlayer > 10.0 ? 0.0 : gl_Position.w;
 
     vec3 c1 = mix(uBaseColor, uTipColor, heightPercent);
     vec3 c2 = mix(uBaseColor2, uTipColor2, heightPercent);
