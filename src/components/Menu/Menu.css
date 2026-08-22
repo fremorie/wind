@@ -528,13 +528,37 @@
 
 /* ---------------------------------------------------------------- controls */
 
-/* A diagram of the keys rather than a list, so it sits in the middle of the
-   page rather than against the margin. */
-.menu-keyboard {
+/* Each half of the Controls page opens with a drawing rather than a list, so
+   it sits in the middle of the page rather than against the margin. No
+   margin: the drawing is a whole number of rules tall and the caption is
+   written on the rule directly under it, the way it would be on paper. The
+   blank rule between the two halves comes from the first caption's own
+   margin instead. */
+.menu-diagram {
     display: flex;
     justify-content: center;
+}
 
-    margin-bottom: var(--rule);
+/* The two halves of Controls, marked by size and weight. Underlining them
+   the way the root heading is underlined would draw a second line 4px under
+   one that is already printed on the page.
+
+   Bigger type sits lower in a line box of a fixed height, so like the list
+   this needs a nudge back up onto its rule - measured, not guessed, by the
+   method in the --baseline-nudge comment: the baseline of 26px type lands
+   2px below the baseline of the 19px body text. Re-measure if either size
+   moves. The nudge is `top` rather than a margin so it cannot change how
+   many rules the heading takes up. */
+.menu-subtitle {
+    --subtitle-nudge: -2px;
+
+    position: relative;
+    top: var(--subtitle-nudge);
+    margin: 0;
+
+    font-size: 26px;
+    font-weight: 500;
+    line-height: var(--rule);
 }
 
 /* Up over left, down, right. --cluster-rules is how many ruled lines the
@@ -571,6 +595,16 @@
 }
 .menu-cluster > :nth-child(4) {
     grid-area: right;
+}
+
+/* Same trick as the cluster: the height is a whole number of ruled lines,
+   and the drawing scales to it. The viewBox is square, so one length does
+   for both axes and the shape cannot end up stretched. */
+.menu-joystick {
+    --joystick-rules: 3;
+
+    width: calc(var(--rule) * var(--joystick-rules));
+    height: calc(var(--rule) * var(--joystick-rules));
 }
 
 /* Caption to the diagram above it rather than a paragraph in its own right,

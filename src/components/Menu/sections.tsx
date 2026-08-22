@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 
 import { Arrow } from './Arrow';
+import { JoystickDoodle } from './JoystickDoodle';
 import { ExternalLink, PolyLink } from './links';
 
 // One page per section, so every one of these has a hard budget: twelve
@@ -28,17 +29,24 @@ export const SECTIONS: Section[] = [
         label: 'Controls',
         title: 'Controls',
         icon: 'help',
-        // Drawn in the shape the keys actually sit in rather than listed one
-        // under the other: up first, then the bottom row left to right.
+        // Both halves on one page, and the page is full. Counting rules:
+        // a heading, three rules of keys and two lines of writing, then a
+        // blank rule, and the same again with three rules of joystick and a
+        // single line under it. Twelve, which is the whole budget - anything
+        // added here has to take a line off something else.
         //
-        // WASD is bound too - see the KeyboardControls map in App.tsx - but
-        // showing one cluster says everything the other one would. Space is
-        // in the map as well and deliberately absent here: nothing reads it
-        // yet, and a menu that lists keys which do nothing is worse than one
-        // that lists fewer.
+        // The keys are drawn in the shape they actually sit in rather than
+        // listed one under the other: up first, then the bottom row left to
+        // right. WASD is bound too - see the KeyboardControls map in
+        // App.tsx - but showing one cluster says everything the other one
+        // would. Space is in the map as well and deliberately absent here:
+        // nothing reads it yet, and a menu that lists keys which do nothing
+        // is worse than one that lists fewer.
         body: (
             <>
-                <div className="menu-keyboard">
+                <h3 className="menu-subtitle">Desktop</h3>
+
+                <div className="menu-diagram">
                     <div className="menu-cluster">
                         <kbd className="menu-key">
                             <Arrow direction="up" label="Up" />
@@ -61,6 +69,23 @@ export const SECTIONS: Section[] = [
                     Use the arrow keys to ride.
                     <br />
                     Hold <kbd className="menu-key">Shift</kbd> to sprint.
+                </p>
+
+                <h3 className="menu-subtitle">Mobile</h3>
+
+                <div className="menu-diagram">
+                    <JoystickDoodle />
+                </div>
+
+                {/* The stick is the only control on a phone - it steers and
+                    it is the throttle at once - so the line is about how far
+                    you push it rather than about which button does what.
+
+                    One line, and it has to stay one: it measures 317px in
+                    the 355px column, and a second line would run into the
+                    drawing at the foot of the page. */}
+                <p className="menu-caption">
+                    Drag the knob. Further out, faster.
                 </p>
             </>
         ),
