@@ -5,14 +5,11 @@ import useGame from '../../store/useGame';
 import {
     generateGrassTilePositions,
     GRASS_PATCH_SIZE,
-    GRASS_SEGMENTS,
     wrapGrassTile,
 } from '../../utils/grassV2';
-import { createGrassGeometry } from './utils';
-import { GrassV2Material } from '../../materials/grassV2Material';
+import { createLodLevels } from './utils';
 
-const geometry = createGrassGeometry(GRASS_SEGMENTS);
-const material = new GrassV2Material();
+const lodLevels = createLodLevels();
 
 export function GrassFieldV2() {
     const playerPosition = useGame((state) => state.playerPosition);
@@ -22,8 +19,13 @@ export function GrassFieldV2() {
     );
 
     useFrame((_, delta) => {
-        material.uTime += delta;
-        material.uPlayerPosition.set(playerPosition.x, playerPosition.z);
+        lodLevels.forEach((level) => {
+            level.material.uTime += delta;
+            level.material.uPlayerPosition.set(
+                playerPosition.x,
+                playerPosition.z,
+            );
+        });
 
         const playerX = playerPosition.x;
         const playerZ = playerPosition.z;
@@ -47,8 +49,8 @@ export function GrassFieldV2() {
         <>
             {grassTiles.map((grassTile) => (
                 <mesh
-                    geometry={geometry}
-                    material={material}
+                    geometry={lodLevels[grassTile.lod].geometry}
+                    material={lodLevels[grassTile.lod].material}
                     position={grassTile.position}
                     key={grassTile.key}
                 />

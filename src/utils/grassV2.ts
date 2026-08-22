@@ -19,6 +19,7 @@ export type GrassTilePosition = [x: number, y: number, z: number];
 export type GridChunk = {
     position: GrassTilePosition;
     key: string;
+    lod: number; // 0 - near, 1 - far
 };
 
 export function generateGrassTilePositions(
@@ -32,6 +33,7 @@ export function generateGrassTilePositions(
             positions.push({
                 position: [x * GRASS_PATCH_SIZE, 0, z * GRASS_PATCH_SIZE],
                 key: `${x}_${z}`,
+                lod: 0,
             });
         }
     }
@@ -47,10 +49,14 @@ export function wrapGrassTile(
     const newGrassTile: GridChunk = {
         position: [...grassTile.position],
         key: grassTile.key,
+        lod: 0,
     };
 
     const chunkCellX = grassTile.position[0] / GRASS_PATCH_SIZE;
     const chunkCellZ = grassTile.position[2] / GRASS_PATCH_SIZE;
+
+    let newCellX = chunkCellX;
+    let newCellZ = chunkCellZ;
 
     const shouldWrapNorth =
         chunkCellX < playerCellX - GRASS_TILES_BEHIND_PLAYER;
@@ -59,30 +65,42 @@ export function wrapGrassTile(
         chunkCellX > playerCellX + GRASS_TILES_IN_FRONT_OF_PLAYER;
     const shouldWrapWest = chunkCellZ > playerCellZ + GRASS_RECYCLING_RADIUS_Z;
 
-    if (
-        !shouldWrapNorth &&
-        !shouldWrapEast &&
-        !shouldWrapSouth &&
-        !shouldWrapWest
-    ) {
-        return grassTile;
-    }
-
     if (shouldWrapNorth) {
         newGrassTile.position[0] += GRASS_GRID_TOTAL_SIZE;
+        newCellX += GRASS_GRID_SIZE;
     }
 
     if (shouldWrapEast) {
         newGrassTile.position[2] += GRASS_GRID_TOTAL_SIZE;
+        newCellZ += GRASS_GRID_SIZE;
     }
 
     if (shouldWrapSouth) {
         newGrassTile.position[0] -= GRASS_GRID_TOTAL_SIZE;
+        newCellX -= GRASS_GRID_SIZE;
     }
 
     if (shouldWrapWest) {
         newGrassTile.position[2] -= GRASS_GRID_TOTAL_SIZE;
+        newCellZ -= GRASS_GRID_SIZE;
     }
 
+    const distanceToPlayer = Math.max(
+        Math.abs(newCellX - playerCellX),
+        Math.abs(newCellZ - playerCellZ),
+    );
+
+    const newLod = distanceToPlayer <= 2 ? 0 : 1;
+
+    if (
+        newCellX === chunkCellX &&
+        newCellZ === chunkCellZ &&
+        newLod === grassTile.lod
+    ) {
+        // Must be literally the same object
+        return grassTile;
+    }
+
+    newGrassTile.lod = newLod;
     return newGrassTile;
 }

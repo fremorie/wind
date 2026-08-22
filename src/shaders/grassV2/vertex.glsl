@@ -65,7 +65,7 @@ void main() {
     float angle = remap(hashVal.x, -1.0, 1.0, -PI, PI);
 
     // Stiffness
-    float stiffness = 1.0 - hashVal.x;
+    float stiffness = 1.0;// - hashVal.x;
     float tileGrassHeight = 1.0;
 
     // Figure out vertex id, > GRASS_VERTICES is other side

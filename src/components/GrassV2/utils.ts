@@ -1,8 +1,13 @@
 import * as THREE from 'three';
 
-import { GRASS_PATCH_SIZE, NUM_GRASS } from '../../utils/grassV2';
+import {
+    GRASS_HEIGHT,
+    GRASS_PATCH_SIZE,
+    GRASS_WIDTH,
+} from '../../utils/grassV2';
+import { GrassV2Material } from '../../materials/grassV2Material';
 
-export function createGrassGeometry(segments: number) {
+export function createGrassGeometry(segments: number, grassBladeCount: number) {
     const VERTICES = (segments + 1) * 2;
     const indices = [];
 
@@ -28,7 +33,7 @@ export function createGrassGeometry(segments: number) {
     }
 
     const geo = new THREE.InstancedBufferGeometry();
-    geo.instanceCount = NUM_GRASS;
+    geo.instanceCount = grassBladeCount;
     geo.setIndex(indices);
     geo.boundingSphere = new THREE.Sphere(
         new THREE.Vector3(0, 0, 0),
@@ -36,4 +41,28 @@ export function createGrassGeometry(segments: number) {
     );
 
     return geo;
+}
+
+export const GRASS_LODS = [
+    { segments: 6, count: 2500 },
+    { segments: 1, count: 2500 },
+];
+
+export function createLodLevels() {
+    return GRASS_LODS.map((level) => {
+        const geometry = createGrassGeometry(level.segments, level.count);
+        const material = new GrassV2Material();
+        material.grassParams.set(
+            level.segments,
+            GRASS_PATCH_SIZE,
+            GRASS_WIDTH,
+            GRASS_HEIGHT,
+        );
+        material.uGrassCount = level.count;
+
+        return {
+            geometry,
+            material,
+        };
+    });
 }
