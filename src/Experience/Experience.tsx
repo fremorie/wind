@@ -36,7 +36,7 @@ export function Experience() {
 
             <RoadSign />
 
-            <OrbitControls makeDefault />
+            {debug && <OrbitControls makeDefault />}
         </>
     );
 }
