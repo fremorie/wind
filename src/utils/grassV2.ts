@@ -1,9 +1,10 @@
 export const NUM_GRASS = 50 * 50;
 export const GRASS_SEGMENTS = 6;
-export const GRASS_VERTICES = (GRASS_SEGMENTS + 1) * 2;
 export const GRASS_PATCH_SIZE = 15;
-export const GRASS_WIDTH = 0.09;//0.12;
+export const GRASS_WIDTH = 0.09; //0.12;
 export const GRASS_HEIGHT = 1.7;
+
+export const GRASS_MAX_GRID = 40;
 
 export const GRASS_GRID_SIZE = 11;
 export const GRASS_GRID_TOTAL_SIZE = GRASS_GRID_SIZE * GRASS_PATCH_SIZE;
@@ -15,15 +16,22 @@ export const GRASS_TILES_IN_FRONT_OF_PLAYER =
     GRASS_GRID_SIZE - GRASS_TILES_BEHIND_PLAYER - 1;
 
 export const GRASS_LODS = [
-    { maxDistance: 2, segments: 6, count: 1500, grassWidth: GRASS_WIDTH },
-    { maxDistance: 4, segments: 2, count: 1200, grassWidth: GRASS_WIDTH },
+    { maxDistance: 3, segments: 6, gridSize: GRASS_MAX_GRID },
+    { maxDistance: 5, segments: 2, gridSize: 20 },
     {
         maxDistance: Infinity,
         segments: 2,
-        count: 625,
-        grassWidth: GRASS_WIDTH + 0.1,
+        gridSize: 10,
     },
 ];
+
+export const GRASS_FADE_END: number[] = GRASS_LODS.map((level) =>
+    Number.isFinite(level.maxDistance)
+        ? level.maxDistance * GRASS_PATCH_SIZE
+        : 1e9,
+);
+
+export const GRASS_FADE_BAND = GRASS_PATCH_SIZE * 0.75;
 
 export type GrassTilePosition = [x: number, y: number, z: number];
 

@@ -9,11 +9,14 @@ import {
 } from '../utils/constants';
 import { grassV2FragmentShader, grassV2VertexShader } from '../shaders';
 import {
+    GRASS_FADE_BAND,
+    GRASS_FADE_END,
     GRASS_HEIGHT,
     GRASS_PATCH_SIZE,
     GRASS_SEGMENTS,
     GRASS_WIDTH,
     NUM_GRASS,
+    GRASS_MAX_GRID,
 } from '../utils/grassV2';
 
 export const GrassV2Material = shaderMaterial(
@@ -28,6 +31,11 @@ export const GrassV2Material = shaderMaterial(
         ),
 
         uGrassCount: NUM_GRASS,
+        uGridSize: GRASS_MAX_GRID,
+        uMaxGridSize: GRASS_MAX_GRID,
+        uFadeEnd: new THREE.Vector3(...GRASS_FADE_END),
+        uFadeBand: GRASS_FADE_BAND,
+        uWidthGain: 1.2,
 
         uTipColor: new THREE.Color('#608d34'),
         uBaseColor: new THREE.Color('#90d64b'),

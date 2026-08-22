@@ -4,7 +4,12 @@ uniform vec3 uTipColor;
 uniform vec3 uBaseColor;
 uniform vec3 uTipColor2;
 uniform vec3 uBaseColor2;
-uniform int uGrassCount;
+
+uniform float uGridSize;
+uniform float uMaxGridSize;
+uniform vec3 uFadeEnd;
+uniform float uFadeBand;
+uniform float uWidthGain;
 
 uniform vec2 uPlayerPosition;
 uniform vec3 uRoadCenter;
@@ -26,15 +31,19 @@ varying vec3 vWorldPosition;
 
 vec3 getGrassBladePosition(
     int instanceID,
-    int grassCount,
+    float gridSize,
+    float maxGridSize,
     float grassPatchSize,
-    vec2 tileOrigin
+    vec2 tileOrigin,
+    out vec2 gridCoord
 ) {
-    float gridSize = sqrt(float(grassCount));
-    float cell = grassPatchSize / gridSize;
+    float stride = maxGridSize / gridSize;
+    // Always the finest cell, so a blade keeps its position across LODs.
+    float cell = grassPatchSize / maxGridSize;
 
-    float x = mod(float(instanceID), gridSize);
-    float z = floor(float(instanceID) / gridSize);
+    float x = mod(float(instanceID), gridSize) * stride;
+    float z = floor(float(instanceID) / gridSize) * stride;
+    gridCoord = vec2(x, z);
 
     vec2 cellCenter = (vec2(x, z) + 0.5) * cell - grassPatchSize * 0.5;
     vec2 worldCellCenter = cellCenter + tileOrigin;
@@ -46,6 +55,18 @@ vec3 getGrassBladePosition(
     return vec3(position.x, 0.0, position.y);
 }
 
+float getBladeLevel(vec2 gridCoord) {
+    if (mod(gridCoord.x, 4.0) == 0.0 && mod(gridCoord.y, 4.0) == 0.0) {
+        return 2.0;
+    }
+
+    if (mod(gridCoord.x, 2.0) == 0.0 && mod(gridCoord.y, 2.0) == 0.0) {
+        return 1.0;
+    }
+
+    return 0.0;
+}
+
 void main() {
     int GRASS_SEGMENTS = int(grassParams.x);
     int GRASS_VERTICES = (GRASS_SEGMENTS + 1) * 2;
@@ -55,7 +76,15 @@ void main() {
 
     // Figure out grass offset
     vec2 tileOrigin = (modelMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xz;
-    vec3 grassOffset = getGrassBladePosition(gl_InstanceID, uGrassCount, GRASS_PATCH_SIZE, tileOrigin);
+    vec2 gridCoord;
+    vec3 grassOffset = getGrassBladePosition(
+        gl_InstanceID,
+        uGridSize,
+        uMaxGridSize,
+        GRASS_PATCH_SIZE,
+        tileOrigin,
+        gridCoord
+    );
     vec3 grassBladeWorldPos = (modelMatrix * vec4(grassOffset, 1.0)).xyz;
     vec3 hashVal = hash(grassBladeWorldPos);
     grassOffset.y = getFinalElevation(grassBladeWorldPos.xz);
@@ -66,7 +95,16 @@ void main() {
 
     // Stiffness
     float stiffness = 1.0;// - hashVal.x;
-    float tileGrassHeight = 1.0;
+
+    float bladeLevel = getBladeLevel(gridCoord);
+    float fadeEnd = bladeLevel > 1.5 ? uFadeEnd.z
+        : bladeLevel > 0.5 ? uFadeEnd.y
+        : uFadeEnd.x;
+
+    vec2 playerDelta = abs(grassBladeWorldPos.xz - uPlayerPosition);
+    float playerDistance = max(playerDelta.x, playerDelta.y);
+
+    float tileGrassHeight = 1.0 - smoothstep(fadeEnd - uFadeBand, fadeEnd, playerDistance);
 
     // Figure out vertex id, > GRASS_VERTICES is other side
     int vertFB_ID = gl_VertexID % (GRASS_VERTICES * 2);
@@ -79,8 +117,9 @@ void main() {
     float zSide = float(zTest);
     float heightPercent = float(vertID - xTest) / (float(GRASS_SEGMENTS) * 2.0);
 
-    float width = GRASS_WIDTH * easeOut(1.0 - heightPercent, 4.0) * tileGrassHeight;
-    float height = GRASS_HEIGHT;
+    float densityCompensation = 1.0 + uWidthGain * smoothstep(0.0, uFadeEnd.y, playerDistance);
+    float width = GRASS_WIDTH * easeOut(1.0 - heightPercent, 4.0) * tileGrassHeight * densityCompensation;
+    float height = GRASS_HEIGHT * tileGrassHeight;
 
     // Calculate the vertex position
     float x = (xSide - 0.5) * width;
@@ -154,7 +193,10 @@ void main() {
 
     gl_Position = projectionMatrix * mvPosition;
     // Hide microscopic grass blades at the edge of the road, around the lake and the farm.
-    gl_Position.w = (roadMask + lakeCull + farmMask) > 0.5 ? 0.0 : gl_Position.w;
+    gl_Position.w = (
+        (roadMask + lakeCull + farmMask) > 0.5 ||
+        tileGrassHeight <= 0.0
+    ) ? 0.0 : gl_Position.w;
 
     vec3 c1 = mix(uBaseColor, uTipColor, heightPercent);
     vec3 c2 = mix(uBaseColor2, uTipColor2, heightPercent);

@@ -4,6 +4,7 @@ import {
     GRASS_HEIGHT,
     GRASS_LODS,
     GRASS_PATCH_SIZE,
+    GRASS_WIDTH,
 } from '../../utils/grassV2';
 import { GrassV2Material } from '../../materials/grassV2Material';
 
@@ -45,15 +46,18 @@ export function createGrassGeometry(segments: number, grassBladeCount: number) {
 
 export function createLodLevels() {
     return GRASS_LODS.map((level) => {
-        const geometry = createGrassGeometry(level.segments, level.count);
+        const geometry = createGrassGeometry(
+            level.segments,
+            level.gridSize * level.gridSize,
+        );
         const material = new GrassV2Material();
         material.grassParams.set(
             level.segments,
             GRASS_PATCH_SIZE,
-            level.grassWidth,
+            GRASS_WIDTH,
             GRASS_HEIGHT,
         );
-        material.uGrassCount = level.count;
+        material.uGridSize = level.gridSize;
 
         return {
             geometry,
