@@ -1,7 +1,7 @@
 export const NUM_GRASS = 50 * 50;
 export const GRASS_SEGMENTS = 6;
 export const GRASS_VERTICES = (GRASS_SEGMENTS + 1) * 2;
-export const GRASS_PATCH_SIZE = 20;
+export const GRASS_PATCH_SIZE = 15;
 export const GRASS_WIDTH = 0.12;
 export const GRASS_HEIGHT = 1.7;
 
@@ -13,6 +13,17 @@ const GRASS_RECYCLING_RADIUS_Z = Math.floor(GRASS_GRID_SIZE / 2);
 export const GRASS_TILES_BEHIND_PLAYER = 1;
 export const GRASS_TILES_IN_FRONT_OF_PLAYER =
     GRASS_GRID_SIZE - GRASS_TILES_BEHIND_PLAYER - 1;
+
+export const GRASS_LODS = [
+    { maxDistance: 2, segments: 6, count: 1500, grassWidth: GRASS_WIDTH },
+    { maxDistance: 4, segments: 2, count: 1500, grassWidth: GRASS_WIDTH },
+    {
+        maxDistance: Infinity,
+        segments: 2,
+        count: 625,
+        grassWidth: GRASS_WIDTH + 0.2,
+    },
+];
 
 export type GrassTilePosition = [x: number, y: number, z: number];
 
@@ -90,7 +101,9 @@ export function wrapGrassTile(
         Math.abs(newCellZ - playerCellZ),
     );
 
-    const newLod = distanceToPlayer <= 2 ? 0 : 1;
+    const newLod = GRASS_LODS.findIndex(
+        (level) => distanceToPlayer <= level.maxDistance,
+    );
 
     if (
         newCellX === chunkCellX &&
