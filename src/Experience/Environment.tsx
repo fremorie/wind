@@ -94,7 +94,7 @@ export function Environment() {
                 shadow-camera-near={-5}
                 shadow-camera-far={20}
                 shadow-radius={10}
-                shadow-mapSize={[1024, 1024]}
+                shadow-mapSize={[1500, 1500]}
             />
             <ambientLight color={ambientColor} intensity={1.5} />
             <fog attach="fog" args={[fogColor, 5, 250]} />
