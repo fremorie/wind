@@ -9,16 +9,23 @@ const hex = (color: Color) => `#${color.getHexString()}`;
 export function useGrassV2Controls(materials: GrassV2MaterialImpl[]) {
     const [reference] = materials;
 
-    const { uBaseColor, uTipColor, uBaseColor2, uTipColor2, uHorizonColor } =
-        useControls('Grass', {
-            Colors: folder({
-                uBaseColor: { value: hex(reference.uBaseColor) },
-                uTipColor: { value: hex(reference.uTipColor) },
-                uBaseColor2: { value: hex(reference.uBaseColor2) },
-                uTipColor2: { value: hex(reference.uTipColor2) },
-                uHorizonColor: { value: hex(reference.uHorizonColor) },
-            }),
-        });
+    const {
+        uBaseColor,
+        uTipColor,
+        uBaseColor2,
+        uTipColor2,
+        uHorizonColor,
+        uRoadSideColor,
+    } = useControls('Grass', {
+        Colors: folder({
+            uBaseColor: { value: hex(reference.uBaseColor) },
+            uTipColor: { value: hex(reference.uTipColor) },
+            uBaseColor2: { value: hex(reference.uBaseColor2) },
+            uTipColor2: { value: hex(reference.uTipColor2) },
+            uHorizonColor: { value: hex(reference.uHorizonColor) },
+            uRoadSideColor: { value: hex(reference.uRoadSideColor) },
+        }),
+    });
 
     useEffect(() => {
         materials.forEach((material) => {
@@ -27,6 +34,7 @@ export function useGrassV2Controls(materials: GrassV2MaterialImpl[]) {
             material.uBaseColor2.set(uBaseColor2);
             material.uTipColor2.set(uTipColor2);
             material.uHorizonColor.set(uHorizonColor);
+            material.uRoadSideColor.set(uRoadSideColor);
         });
     }, [
         materials,
@@ -35,5 +43,6 @@ export function useGrassV2Controls(materials: GrassV2MaterialImpl[]) {
         uBaseColor2,
         uTipColor2,
         uHorizonColor,
+        uRoadSideColor,
     ]);
 }

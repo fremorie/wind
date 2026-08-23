@@ -22,6 +22,7 @@ varying vec4 vGrassData;
 varying vec3 vNormal;
 varying vec3 vWorldPosition;
 varying float vDistanceToPlayer;
+varying float vRoadMask;
 
 #include "../includes/utils.glsl"
 #include "../includes/hash.glsl"
@@ -211,4 +212,5 @@ void main() {
     vNormal = normalize((modelMatrix * vec4(grassLocalNormal, 0.0)).xyz);
     vWorldPosition = worldPosition.xyz;
     vDistanceToPlayer = distanceToPlayer;
+    vRoadMask = roadMask;
 }

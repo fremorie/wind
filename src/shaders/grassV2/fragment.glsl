@@ -1,11 +1,13 @@
 uniform vec2 uPlayerPosition;
 uniform vec3 uHorizonColor;
+uniform vec3 uRoadSideColor;
 
 varying vec3 vColor;
 varying vec4 vGrassData;
 varying vec3 vNormal;
 varying vec3 vWorldPosition;
 varying float vDistanceToPlayer;
+varying float vRoadMask;
 
 #include "../includes/utils.glsl"
 #include "../includes/lights.glsl"
@@ -44,6 +46,9 @@ void main() {
 
     vec3 color = baseColor * ambientLighting;// + specular * 0.25;
     color *= ao;
+
+    // Lighter grass on the side of the road
+    color = mix(color, uRoadSideColor, vRoadMask);
 
     // Lighter grass on the horizon
     float distanceMix = smoothstep(-5.0, 100.0, vDistanceToPlayer);
