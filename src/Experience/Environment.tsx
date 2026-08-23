@@ -19,7 +19,6 @@ import { folder, useControls } from 'leva';
 import useGame from '../store/useGame';
 import { useSkyControls } from './useSkyControls';
 import { useDebug } from '../hooks/useDebug';
-import { CHUNK_SIZE } from '../utils/constants';
 
 export function Environment() {
     const debug = useDebug();
@@ -81,15 +80,15 @@ export function Environment() {
                 castShadow
                 position={[1, 2, 3]}
                 intensity={4.5}
-                shadow-normalBias={0.04}
-                shadow-camera-left={-15}
-                shadow-camera-right={CHUNK_SIZE * 2}
-                shadow-camera-top={15}
-                shadow-camera-bottom={-CHUNK_SIZE * 2}
-                shadow-camera-near={-CHUNK_SIZE * 2}
-                shadow-camera-far={CHUNK_SIZE}
+                shadow-normalBias={0}
+                shadow-camera-left={-5}
+                shadow-camera-right={5}
+                shadow-camera-top={5}
+                shadow-camera-bottom={-4}
+                shadow-camera-near={0}
+                shadow-camera-far={15}
                 shadow-radius={10}
-                shadow-mapSize={[2048 * 2, 2048 * 2]}
+                shadow-mapSize={[1024, 1024]}
             />
             <ambientLight intensity={1.5} />
             <fog attach="fog" args={[fogColor, 5, 250]} />

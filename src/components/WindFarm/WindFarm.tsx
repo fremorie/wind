@@ -91,11 +91,7 @@ export function WindFarm({
     );
 
     return (
-        <Merged
-            meshes={meshes}
-            limit={128}
-            frustumCulled={false}
-        >
+        <Merged meshes={meshes} limit={128} frustumCulled={false}>
             {(parts) =>
                 turbines.map((data) => (
                     <Turbine
