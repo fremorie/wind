@@ -8,11 +8,15 @@ import {
     wrapGrassTile,
 } from '../../utils/grassV2';
 import { createLodLevels } from './utils';
+import { useGrassV2Controls } from './useGrassV2Controls';
 
 const lodLevels = createLodLevels();
+const lodMaterials = lodLevels.map((level) => level.material);
 
 export function GrassFieldV2() {
     const playerPosition = useGame((state) => state.playerPosition);
+
+    useGrassV2Controls(lodMaterials);
 
     const [grassTiles, setGrassTiles] = useState(() =>
         generateGrassTilePositions(),
