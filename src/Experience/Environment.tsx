@@ -32,8 +32,13 @@ export function Environment() {
 
     const { fogColor } = useControls({
         Fog: folder({
-            fogColor: '#99a370',
+            fogColor: '#bea091',
         }),
+    });
+
+    const { ambientColor, directionalColor } = useControls('Lights', {
+        ambientColor: '#ffefd2',
+        directionalColor: '#e8ae47',
     });
 
     useFrame(() => {
@@ -78,19 +83,20 @@ export function Environment() {
             <directionalLight
                 ref={lightRef}
                 castShadow
+                color={directionalColor}
                 position={[1, 2, 3]}
                 intensity={4.5}
                 shadow-normalBias={0}
-                shadow-camera-left={-5}
-                shadow-camera-right={5}
+                shadow-camera-left={-10}
+                shadow-camera-right={10}
                 shadow-camera-top={5}
                 shadow-camera-bottom={-4}
-                shadow-camera-near={0}
-                shadow-camera-far={15}
+                shadow-camera-near={-5}
+                shadow-camera-far={20}
                 shadow-radius={10}
                 shadow-mapSize={[1024, 1024]}
             />
-            <ambientLight intensity={1.5} />
+            <ambientLight color={ambientColor} intensity={1.5} />
             <fog attach="fog" args={[fogColor, 5, 250]} />
         </>
     );

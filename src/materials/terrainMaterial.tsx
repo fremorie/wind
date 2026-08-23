@@ -20,7 +20,7 @@ export const terrainUniforms = {
 
     uNoiseColor: new THREE.Uniform(new THREE.Color('#836c04')),
 
-    uGrassTipColor: new THREE.Uniform(new THREE.Color('#97a071')),
+    uGrassTipColor: new THREE.Uniform(new THREE.Color('#a38e68')),
     uGrassBaseColor: new THREE.Uniform(new THREE.Color('#1a2e03')),
 
     uPlayerPosition: new THREE.Uniform(new THREE.Vector2()),
@@ -33,8 +33,8 @@ export const terrainUniforms = {
     // Lake
     uLakeCenterX: new THREE.Uniform(LAKE_CENTER[0]),
     uLakeCenterZ: new THREE.Uniform(LAKE_CENTER[1]),
-    uColorWaterShallow: new THREE.Uniform(new THREE.Color('#60cfd8')),
-    uColorWaterDeep: new THREE.Uniform(new THREE.Color('#1c7d93')),
+    uColorWaterShallow: new THREE.Uniform(new THREE.Color('#8dc4d1')),
+    uColorWaterDeep: new THREE.Uniform(new THREE.Color('#255355')),
 };
 
 export const terrainMaterial = new CustomShaderMaterial({

@@ -2,11 +2,7 @@ import * as THREE from 'three';
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 
-import {
-    CHUNK_SIZE,
-    GRID_SIZE_Z,
-    SIDE_ROAD_X,
-} from '../utils/constants';
+import { CHUNK_SIZE, GRID_SIZE_Z, SIDE_ROAD_X } from '../utils/constants';
 
 interface GameState {
     playerPosition: THREE.Vector3;

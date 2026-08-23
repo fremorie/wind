@@ -146,6 +146,7 @@ export function InstancedTree({ trees, species, recycle }: Props) {
                     frustumCulled={false}
                     customDepthMaterial={part.depthMaterial}
                     receiveShadow={part.receiveShadow}
+                    castShadow
                 />
             ))}
         </>
