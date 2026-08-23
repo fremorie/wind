@@ -31,7 +31,7 @@ void main() {
     // Beach
     float distanceToLake = length(vPosition.xz - vec2(uLakeCenterX, uLakeCenterZ));
     float grassLine = uLakeRadius + uBeachWidth;
-    float sandMask = smoothstep(grassLine, grassLine - 5.0, distanceToLake);
+    float sandMask = smoothstep(grassLine, grassLine - 17.0, distanceToLake);
     color = mix(color, uColorDirt, sandMask);
 
     // Water
@@ -42,8 +42,10 @@ void main() {
     vec3 waterColor = mix(uColorWaterShallow, uColorWaterDeep, waterMix);
     color = mix(color, waterColor, waterMask);
 
+    float litMask = vRoadMask + vFarmMask + sandMask + waterMask;
+
     // Final color
     csm_DiffuseColor = vec4(color, 1.0);
     csm_FragColor = vec4(color, 1.0);
-    csm_UnlitFac = distanceMix;
+    csm_UnlitFac = distanceMix * (1.0 - sandMask);
 }

@@ -33,7 +33,7 @@ export function Environment() {
 
     const { fogColor } = useControls({
         Fog: folder({
-            fogColor: '#bed6e3',
+            fogColor: '#99a370',
         }),
     });
 
@@ -92,7 +92,7 @@ export function Environment() {
                 shadow-mapSize={[2048 * 2, 2048 * 2]}
             />
             <ambientLight intensity={1.5} />
-            <fog attach="fog" args={[fogColor, 20, 250]} />
+            <fog attach="fog" args={[fogColor, 5, 250]} />
         </>
     );
 }

@@ -75,7 +75,7 @@ export const WORLD_SETTINGS = {
     // Lake
     uLakeRadius: 70,
     uLakeDepth: 20,
-    uBeachWidth: 0.5,
+    uBeachWidth: 0.25,
     uLakeSurfaceLevel: -2,
 
     // Farm

@@ -159,7 +159,7 @@ void main() {
     // Lake
     float distanceToLake = length(grassBladeWorldPos.xz - vec2(uLakeCenterX, uLakeCenterZ));
     float grassLine = uLakeRadius + uBeachWidth;
-    float lakeCull = smoothstep(grassLine, grassLine - 5.0, distanceToLake);
+    float lakeCull = smoothstep(grassLine, grassLine - 17.0, distanceToLake);
 
     // Farm
     float farmMask = getFarmMask(grassBladeWorldPos.xz);
@@ -195,7 +195,7 @@ void main() {
     gl_Position = projectionMatrix * mvPosition;
     // Hide microscopic grass blades at the edge of the road, around the lake and the farm.
     gl_Position.w = (
-        (roadMask + lakeCull + farmMask) > 0.5 ||
+        (roadMask + lakeCull + farmMask) > 0.55 ||
         tileGrassHeight <= 0.0
     ) ? 0.0 : gl_Position.w;
 
