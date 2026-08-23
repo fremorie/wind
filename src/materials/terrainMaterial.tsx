@@ -6,7 +6,7 @@ import { GRID_TOTAL_WIDTH, LAKE_CENTER } from '../utils/constants';
 
 export const terrainUniforms = {
     uColorGrass: new THREE.Uniform(new THREE.Color('#2B3D13')),
-    uColorDirt: new THREE.Uniform(new THREE.Color('#c4bb82')),
+    uColorDirt: new THREE.Uniform(new THREE.Color('#ada364')),
 
     uGrassTipColor: new THREE.Uniform(new THREE.Color('#6d9022')),
     uGrassBaseColor: new THREE.Uniform(new THREE.Color('#1a2e03')),
@@ -28,7 +28,7 @@ export const terrainUniforms = {
 export const terrainMaterial = new CustomShaderMaterial({
     // MeshStandardMaterial props
     metalness: 0,
-    roughness: 0.8,
+    roughness: 1,
     color: '#85d534',
 
     // Shader (CSM props)
