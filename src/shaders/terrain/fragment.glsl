@@ -10,7 +10,6 @@ uniform vec3 uGrassTipColor;
 uniform vec3 uGrassBaseColor;
 
 varying vec3 vPosition;
-varying float vUpDot;
 varying float vRoadMask;
 varying float vFarmMask;
 

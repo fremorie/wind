@@ -46,7 +46,7 @@ void main() {
     color *= ao;
 
     // Lighter grass on the horizon
-    float distanceMix = smoothstep(-5.0, 150.0, vDistanceToPlayer);
+    float distanceMix = smoothstep(-5.0, 100.0, vDistanceToPlayer);
     color = mix(color, uHorizonColor, distanceMix);
 
     gl_FragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
