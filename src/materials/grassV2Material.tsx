@@ -17,6 +17,11 @@ import {
     GRASS_WIDTH,
     GRASS_MAX_GRID,
 } from '../utils/grassV2';
+import {
+    TRAIL_AREA_SIZE,
+    TRAIL_FLATTEN,
+    TRAIL_PUSH,
+} from '../utils/grassTrail';
 
 export const GrassV2Material = shaderMaterial(
     {
@@ -57,6 +62,13 @@ export const GrassV2Material = shaderMaterial(
         uPlayerPosition: new THREE.Vector2(),
 
         uTileSize: GRASS_TILE_SIZE,
+
+        // Trail
+        uTrailMap: null as THREE.Texture | null,
+        uTrailCenter: new THREE.Vector2(),
+        uTrailSize: TRAIL_AREA_SIZE,
+        uTrailPush: TRAIL_PUSH,
+        uTrailFlatten: TRAIL_FLATTEN,
 
         // Lake
         uLakeCenterX: LAKE_CENTER[0],

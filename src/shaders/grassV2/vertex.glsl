@@ -14,6 +14,14 @@ uniform float uWidthGain;
 uniform vec2 uPlayerPosition;
 uniform vec3 uRoadCenter;
 uniform float uTileSize;
+
+// Trail. RG = direction to push a blade (encoded to 0..1), B = strength.
+uniform sampler2D uTrailMap;
+uniform vec2 uTrailCenter;
+uniform float uTrailSize;
+uniform float uTrailPush;
+uniform float uTrailFlatten;
+
 uniform float uLakeCenterX;
 uniform float uLakeCenterZ;
 
@@ -165,7 +173,34 @@ void main() {
     // Farm
     float farmMask = getFarmMask(grassBladeWorldPos.xz);
 
-    vec3 grassLocalPosition = grassMat * vec3(x, y, z)
+    // Trail. The map only covers the grass near the player, so a blade outside
+    // it is simply upright.
+    vec2 trailUv = (grassBladeWorldPos.xz - uTrailCenter) / uTrailSize + 0.5;
+    bool inTrailMap = all(greaterThanEqual(trailUv, vec2(0.0)))
+        && all(lessThanEqual(trailUv, vec2(1.0)));
+    vec4 trailSample = inTrailMap
+        ? textureLod(uTrailMap, trailUv, 0.0)
+        : vec4(0.5, 0.5, 0.0, 1.0);
+
+    float trailStrength = trailSample.b;
+    vec2 trailDirection = trailSample.rg * 2.0 - 1.0;
+    // Linear filtering between texels pointing opposite ways cancels out.
+    trailDirection = dot(trailDirection, trailDirection) > 1e-6
+        ? normalize(trailDirection)
+        : vec2(0.0);
+
+    vec3 bladeVertex = grassMat * vec3(x, y, z);
+    // The further up the blade, the further it is carried, so it bends over
+    // instead of sliding sideways. Squashing the height at the same time keeps
+    // it from stretching as it goes.
+    bladeVertex.xz += trailDirection
+        * trailStrength
+        * uTrailPush
+        * heightPercent
+        * heightPercent;
+    bladeVertex.y *= 1.0 - trailStrength * uTrailFlatten;
+
+    vec3 grassLocalPosition = bladeVertex
         // No grass on the road
         * (1.0 - roadMask)
         // No grass in the lake
@@ -178,6 +213,8 @@ void main() {
     // Blend normal
     float distanceBlend = smoothstep(0.0, 10.0, distance(cameraPosition, grassBladeWorldPos));
     grassLocalNormal = mix(grassLocalNormal, vec3(0.0, 1.0, 0.0), distanceBlend * 0.5);
+    // Flattened grass shows its top face rather than its edge.
+    grassLocalNormal = mix(grassLocalNormal, vec3(0.0, 1.0, 0.0), trailStrength * 0.7);
     grassLocalNormal = normalize(grassLocalNormal);
 
     // Curve world

@@ -16,6 +16,8 @@ export function useGrassV2Controls(materials: GrassV2MaterialImpl[]) {
         uTipColor2,
         uHorizonColor,
         uRoadSideColor,
+        uTrailPush,
+        uTrailFlatten,
     } = useControls('Grass', {
         Colors: folder({
             uBaseColor: { value: hex(reference.uBaseColor) },
@@ -24,6 +26,20 @@ export function useGrassV2Controls(materials: GrassV2MaterialImpl[]) {
             uTipColor2: { value: hex(reference.uTipColor2) },
             uHorizonColor: { value: hex(reference.uHorizonColor) },
             uRoadSideColor: { value: hex(reference.uRoadSideColor) },
+        }),
+        Trail: folder({
+            uTrailPush: {
+                value: reference.uTrailPush,
+                min: 0,
+                max: 2,
+                step: 0.01,
+            },
+            uTrailFlatten: {
+                value: reference.uTrailFlatten,
+                min: 0,
+                max: 1,
+                step: 0.01,
+            },
         }),
     });
 
@@ -35,6 +51,8 @@ export function useGrassV2Controls(materials: GrassV2MaterialImpl[]) {
             material.uTipColor2.set(uTipColor2);
             material.uHorizonColor.set(uHorizonColor);
             material.uRoadSideColor.set(uRoadSideColor);
+            material.uTrailPush = uTrailPush;
+            material.uTrailFlatten = uTrailFlatten;
         });
     }, [
         materials,
@@ -44,5 +62,7 @@ export function useGrassV2Controls(materials: GrassV2MaterialImpl[]) {
         uTipColor2,
         uHorizonColor,
         uRoadSideColor,
+        uTrailPush,
+        uTrailFlatten,
     ]);
 }
