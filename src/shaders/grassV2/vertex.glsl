@@ -169,7 +169,7 @@ void main() {
     // Lake
     float distanceToLake = length(grassBladeWorldPos.xz - vec2(uLakeCenterX, uLakeCenterZ));
     float grassLine = uLakeRadius + uBeachWidth;
-    float lakeCull = smoothstep(grassLine, grassLine - 17.0, distanceToLake);
+    float lakeCull = smoothstep(grassLine, grassLine - 15.0, distanceToLake);
 
     // Trail. The map only covers the grass near the player, so a blade outside
     // it is simply upright.

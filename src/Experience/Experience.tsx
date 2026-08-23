@@ -8,6 +8,7 @@ import { TreesV2 } from '../components/Foliage/TreesV2';
 import { Player } from '../components/Player';
 import { OrbitControls } from '@react-three/drei';
 import { GrassFieldV2 } from '../components/GrassV2';
+import { LakeTrees } from '../components/LakeTrees';
 
 export function Experience() {
     const debug = useDebug();
@@ -25,7 +26,8 @@ export function Experience() {
             <GrassFieldV2 />
             <WaterSurface />
             <WindFarm />
-            <TreesV2 count={TREES_V2_COUNT} />
+            <TreesV2 count={TREES_V2_COUNT} recycle />
+            <LakeTrees />
 
             {debug && <OrbitControls makeDefault />}
         </>

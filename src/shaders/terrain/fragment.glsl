@@ -32,11 +32,11 @@ void main() {
     // Beach
     float distanceToLake = length(vPosition.xz - vec2(uLakeCenterX, uLakeCenterZ));
     float grassLine = uLakeRadius + uBeachWidth;
-    float sandMask = smoothstep(grassLine, grassLine - 17.0, distanceToLake);
+    float sandMask = smoothstep(grassLine, grassLine - 9.0, distanceToLake);
     color = mix(color, uColorDirt, sandMask);
 
     // Noise
-    color = mix(color, uNoiseColor, vec3(perlinNoise) * 0.25 * vRoadMask);
+    color = mix(color, uNoiseColor, vec3(perlinNoise) * 0.15 * vRoadMask);
 
     // Water
     float lakeRegion = smoothstep(uLakeRadius, uLakeRadius - 0.5, distanceToLake);

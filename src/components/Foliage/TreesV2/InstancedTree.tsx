@@ -49,9 +49,10 @@ type GLTFResult = GLTF & {
 type Props = {
     trees: Instance[];
     species: TreeSpecies;
+    recycle: boolean;
 };
 
-export function InstancedTree({ trees, species }: Props) {
+export function InstancedTree({ trees, species, recycle }: Props) {
     const meshRefs = useRef<Array<THREE.InstancedMesh | null>>([]);
     const playerPosition = useGame((state) => state.playerPosition);
 
@@ -112,18 +113,24 @@ export function InstancedTree({ trees, species }: Props) {
     }, [trees, parts]);
 
     useFrame(() => {
-        const moved = recycleInstances(
-            trees,
-            playerPosition.x,
-            playerPosition.z,
-            (index) =>
-                stampSpawnTime(spawnTimes, index, foliageUniforms.uTime.value),
-        );
+        if (recycle) {
+            const moved = recycleInstances(
+                trees,
+                playerPosition.x,
+                playerPosition.z,
+                (index) =>
+                    stampSpawnTime(
+                        spawnTimes,
+                        index,
+                        foliageUniforms.uTime.value,
+                    ),
+            );
 
-        if (!moved) return;
+            if (!moved) return;
 
-        for (const mesh of meshRefs.current) {
-            if (mesh) writeInstanceMatrices(mesh, trees);
+            for (const mesh of meshRefs.current) {
+                if (mesh) writeInstanceMatrices(mesh, trees);
+            }
         }
     });
 
