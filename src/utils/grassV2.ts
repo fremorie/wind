@@ -6,7 +6,7 @@ export const GRASS_HEIGHT = 1.7;
 
 export const GRASS_MAX_GRID = 40;
 
-export const GRASS_GRID_SIZE = 11;
+export const GRASS_GRID_SIZE = 13;
 export const GRASS_GRID_TOTAL_SIZE = GRASS_GRID_SIZE * GRASS_PATCH_SIZE;
 
 const GRASS_RECYCLING_RADIUS_Z = Math.floor(GRASS_GRID_SIZE / 2);
@@ -16,12 +16,12 @@ export const GRASS_TILES_IN_FRONT_OF_PLAYER =
     GRASS_GRID_SIZE - GRASS_TILES_BEHIND_PLAYER - 1;
 
 export const GRASS_LODS = [
-    { maxDistance: 3, segments: 6, gridSize: GRASS_MAX_GRID },
-    { maxDistance: 5, segments: 2, gridSize: 20 },
+    { maxDistance: 4, segments: 5, gridSize: GRASS_MAX_GRID },
+    { maxDistance: 10, segments: 2, gridSize: GRASS_MAX_GRID / 2 },
     {
         maxDistance: Infinity,
-        segments: 2,
-        gridSize: 10,
+        segments: 1,
+        gridSize: GRASS_MAX_GRID / 4,
     },
 ];
 

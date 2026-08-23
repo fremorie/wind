@@ -13,24 +13,46 @@ const hex = (color: Color) => `#${color.getHexString()}`;
  * React Compiler lint rule.
  */
 export function useTerrainControls() {
-    const { uColorGrass, uColorDirt, uColorWaterShallow, uColorWaterDeep } =
-        useControls('Terrain', {
-            Colors: folder({
-                uColorGrass: { value: hex(terrainUniforms.uColorGrass.value) },
-                uColorDirt: { value: hex(terrainUniforms.uColorDirt.value) },
-                uColorWaterShallow: {
-                    value: hex(terrainUniforms.uColorWaterShallow.value),
-                },
-                uColorWaterDeep: {
-                    value: hex(terrainUniforms.uColorWaterDeep.value),
-                },
-            }),
-        });
+    const {
+        uColorGrass,
+        uColorDirt,
+        uColorWaterShallow,
+        uColorWaterDeep,
+        uGrassBaseColor,
+        uGrassTipColor,
+    } = useControls('Terrain', {
+        Colors: folder({
+            uColorGrass: { value: hex(terrainUniforms.uColorGrass.value) },
+            uColorDirt: { value: hex(terrainUniforms.uColorDirt.value) },
+            uColorWaterShallow: {
+                value: hex(terrainUniforms.uColorWaterShallow.value),
+            },
+            uColorWaterDeep: {
+                value: hex(terrainUniforms.uColorWaterDeep.value),
+            },
+            uGrassTipColor: {
+                value: hex(terrainUniforms.uGrassTipColor.value),
+            },
+            uGrassBaseColor: {
+                value: hex(terrainUniforms.uGrassBaseColor.value),
+            },
+        }),
+    });
 
     useEffect(() => {
         terrainUniforms.uColorDirt.value.set(uColorDirt);
         terrainUniforms.uColorGrass.value.set(uColorGrass);
         terrainUniforms.uColorWaterShallow.value.set(uColorWaterShallow);
         terrainUniforms.uColorWaterDeep.value.set(uColorWaterDeep);
-    }, [uColorGrass, uColorDirt, uColorWaterShallow, uColorWaterDeep]);
+
+        terrainUniforms.uGrassTipColor.value.set(uGrassTipColor);
+        terrainUniforms.uGrassBaseColor.value.set(uGrassBaseColor);
+    }, [
+        uColorGrass,
+        uColorDirt,
+        uColorWaterShallow,
+        uColorWaterDeep,
+        uGrassBaseColor,
+        uGrassTipColor,
+    ]);
 }

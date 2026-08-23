@@ -21,6 +21,7 @@ varying vec3 vColor;
 varying vec4 vGrassData;
 varying vec3 vNormal;
 varying vec3 vWorldPosition;
+varying float vDistanceToPlayer;
 
 #include "../includes/utils.glsl"
 #include "../includes/hash.glsl"
@@ -50,7 +51,7 @@ vec3 getGrassBladePosition(
 
     vec2 randomOffset = hash(vec3(worldCellCenter.x, 0.0, worldCellCenter.y)).xy * 0.5;
 
-    vec2 position = cellCenter + randomOffset * cell;
+    vec2 position = cellCenter + randomOffset * cell * 4.0;
 
     return vec3(position.x, 0.0, position.y);
 }
@@ -202,9 +203,12 @@ void main() {
     vec3 c2 = mix(uBaseColor2, uTipColor2, heightPercent);
     float noiseValue = noise(grassBladeWorldPos * 0.1);
 
+    float distanceToPlayer = distance(worldPosition.xz, uPlayerPosition);
+
     vColor = mix(c1, c2, smoothstep(-1.0, 1.0, noiseValue));
     vColor = mix(c1, vColor, stiffness);
     vGrassData = vec4(x, heightPercent, 0.0, 0.0);
     vNormal = normalize((modelMatrix * vec4(grassLocalNormal, 0.0)).xyz);
-    vWorldPosition = (modelMatrix * vec4(grassLocalPosition, 1.0)).xyz;
+    vWorldPosition = worldPosition.xyz;
+    vDistanceToPlayer = distanceToPlayer;
 }

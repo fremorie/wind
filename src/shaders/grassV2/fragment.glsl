@@ -1,7 +1,11 @@
+uniform vec2 uPlayerPosition;
+uniform vec3 uHorizonColor;
+
 varying vec3 vColor;
 varying vec4 vGrassData;
 varying vec3 vNormal;
 varying vec3 vWorldPosition;
+varying float vDistanceToPlayer;
 
 #include "../includes/utils.glsl"
 #include "../includes/lights.glsl"
@@ -40,6 +44,10 @@ void main() {
 
     vec3 color = baseColor * ambientLighting;// + specular * 0.25;
     color *= ao;
+
+    // Lighter grass on the horizon
+    float distanceMix = smoothstep(-5.0, 150.0, vDistanceToPlayer);
+    color = mix(color, uHorizonColor, distanceMix);
 
     gl_FragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
 }

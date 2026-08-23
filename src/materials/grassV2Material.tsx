@@ -15,7 +15,6 @@ import {
     GRASS_PATCH_SIZE,
     GRASS_SEGMENTS,
     GRASS_WIDTH,
-    NUM_GRASS,
     GRASS_MAX_GRID,
 } from '../utils/grassV2';
 
@@ -30,7 +29,6 @@ export const GrassV2Material = shaderMaterial(
             GRASS_HEIGHT,
         ),
 
-        uGrassCount: NUM_GRASS,
         uGridSize: GRASS_MAX_GRID,
         uMaxGridSize: GRASS_MAX_GRID,
         uFadeEnd: new THREE.Vector3(...GRASS_FADE_END),
@@ -42,6 +40,8 @@ export const GrassV2Material = shaderMaterial(
 
         uTipColor2: new THREE.Color('#b2e04f'),
         uBaseColor2: new THREE.Color('#5e7a20'),
+
+        uHorizonColor: new THREE.Color('#81A63D'),
 
         uShadowColor: new THREE.Color('#88a9c4'),
         uAlphaMap: null as THREE.Texture | null,

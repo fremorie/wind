@@ -4,6 +4,10 @@ uniform float uLakeCenterX;
 uniform float uLakeCenterZ;
 uniform vec3 uColorWaterShallow;
 uniform vec3 uColorWaterDeep;
+uniform vec2 uPlayerPosition;
+
+uniform vec3 uGrassTipColor;
+uniform vec3 uGrassBaseColor;
 
 varying vec3 vPosition;
 varying float vUpDot;
@@ -13,6 +17,13 @@ varying float vFarmMask;
 void main() {
     // Color
     vec3 color = vec3(uColorGrass);
+
+    // Grass gradient
+    float distanceToPlayer = distance(vPosition.xz, uPlayerPosition);
+    float distanceMix = smoothstep(-5.0, 100.0, distanceToPlayer);
+    color = mix(uGrassBaseColor, uGrassTipColor, distanceMix);
+
+    // Road
     color = mix(color, uColorDirt, vRoadMask);
 
     // Farm
