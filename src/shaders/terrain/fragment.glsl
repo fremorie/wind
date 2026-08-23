@@ -11,7 +11,6 @@ uniform vec3 uGrassBaseColor;
 
 varying vec3 vPosition;
 varying float vRoadMask;
-varying float vFarmMask;
 
 void main() {
     // Color
@@ -24,9 +23,6 @@ void main() {
 
     // Road
     color = mix(color, uColorDirt, vRoadMask);
-
-    // Farm
-    color = mix(color, uColorDirt, vFarmMask);
 
     // Beach
     float distanceToLake = length(vPosition.xz - vec2(uLakeCenterX, uLakeCenterZ));
@@ -42,7 +38,7 @@ void main() {
     vec3 waterColor = mix(uColorWaterShallow, uColorWaterDeep, waterMix);
     color = mix(color, waterColor, waterMask);
 
-    float litMask = vRoadMask + vFarmMask + sandMask + waterMask;
+    float litMask = vRoadMask + sandMask + waterMask;
 
     // Final color
     csm_DiffuseColor = vec4(color, 1.0);

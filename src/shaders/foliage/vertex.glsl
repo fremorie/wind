@@ -35,10 +35,6 @@ void main() {
     float roadMask = getRoadMask(groundXZ);
     csm_Position.xyz *= (1.0 - step(0.5, roadMask));
 
-    // No trees on the farm
-    float farmMask = getFarmMask(groundXZ);
-    csm_Position.xyz *= (1.0 - step(0.1, farmMask));
-
     csm_Position.xyz *= instanceGrowth(uTime);
 
     // Final position

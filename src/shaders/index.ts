@@ -12,7 +12,6 @@ import treeFragment from './tree/fragment.glsl';
 import treeVertex from './tree/vertex.glsl';
 import waterSurfaceFragment from './waterSurface/fragment.glsl';
 import waterSurfaceVertex from './waterSurface/vertex.glsl';
-import farmVertex from './farm/vertex.glsl';
 import grassV2Vertex from './grassV2/vertex.glsl';
 import grassV2Fragment from './grassV2/fragment.glsl';
 import grassTrailVertex from './grassTrail/vertex.glsl';
@@ -45,8 +44,6 @@ export const treeFragmentShader = withWorldSettings(treeFragment);
 export const waterSurfaceVertexShader = withWorldSettings(waterSurfaceVertex);
 export const waterSurfaceFragmentShader =
     withWorldSettings(waterSurfaceFragment);
-
-export const farmVertexShader = withWorldSettings(farmVertex);
 
 export const grassV2FragmentShader = withWorldSettings(grassV2Fragment);
 export const grassV2VertexShader = withWorldSettings(grassV2Vertex);

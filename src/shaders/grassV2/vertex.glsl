@@ -170,9 +170,6 @@ void main() {
     float grassLine = uLakeRadius + uBeachWidth;
     float lakeCull = smoothstep(grassLine, grassLine - 17.0, distanceToLake);
 
-    // Farm
-    float farmMask = getFarmMask(grassBladeWorldPos.xz);
-
     // Trail. The map only covers the grass near the player, so a blade outside
     // it is simply upright.
     vec2 trailUv = (grassBladeWorldPos.xz - uTrailCenter) / uTrailSize + 0.5;
@@ -205,8 +202,6 @@ void main() {
         * (1.0 - roadMask)
         // No grass in the lake
         * (1.0 - lakeCull)
-        // No grass on the farm
-        * (1.0 - farmMask)
         + grassOffset;
     vec3 grassLocalNormal = grassMat * vec3(0.0, curveRot90 * curveGrad.yz);
 
@@ -233,7 +228,7 @@ void main() {
     gl_Position = projectionMatrix * mvPosition;
     // Hide microscopic grass blades at the edge of the road, around the lake and the farm.
     gl_Position.w = (
-        (roadMask + lakeCull + farmMask) > 0.55 ||
+        (roadMask + lakeCull) > 0.55 ||
         tileGrassHeight <= 0.0
     ) ? 0.0 : gl_Position.w;
 

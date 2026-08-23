@@ -5,7 +5,6 @@ uniform float uLakeCenterZ;
 
 varying vec3 vPosition;
 varying float vRoadMask;
-varying float vFarmMask;
 
 #include "../includes/curveWorld.glsl"
 #include "../includes/elevation.glsl"
@@ -38,7 +37,6 @@ void main() {
     vPosition = csm_Position;
     vPosition.xz = worldUV;
     vRoadMask = roadMask;
-    vFarmMask = getFarmMask(worldUV);
 
     // Curve world
     csm_Position = curveWorld(csm_Position, worldUV, uPlayerPosition, uCurvature);

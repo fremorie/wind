@@ -122,18 +122,6 @@ export const SECTIONS: Section[] = [
                         <PolyLink id="j4KsIuJYnq">Small Bridge</PolyLink>
                     </li>
                     <li>
-                        <PolyLink id="q1N3xn2SpC">Big barn</PolyLink>
-                    </li>
-                    <li>
-                        <PolyLink id="DM0F8siLam">Chicken Coop</PolyLink>
-                    </li>
-                    <li>
-                        <PolyLink id="5GhLrv5Ce3">Silo</PolyLink>
-                    </li>
-                    <li>
-                        <PolyLink id="26zM1outCr">Cow</PolyLink>
-                    </li>
-                    <li>
                         <PolyLink id="RieYOsjDj8">Birch tree dead</PolyLink>
                     </li>
                     <li>

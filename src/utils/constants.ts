@@ -32,24 +32,6 @@ export const TREES_V2_COUNT = 20;
 export const SIDE_ROAD_X = 400;
 const ROAD_WIDTH = 12;
 
-// Farm
-export const FARM_WIDTH = 226;
-export const FARM_DEPTH = 113;
-
-const FARM_Z = GRID_TOTAL_WIDTH + 100 + FARM_WIDTH / 2;
-const FARM_X = SIDE_ROAD_X + ROAD_WIDTH;
-
-export const FARM_BOUNDS = [
-    // bottom left
-    [FARM_X, FARM_Z],
-    // bottom right
-    [FARM_X, FARM_Z + FARM_WIDTH],
-    // top left
-    [FARM_X + FARM_DEPTH, FARM_Z],
-    // top right
-    [FARM_X + FARM_DEPTH, FARM_Z + FARM_WIDTH],
-];
-
 /**
  * The only copy of the world's shape, read by both terrains: the CPU one in
  * utils/elevation.ts and the GPU one in shaders/includes/elevation.glsl.
@@ -77,13 +59,6 @@ export const WORLD_SETTINGS = {
     uLakeDepth: 20,
     uBeachWidth: 0.25,
     uLakeSurfaceLevel: -2,
-
-    // Farm
-    uFarmBottomLeftX: FARM_BOUNDS[0][0],
-    uFarmBottomLeftZ: FARM_BOUNDS[0][1],
-    uFarmWidth: FARM_WIDTH,
-    uFarmDepth: FARM_DEPTH,
-    uFarmFalloff: 5,
 } as const;
 
 // Unpacked so call sites can import a single value.
@@ -101,9 +76,4 @@ export const {
     uLakeDepth,
     uBeachWidth,
     uLakeSurfaceLevel,
-    uFarmBottomLeftX,
-    uFarmBottomLeftZ,
-    uFarmWidth,
-    uFarmDepth,
-    uFarmFalloff,
 } = WORLD_SETTINGS;

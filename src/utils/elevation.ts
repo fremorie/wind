@@ -5,11 +5,6 @@ import { terrainUniforms } from '../materials/terrainMaterial';
 import {
     uBeachWidth,
     uCurvature,
-    uFarmBottomLeftX,
-    uFarmBottomLeftZ,
-    uFarmDepth,
-    uFarmFalloff,
-    uFarmWidth,
     uLakeDepth,
     uLakeRadius,
     uPositionFrequency,
@@ -98,38 +93,6 @@ function getRoadElevation(x: number): number {
     return getBaseElevation(x, roadCenterZ(x)) * roadFlatness;
 }
 
-// 1 over the flat farm pad, falling to 0 across uFarmFalloff units *outside*
-// the bounds, so FARM_BOUNDS describes the flat region itself.
-function getFarmMask(x: number, z: number): number {
-    const x0 = uFarmBottomLeftX;
-    const x1 = uFarmBottomLeftX + uFarmDepth;
-    const z0 = uFarmBottomLeftZ;
-    const z1 = uFarmBottomLeftZ + uFarmWidth;
-
-    // Positive inside, negative outside
-    const insideX = Math.min(x - x0, x1 - x);
-    const insideZ = Math.min(z - z0, z1 - z);
-
-    return (
-        smoothstep(-uFarmFalloff, 0, insideX) *
-        smoothstep(-uFarmFalloff, 0, insideZ)
-    );
-}
-
-// The pad's height. Unlike getRoadElevation, which follows the terrain along
-// the road's length, this samples one fixed point -- the farm centre -- so the
-// pad is level everywhere. Takes no position for that reason.
-export function getFarmElevation(): number {
-    const farmFlatness = 0.2;
-
-    return (
-        getBaseElevation(
-            uFarmBottomLeftX + uFarmDepth / 2,
-            uFarmBottomLeftZ + uFarmWidth / 2,
-        ) * farmFlatness
-    );
-}
-
 function getLakeDepth(x: number, z: number): number {
     const dist = Math.hypot(
         x - terrainUniforms.uLakeCenterX.value,
@@ -139,13 +102,11 @@ function getLakeDepth(x: number, z: number): number {
 }
 
 export function getElevation(x: number, z: number): number {
-    let elevation = mix(
+    const elevation = mix(
         getBaseElevation(x, z),
         getRoadElevation(x),
         getRoadMask(x, z),
     );
-
-    elevation = mix(elevation, getFarmElevation(), getFarmMask(x, z));
 
     return elevation - getLakeDepth(x, z);
 }
