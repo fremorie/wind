@@ -41,7 +41,7 @@ export const GrassV2Material = shaderMaterial(
         uTipColor2: new THREE.Color('#b2b418'),
         uBaseColor2: new THREE.Color('#365517'),
 
-        uHorizonColor: new THREE.Color('#81A63D'),
+        uHorizonColor: new THREE.Color('#99a370'),
 
         uShadowColor: new THREE.Color('#88a9c4'),
         uAlphaMap: null as THREE.Texture | null,

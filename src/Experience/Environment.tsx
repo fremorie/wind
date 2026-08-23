@@ -14,7 +14,7 @@ import {
     type DirectionalLight,
     type Object3D,
 } from 'three';
-// import { folder, useControls } from 'leva';
+import { folder, useControls } from 'leva';
 
 import useGame from '../store/useGame';
 import { useSkyControls } from './useSkyControls';
@@ -31,11 +31,11 @@ export function Environment() {
     const playerPosition = useGame((state) => state.playerPosition);
     const sky = useSkyControls();
 
-    // const { fogColor } = useControls({
-    //     Fog: folder({
-    //         fogColor: '#bed6e3',
-    //     }),
-    // });
+    const { fogColor } = useControls({
+        Fog: folder({
+            fogColor: '#bed6e3',
+        }),
+    });
 
     useFrame(() => {
         if (!lightRef.current || !skyRef.current) return;
@@ -92,7 +92,7 @@ export function Environment() {
                 shadow-mapSize={[2048 * 2, 2048 * 2]}
             />
             <ambientLight intensity={1.5} />
-            {/*<fog attach="fog" args={[fogColor, 20, 150]} />*/}
+            <fog attach="fog" args={[fogColor, 20, 250]} />
         </>
     );
 }

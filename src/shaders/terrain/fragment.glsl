@@ -44,4 +44,6 @@ void main() {
 
     // Final color
     csm_DiffuseColor = vec4(color, 1.0);
+    csm_FragColor = vec4(color, 1.0);
+    csm_UnlitFac = distanceMix;
 }

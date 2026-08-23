@@ -17,7 +17,7 @@ export const GRASS_TILES_IN_FRONT_OF_PLAYER =
 
 export const GRASS_LODS = [
     { maxDistance: 4, segments: 5, gridSize: GRASS_MAX_GRID },
-    { maxDistance: 10, segments: 2, gridSize: GRASS_MAX_GRID / 2 },
+    { maxDistance: 7, segments: 2, gridSize: GRASS_MAX_GRID / 2 },
     {
         maxDistance: Infinity,
         segments: 1,

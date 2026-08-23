@@ -9,17 +9,16 @@ const hex = (color: Color) => `#${color.getHexString()}`;
 export function useGrassV2Controls(materials: GrassV2MaterialImpl[]) {
     const [reference] = materials;
 
-    const { uBaseColor, uTipColor, uBaseColor2, uTipColor2 } = useControls(
-        'Grass',
-        {
+    const { uBaseColor, uTipColor, uBaseColor2, uTipColor2, uHorizonColor } =
+        useControls('Grass', {
             Colors: folder({
                 uBaseColor: { value: hex(reference.uBaseColor) },
                 uTipColor: { value: hex(reference.uTipColor) },
                 uBaseColor2: { value: hex(reference.uBaseColor2) },
                 uTipColor2: { value: hex(reference.uTipColor2) },
+                uHorizonColor: { value: hex(reference.uHorizonColor) },
             }),
-        },
-    );
+        });
 
     useEffect(() => {
         materials.forEach((material) => {
@@ -27,6 +26,14 @@ export function useGrassV2Controls(materials: GrassV2MaterialImpl[]) {
             material.uTipColor.set(uTipColor);
             material.uBaseColor2.set(uBaseColor2);
             material.uTipColor2.set(uTipColor2);
+            material.uHorizonColor.set(uHorizonColor);
         });
-    }, [materials, uBaseColor, uTipColor, uBaseColor2, uTipColor2]);
+    }, [
+        materials,
+        uBaseColor,
+        uTipColor,
+        uBaseColor2,
+        uTipColor2,
+        uHorizonColor,
+    ]);
 }
