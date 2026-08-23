@@ -5,6 +5,8 @@ uniform float uLakeCenterZ;
 uniform vec3 uColorWaterShallow;
 uniform vec3 uColorWaterDeep;
 uniform vec2 uPlayerPosition;
+uniform sampler2D uPerlinNoiseTexture;
+uniform vec3 uNoiseColor;
 
 uniform vec3 uGrassTipColor;
 uniform vec3 uGrassBaseColor;
@@ -13,6 +15,9 @@ varying vec3 vPosition;
 varying float vRoadMask;
 
 void main() {
+    // Noise
+    float perlinNoise = texture(uPerlinNoiseTexture, vPosition.xz * 0.05).r;
+
     // Color
     vec3 color = vec3(uColorGrass);
 
@@ -29,6 +34,9 @@ void main() {
     float grassLine = uLakeRadius + uBeachWidth;
     float sandMask = smoothstep(grassLine, grassLine - 17.0, distanceToLake);
     color = mix(color, uColorDirt, sandMask);
+
+    // Noise
+    color = mix(color, uNoiseColor, vec3(perlinNoise) * 0.25 * vRoadMask);
 
     // Water
     float lakeRegion = smoothstep(uLakeRadius, uLakeRadius - 0.5, distanceToLake);

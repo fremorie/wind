@@ -4,9 +4,21 @@ import * as THREE from 'three';
 import { terrainFragmentShader, terrainVertexShader } from '../shaders';
 import { GRID_TOTAL_WIDTH, LAKE_CENTER } from '../utils/constants';
 
+const textureLoader = new THREE.TextureLoader();
+
+const perlinNoiseTexture = textureLoader.load(
+    './textures/perlinNoise/perlin.png',
+);
+perlinNoiseTexture.wrapS = THREE.RepeatWrapping;
+perlinNoiseTexture.wrapT = THREE.RepeatWrapping;
+
 export const terrainUniforms = {
+    uPerlinNoiseTexture: new THREE.Uniform(perlinNoiseTexture),
+
     uColorGrass: new THREE.Uniform(new THREE.Color('#2B3D13')),
     uColorDirt: new THREE.Uniform(new THREE.Color('#ada364')),
+
+    uNoiseColor: new THREE.Uniform(new THREE.Color('#836c04')),
 
     uGrassTipColor: new THREE.Uniform(new THREE.Color('#97a071')),
     uGrassBaseColor: new THREE.Uniform(new THREE.Color('#1a2e03')),
