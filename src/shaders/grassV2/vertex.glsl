@@ -31,6 +31,7 @@ varying vec3 vNormal;
 varying vec3 vWorldPosition;
 varying float vDistanceToPlayer;
 varying float vRoadMask;
+varying float vLakeMask;
 
 #include "../includes/utils.glsl"
 #include "../includes/hash.glsl"
@@ -245,4 +246,5 @@ void main() {
     vWorldPosition = worldPosition.xyz;
     vDistanceToPlayer = distanceToPlayer;
     vRoadMask = roadMask;
+    vLakeMask = lakeCull;
 }
