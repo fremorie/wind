@@ -1,6 +1,5 @@
 import { Terrain } from '../components/Terrain';
 import { Environment } from './Environment';
-import { Grass } from '../components/Grass';
 import { WindFarm } from '../components/WindFarm';
 import { Cow } from '../components/Cow';
 import { WaterSurface } from '../components/WaterSurface';
@@ -26,7 +25,7 @@ export function Experience() {
 
             <Terrain />
 
-            {debug ? <GrassFieldV2 /> : <Grass />}
+            <GrassFieldV2 />
             <WaterSurface />
             <Cow />
             <WindFarm />
