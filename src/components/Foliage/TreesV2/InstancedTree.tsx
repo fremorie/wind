@@ -138,7 +138,6 @@ export function InstancedTree({ trees, species }: Props) {
                     args={[part.geometry, part.material, trees.length]}
                     frustumCulled={false}
                     customDepthMaterial={part.depthMaterial}
-                    castShadow
                     receiveShadow={part.receiveShadow}
                 />
             ))}

@@ -80,16 +80,12 @@ export function WindTurbine(props: ThreeElements['group']) {
     return (
         <group {...props} dispose={null} ref={groupRef}>
             <mesh
-                castShadow
-                receiveShadow
                 ref={rotatorRef}
                 geometry={nodes.Rotator.geometry}
                 material={materials.BaseColor}
                 position={[0, 3.278, 0.011]}
             >
                 <mesh
-                    castShadow
-                    receiveShadow
                     ref={propellerRef}
                     geometry={nodes.Turbine.geometry}
                     material={materials.Base}
@@ -97,14 +93,10 @@ export function WindTurbine(props: ThreeElements['group']) {
                 >
                     <group position={[0, 0, 0.314]}>
                         <mesh
-                            castShadow
-                            receiveShadow
                             geometry={nodes.Mesh.geometry}
                             material={materials.BaseColor}
                         />
                         <mesh
-                            castShadow
-                            receiveShadow
                             geometry={nodes.Mesh_1.geometry}
                             material={materials.BlueStripe}
                         />
@@ -113,14 +105,10 @@ export function WindTurbine(props: ThreeElements['group']) {
             </mesh>
             <group scale={[0.809, 1, 0.809]}>
                 <mesh
-                    castShadow
-                    receiveShadow
                     geometry={nodes.Circle002.geometry}
                     material={materials.Base}
                 />
                 <mesh
-                    castShadow
-                    receiveShadow
                     geometry={nodes.Circle002_1.geometry}
                     material={materials.BaseColor}
                 />

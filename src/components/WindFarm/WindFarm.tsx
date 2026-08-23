@@ -94,8 +94,6 @@ export function WindFarm({
         <Merged
             meshes={meshes}
             limit={128}
-            castShadow
-            receiveShadow
             frustumCulled={false}
         >
             {(parts) =>
