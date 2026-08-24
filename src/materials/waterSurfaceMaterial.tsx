@@ -10,9 +10,9 @@ import { GRID_TOTAL_WIDTH, LAKE_CENTER } from '../utils/constants';
 export const waterSurfaceUniforms = {
     // Water surface params
     uPlayerPosition: new THREE.Uniform(new THREE.Vector2()),
-    uFresnelPower: new THREE.Uniform(4.35),
+    uFresnelPower: new THREE.Uniform(2.57),
     uFresnelStrength: new THREE.Uniform(1),
-    uFresnelColor: new THREE.Uniform(new THREE.Color('#ffffff')),
+    uFresnelColor: new THREE.Uniform(new THREE.Color('#fce4e4')),
     uTime: new THREE.Uniform(0),
 
     // Road
