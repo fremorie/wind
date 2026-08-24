@@ -89,7 +89,7 @@ export function Environment() {
                 shadow-normalBias={0}
                 shadow-camera-left={-10}
                 shadow-camera-right={10}
-                shadow-camera-top={5}
+                shadow-camera-top={2}
                 shadow-camera-bottom={-4}
                 shadow-camera-near={-5}
                 shadow-camera-far={20}
