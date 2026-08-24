@@ -59,7 +59,7 @@
    control. */
 .mv2,
 .mv2-toggle {
-    --mv2-panel: rgba(58, 50, 42, 0.5);
+    --mv2-panel: rgba(200, 200, 200, 0.1);
     --mv2-edge: rgba(255, 255, 255, 0.08);
 }
 
@@ -90,7 +90,7 @@
        modal dialog's containing block - not against any layout of ours.
        They also override the UA's own max-width and max-height, which are
        in em and would narrow the panel wherever the root font is large. */
-    max-width: min(510px, calc(100% - 96px));
+    max-width: min(610px, calc(100% - 16px));
     max-height: calc(100% - 96px);
 
     /* And one height, whatever page is showing, so nothing resizes on the
@@ -116,7 +116,7 @@
        the words. The tint and this number were picked together by measuring
        the worst case - a row label and a paragraph over the brightest sky
        in the scene, which used to sit at roughly 2:1. */
-    backdrop-filter: blur(9px) brightness(0.7) saturate(0.94);
+    backdrop-filter: blur(5px) brightness(0.7);
     box-shadow: 0 27px 60px rgba(0, 0, 0, 0.28);
 
     color: #ffffff;
@@ -295,7 +295,7 @@
 }
 
 .mv2-round.is-quiet {
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba(255, 255, 255, 0.15);
 }
 
 .mv2-round:hover {
