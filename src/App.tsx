@@ -42,7 +42,7 @@ function App() {
             >
                 <Experience />
 
-                {debug && <Perf position="top-left" />}
+                {debug && <Perf position="bottom-left" />}
             </Canvas>
 
             <Joystick />

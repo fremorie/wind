@@ -51,9 +51,12 @@ export const SECTIONS: Section[] = [
                     </kbd>
                 </div>
 
+                {/* Two sentences, two lines, broken on purpose rather than
+                    left to wrap: they are two separate things to know. */}
                 <p className="mv2-text">
-                    Use the arrow keys to ride. Hold{' '}
-                    <kbd className="mv2-key is-wide">Shift</kbd> to sprint.
+                    Use the arrow keys to ride.
+                    <br />
+                    Hold <kbd className="mv2-key is-wide">Shift</kbd> to sprint.
                 </p>
 
                 <h3 className="mv2-subtitle">Mobile</h3>

@@ -1,14 +1,25 @@
-/* A soft-glass panel, centred, in the system UI font.
+/* A translucent panel, centred, in Outfit.
 
-   Soft glass rather than a dark sheet: the pane is barely tinted and the
-   blur behind it is heavy, so the scene reads through it as a wash of its
-   own colour rather than being hidden behind a slab. What keeps white text
-   legible over a bright sky is not a dark fill but the shadow under the
-   type and the white lift of the pane itself.
+   The blur is deliberately shallow. Enough of one to take the detail out
+   of whatever is behind the text - a tint alone left the grass legible
+   through it and the words hard to pick out - but well short of the frosted
+   pane that reads as a phone's control panel. Corners are barely rounded
+   and the row highlight runs the full width of the panel, which keeps the
+   rest of it off that shelf too.
 
    Everything here is in whole pixels on purpose: the panel is a fixed piece
    of furniture rather than something that reflows with the text size, so
    there is one number per measurement and no arithmetic to follow. */
+
+/* Self-hosted next to the other three families in public/fonts. One
+   variable file covers the whole weight range; swap is fine here because
+   nothing on the panel is measured against the font's metrics. */
+@font-face {
+    font-family: 'Outfit';
+    src: url('/fonts/Outfit/Outfit-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-display: swap;
+}
 
 /* Border-box everywhere below, so a width is the width you see on screen
    and the numbers in this file add up without the borders being counted
@@ -19,6 +30,32 @@
     box-sizing: border-box;
 }
 
+/* The two colours the panel and its button are painted in.
+
+   The tint is warm and dark rather than black - the game is a field at
+   golden hour, and a neutral near-black panel sat on top of it like a hole
+   - and thin enough that the grass is still readable through it as grass.
+   The blur below is shallow for the same reason: enough to settle what is
+   behind the text, not enough to erase the scene.
+
+   The edge is nearly invisible at rest. A bright hairline around a
+   translucent rounded panel is the thing that reads as glassmorphism, so it
+   only comes up under the pointer. Focus is left out of it deliberately:
+   focus already has a ring of its own, and lighting the edge as well would
+   put two indicators on one control. */
+.mv2,
+.mv2-toggle {
+    --mv2-panel: rgba(58, 50, 42, 0.34);
+    --mv2-edge: rgba(255, 255, 255, 0.06);
+}
+
+/* Hover only. Not :focus-within on the panel either - a modal dialog holds
+   focus the whole time it is open, so the edge would simply always be lit. */
+.mv2:hover,
+.mv2-toggle:hover {
+    --mv2-edge: rgba(255, 255, 255, 0.24);
+}
+
 /* ------------------------------------------------------------------ dialog */
 
 .mv2 {
@@ -27,41 +64,40 @@
        of the same number of pixels to stop the panel narrowing on a small
        one. */
     width: 340px;
-    max-width: 340px;
+
+    /* The clamp is MUI's: its dialog paper carries margin: 32px and
+       max-height: calc(100% - 64px), so a dialog never runs off the screen
+       it is centred in. On anything roomier than the panel these do nothing
+       and the size is the fixed one below; on a phone in landscape, or a
+       window dragged small, the panel gives way at the edges rather than
+       hanging off them. Percentages here resolve against the viewport - a
+       modal dialog's containing block - not against any layout of ours.
+       They also override the UA's own max-width and max-height, which are
+       in em and would narrow the panel wherever the root font is large. */
+    max-width: min(340px, calc(100% - 64px));
+    max-height: calc(100% - 64px);
 
     /* And one height, whatever page is showing. 400px clears the tallest
-       page - Controls, at 380 - so every other one keeps the difference as
-       empty space at the foot of the panel rather than shrinking to fit.
+       page - Controls, which needs 424 for its header and content - so
+       every other one keeps the difference as empty space at the foot of
+       the panel rather than shrinking to fit.
        The UA's max-height, also in em, still clamps this on a screen too
        short to hold it; the body scrolls in that case. */
-    height: 400px;
+    height: 440px;
     padding: 0;
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    border-radius: 26px;
+    border: 1px solid var(--mv2-edge);
+    border-radius: 8px;
 
-    /* The glass, in three parts: a white pane lit from the top, the blur
-       that frosts whatever is behind it, and a hairline of brighter white
-       inside the top edge, which is what reads as thickness. */
-    background: linear-gradient(
-        rgba(255, 255, 255, 0.16),
-        rgba(255, 255, 255, 0.07)
-    );
-    backdrop-filter: blur(40px) saturate(120%) brightness(0.95);
-    box-shadow:
-        0 20px 50px rgba(0, 0, 0, 0.25),
-        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    background: var(--mv2-panel);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
 
     color: #ffffff;
-    font-family:
-        system-ui,
-        -apple-system,
-        'Segoe UI',
-        Roboto,
-        sans-serif;
+    font-family: 'Outfit', 'Segoe UI', sans-serif;
     font-size: 15px;
     /* Carries to every label and paragraph below, so white type holds up
        wherever the panel happens to be sitting. */
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
 
     /* Column so the header keeps its height and the body takes the rest -
        see .mv2-body. The panel itself never scrolls: it is a fixed box. */
@@ -73,11 +109,18 @@
        which is the only reason the closing animation is ever seen. */
     opacity: 0;
     scale: 0.96;
+
+    /* Durations and curve from MUI's theme: 225ms coming in, 195ms going
+       out, on cubic-bezier(0.4, 0, 0.2, 1). Asymmetric on purpose - a panel
+       arriving wants to settle, one leaving should get out of the way. This
+       rule is the closing state, so it carries the shorter of the two; the
+       open state below overrides the duration. */
     transition:
-        opacity 200ms ease,
-        scale 200ms ease,
-        display 200ms allow-discrete,
-        overlay 200ms allow-discrete;
+        opacity 195ms cubic-bezier(0.4, 0, 0.2, 1),
+        scale 195ms cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 150ms ease,
+        display 195ms allow-discrete,
+        overlay 195ms allow-discrete;
 }
 
 /* display goes on the open state alone: an author `display` on .mv2 itself
@@ -88,6 +131,8 @@
 
     opacity: 1;
     scale: 1;
+
+    transition-duration: 225ms;
 }
 
 /* The open styles already apply on the frame the dialog enters the top
@@ -100,6 +145,28 @@
     }
 }
 
+/* The scale belongs to the menu arriving over the game. A page is not an
+   arrival: it is the same panel in the same place with different words in
+   it, and anything that moves or grows reads as a glitch rather than as a
+   transition. Pages cross-fade with the root instead - one out at 195ms,
+   the other in at 225ms, overlapping. */
+.mv2:not(.is-root),
+.mv2:not(.is-root)[open] {
+    scale: 1;
+}
+
+@starting-style {
+    .mv2:not(.is-root)[open] {
+        scale: 1;
+    }
+}
+
+/* Same reason: the body's little fall into place is for the menu opening,
+   not for a page that is already in position. */
+.mv2:not(.is-root)[open] .mv2-body {
+    animation: none;
+}
+
 /* ::backdrop is the dialog's own layer - no overlay div, and it always sits
    directly beneath this dialog in the top layer whatever else is on screen.
    Barely there: the glass is the thing that separates the menu from the
@@ -109,13 +176,37 @@
 
     opacity: 0;
     transition:
-        opacity 200ms ease,
-        display 200ms allow-discrete,
-        overlay 200ms allow-discrete;
+        opacity 195ms cubic-bezier(0.4, 0, 0.2, 1),
+        display 195ms allow-discrete,
+        overlay 195ms allow-discrete;
+}
+
+/* A section page opens on top of the root menu, which is still open behind
+   it with a backdrop of its own. A second scrim on top of that one would
+   darken the scene every time someone opened a page. */
+.mv2:not(.is-root)::backdrop {
+    background: transparent;
+}
+
+/* And the root menu itself stands aside while a page is up. It has to stay
+   open - it is what closing the page returns to - but the panel is
+   translucent, so left showing, the two lists would read through each
+   other. :has() again: the only thing that knows a page is open is the
+   page's own [open] attribute. */
+body:has(.mv2:not(.is-root)[open]) .mv2.is-root {
+    opacity: 0;
+
+    /* Invisible, so it has no business blurring anything. Left on, the
+       panel under the pointer had two stacked backdrop-filter layers to
+       recomposite on every hover - which is the kind of thing that shows up
+       as flicker on a real GPU and never in a software-rendered capture. */
+    backdrop-filter: none;
 }
 
 .mv2[open]::backdrop {
     opacity: 1;
+
+    transition-duration: 225ms;
 }
 
 @starting-style {
@@ -131,7 +222,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 18px 18px 8px 18px;
+    padding: 22px 22px 10px 22px;
 }
 
 .mv2-title {
@@ -140,7 +231,7 @@
     text-align: center;
     font-size: 19px;
     font-weight: 500;
-    letter-spacing: 0.2px;
+    letter-spacing: 0.6px;
 }
 
 /* Back and close. The empty one on the root page is a spacer, so the title
@@ -151,20 +242,31 @@
     align-items: center;
     justify-content: center;
 
-    width: 30px;
-    height: 30px;
+    width: 36px;
+    height: 36px;
     padding: 0;
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    border-radius: 15px;
+    border: 1px solid var(--mv2-edge);
+    border-radius: 6px;
     background: rgba(255, 255, 255, 0.12);
 
     color: #ffffff;
     cursor: pointer;
-    transition: background 150ms ease;
+
+    /* One declaration, both properties. There were two `transition` lines
+       here and the second won, so the border had no transition at all and
+       snapped between its two colours while the fill faded. */
+    transition:
+        background 150ms ease,
+        border-color 150ms ease;
 }
 
+/* border-color directly rather than through --mv2-edge: a custom property
+   animates discretely, so routing the hover through the variable made the
+   edge snap on in a single frame while the fill eased in behind it - one
+   control changing in two different ways as the pointer crossed it. */
 .mv2-round:hover {
-    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.22);
 }
 
 .mv2-round.is-empty {
@@ -182,8 +284,15 @@
     flex: 1;
     min-height: 0;
     overflow-y: auto;
-    padding: 8px 16px 20px 16px;
+    padding: 20px 0 24px 0;
+}
 
+/* On [open] rather than on .mv2-body itself. The dialogs are in the markup
+   from the first paint, display: none until they are opened - an animation
+   declared unconditionally would run once, while nothing was on screen, and
+   never again. Applying it when the attribute flips starts it fresh on
+   every open. */
+.mv2[open] .mv2-body {
     animation: mv2-fade-in 180ms ease both;
 }
 
@@ -208,7 +317,6 @@
 .mv2-nav {
     display: flex;
     flex-direction: column;
-    gap: 6px;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -227,26 +335,41 @@
 
     flex: 1;
     height: 60px;
-    padding: 0 14px;
+    padding: 0 24px;
     border: none;
-    border-radius: 16px;
+    border-radius: 0;
     background: none;
 
-    color: #ffffff;
+    /* Held just off white at rest, so hovering has somewhere to go. The
+       icon inherits it and brightens along with the words. */
+    color: rgba(255, 255, 255, 0.82);
     font: inherit;
     font-size: 20px;
     text-shadow: inherit;
     text-align: left;
     cursor: pointer;
-    transition: background 150ms ease;
+    transition: color 150ms ease;
 }
 
-.mv2-item:hover {
-    background: rgba(255, 255, 255, 0.18);
+/* The row itself stays out of it - no band of colour across the panel, just
+   the words coming forward. */
+.mv2-item:hover,
+.mv2-item:focus-visible {
+    color: #ffffff;
 }
 
 .mv2-label {
     flex: 1;
+
+    /* Grown from the left, so the label does not drift away from its icon.
+       A scale is paint, not layout: nothing around it moves. */
+    transform-origin: left center;
+    transition: scale 150ms ease;
+}
+
+.mv2-item:hover .mv2-label,
+.mv2-item:focus-visible .mv2-label {
+    scale: 1.05;
 }
 
 /* The icons are drawn at 20px; beside a 20px label they want a shade more,
@@ -273,11 +396,27 @@
     outline-offset: 2px;
 }
 
+/* A row runs the full width of the panel, so a ring drawn outside it would
+   sit on the panel's own border. Drawn inside instead. */
+.mv2-item:focus-visible {
+    outline-offset: -3px;
+}
+
+/* The button sits on the game rather than on the panel, so a white ring
+   alone disappears against a bright sky. The halo is what makes it a ring
+   in both directions; the second shadow is the button's own, restated
+   because one box-shadow replaces another. */
+.mv2-toggle:focus-visible {
+    box-shadow:
+        0 0 0 4px rgba(0, 0, 0, 0.55),
+        0 10px 24px rgba(0, 0, 0, 0.25);
+}
+
 /* --------------------------------------------------------------- page text */
 
 .mv2-text {
-    margin: 0 0 10px 0;
-    padding: 0 4px;
+    margin: 0 0 12px 0;
+    padding: 0 24px;
     font-size: 15px;
     line-height: 22px;
     color: rgba(255, 255, 255, 0.92);
@@ -288,12 +427,12 @@
 }
 
 .mv2-subtitle {
-    margin: 10px 0 8px 4px;
-    font-size: 12px;
+    margin: 14px 0 10px 24px;
+    font-size: 15px;
     font-weight: 600;
-    letter-spacing: 0.8px;
+    letter-spacing: 1px;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.7);
+    color: #ffffff;
 }
 
 .mv2-subtitle:first-child {
@@ -301,8 +440,8 @@
 }
 
 .mv2-list {
-    margin: 0 0 10px 0;
-    padding: 0 4px 0 20px;
+    margin: 0 0 12px 0;
+    padding: 0 24px 0 42px;
     font-size: 15px;
     line-height: 24px;
     color: rgba(255, 255, 255, 0.92);
@@ -356,9 +495,9 @@
 
     height: 26px;
     min-width: 26px;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.14);
 
     font-family: inherit;
     font-size: 13px;
@@ -403,7 +542,7 @@
 /* The same glass as the panel, at button size. */
 .mv2-toggle {
     position: fixed;
-    bottom: 24px;
+    top: 24px;
     left: 24px;
     z-index: 199;
 
@@ -414,49 +553,84 @@
     width: 48px;
     height: 48px;
     padding: 0;
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    border-radius: 16px;
+    border: 1px solid var(--mv2-edge);
+    border-radius: 8px;
 
-    background: linear-gradient(
-        rgba(255, 255, 255, 0.16),
-        rgba(255, 255, 255, 0.07)
-    );
-    backdrop-filter: blur(24px) saturate(120%) brightness(0.95);
-    box-shadow:
-        0 10px 24px rgba(0, 0, 0, 0.22),
-        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    background: var(--mv2-panel);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
 
     color: #ffffff;
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
     cursor: pointer;
     transition:
         opacity 200ms ease,
-        background 200ms ease;
+        background 200ms ease,
+        border-color 150ms ease;
 }
 
 .mv2-toggle:hover {
-    background: linear-gradient(
-        rgba(255, 255, 255, 0.28),
-        rgba(255, 255, 255, 0.18)
-    );
+    background: rgba(84, 74, 64, 0.55);
 }
 
-.mv2-toggle.is-hidden {
+/* Out of the way while a menu is on screen. :has() reads the dialog's own
+   [open] attribute, which the browser sets - nothing has to tell the button
+   what the menu is doing. */
+body:has(.mv2[open]) .mv2-toggle {
     opacity: 0;
     pointer-events: none;
+}
+
+/* -------------------------------------------------------- other preferences */
+
+/* Transparency is a preference, not a given: a scene moving behind the text
+   makes it unreadable for some people. Both the tint and the blur go. */
+@media (prefers-reduced-transparency: reduce) {
+    .mv2,
+    .mv2-toggle {
+        --mv2-panel: rgb(42, 37, 32);
+    }
+
+    .mv2,
+    .mv2-toggle {
+        backdrop-filter: none;
+    }
+}
+
+/* Contrast the same. The dimmed page text goes back to full white and the
+   panel's hairline border becomes an edge you can actually see. */
+@media (prefers-contrast: more) {
+    .mv2,
+    .mv2-toggle {
+        --mv2-panel: rgb(28, 25, 21);
+
+        border-color: #ffffff;
+        backdrop-filter: none;
+    }
+
+    .mv2-text,
+    .mv2-text.is-dim,
+    .mv2-list,
+    .mv2-subtitle {
+        color: #ffffff;
+    }
 }
 
 /* ------------------------------------------------------------------ motion */
 
 @media (prefers-reduced-motion: reduce) {
+    /* Every state that sets a duration has to be listed, open ones
+       included: .mv2[open] and .mv2[open]::backdrop each override the
+       closed-state duration, and would outrank a shorter list here. */
     .mv2,
     .mv2[open],
-    .mv2::backdrop {
+    .mv2::backdrop,
+    .mv2[open]::backdrop {
         transition-duration: 1ms;
         scale: 1;
     }
 
-    .mv2-body {
+    .mv2[open] .mv2-body {
         animation: none;
     }
 }
