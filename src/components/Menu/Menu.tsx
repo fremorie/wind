@@ -15,11 +15,7 @@ import './Menu.css';
 
 const MENU = 'mv2-menu';
 
-export function Menu({
-    onOpenChange,
-}: {
-    onOpenChange?: (open: boolean) => void;
-}) {
+export function Menu() {
     const [page, setPage] = useState<Section | null>(null);
     const panelRef = useRef<HTMLDialogElement>(null);
 
@@ -29,7 +25,6 @@ export function Menu({
 
         const panel = panelRef.current;
         panel?.showModal();
-        onOpenChange?.(true);
     };
 
     const openPage = (section: Section) => () => {
@@ -53,7 +48,6 @@ export function Menu({
                 className="mv2"
                 closedby="any"
                 ref={panelRef}
-                onClose={() => onOpenChange?.(false)}
                 aria-labelledby={`${MENU}-wordmark`}
             >
                 <div
