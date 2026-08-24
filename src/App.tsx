@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Perf } from 'r3f-perf';
 import { KeyboardControls } from '@react-three/drei';
@@ -11,6 +12,7 @@ import './App.css';
 
 function App() {
     const debug = useDebug();
+    const [menuOpen, setMenuOpen] = useState(false);
 
     return (
         <KeyboardControls
@@ -28,7 +30,6 @@ function App() {
                 theme={{ sizes: { rootWidth: '350px' } }}
                 collapsed
             />
-
             <Canvas
                 shadows
                 camera={{
@@ -38,6 +39,7 @@ function App() {
                     position: [-15, 10, 39],
                 }}
                 flat
+                frameloop={menuOpen ? 'demand' : 'always'}
             >
                 <Experience />
 
@@ -45,7 +47,7 @@ function App() {
             </Canvas>
 
             <Joystick />
-            <Menu />
+            <Menu onOpenChange={setMenuOpen} />
         </KeyboardControls>
     );
 }
