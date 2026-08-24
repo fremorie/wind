@@ -1,28 +1,29 @@
-import type { ReactNode } from 'react';
+import type { MouseEvent, ReactNode } from 'react';
 
 import { ChevronIcon } from './icons';
 
-// One row of the root list, and a plain invoker button: `command` and
-// `commandfor` name a dialog and what to do to it, and the browser does it.
-// `chevron` marks the rows that open a page, as opposed to Resume, which
-// closes the menu, and `primary` marks the one row that is the reason most
-// people opened the menu at all.
+// One row of the root list. Resume is a plain invoker button - `command` and
+// `commandfor` name the dialog and what to do to it, and the browser does it
+// - and the rows below it are script, because what they open is a screen
+// inside that dialog rather than a dialog of its own. `chevron` marks those,
+// and `primary` marks the one row that is the reason most people opened the
+// menu at all.
 export function MenuItem({
     icon,
     label,
     command,
     commandfor,
+    onClick,
     chevron,
     primary,
-    autofocus,
 }: {
     icon: ReactNode;
     label: string;
-    command: 'show-modal' | 'close';
-    commandfor: string;
+    command?: 'close';
+    commandfor?: string;
+    onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
     chevron?: boolean;
     primary?: boolean;
-    autofocus?: '';
 }) {
     return (
         <li>
@@ -31,10 +32,7 @@ export function MenuItem({
                 className={primary ? 'mv2-item is-primary' : 'mv2-item'}
                 command={command}
                 commandfor={commandfor}
-                autofocus={autofocus}
-                // The rows that open a page say so, the way the hamburger
-                // does. Resume closes the menu and has nothing to announce.
-                aria-haspopup={command === 'show-modal' ? 'dialog' : undefined}
+                onClick={onClick}
             >
                 {icon}
                 <span className="mv2-label">{label}</span>

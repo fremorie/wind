@@ -94,10 +94,10 @@
     max-height: calc(100% - 96px);
 
     /* And one height, whatever page is showing, so nothing resizes on the
-       way between screens. 440px clears the tallest page - Controls - and
-       the root screen, which has the fewest rows, spends the difference on
-       a wordmark, a footer and air around the list rather than leaving it
-       pooled at the bottom as empty glass.
+       way between screens. 660px clears the tallest page - Credits, at 565
+       - and the root screen, at 602, spends the difference on a wordmark, a
+       footer and air around the list rather than leaving it pooled at the
+       bottom as empty glass.
        The UA's max-height, also in em, still clamps this on a screen too
        short to hold it; the body scrolls in that case. */
     height: 660px;
@@ -126,9 +126,9 @@
        wherever the panel happens to be sitting. */
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
 
-    /* Column so the header keeps its height and the body takes the rest -
-       see .mv2-body. The panel itself never scrolls: it is a fixed box. */
-    flex-direction: column;
+    /* The panel itself never scrolls: it is a fixed box. What is inside
+       it is one grid cell with every screen stacked in it - see
+       .mv2-screen, which is where the column went. */
     overflow: hidden;
 
     /* display and overlay are discrete properties, so they normally flip on
@@ -154,7 +154,7 @@
    would beat the UA's `dialog:not([open]) { display: none }` and leave the
    panel on screen with the menu shut. */
 .mv2[open] {
-    display: flex;
+    display: grid;
 
     opacity: 1;
     scale: 1;
@@ -172,30 +172,48 @@
     }
 }
 
-/* The scale belongs to the menu arriving over the game. A page is not an
-   arrival: it is the same panel in the same place with different words in
-   it, and anything that moves or grows reads as a glitch rather than as a
-   transition. Pages cross-fade with the root instead - one out at 195ms,
-   the other in at 225ms, overlapping. */
-.mv2:not(.is-root),
-.mv2:not(.is-root)[open] {
-    scale: 1;
+/* ------------------------------------------------------------------ screen */
+
+/* One panel, one screen showing in it. They all sit in the same grid cell
+   rather than being swapped in and out, so the one leaving and the one
+   arriving overlap: a page is not an arrival, it is the same panel in the
+   same place with different words in it, and anything that moved or grew
+   would read as a glitch rather than as a transition. One out at 195ms, the
+   other in at 225ms.
+
+   The column that used to be on the dialog is here: the header keeps its
+   height and the body takes the rest - see .mv2-body.
+
+   pointer-events, because a screen at opacity 0 is still under the pointer
+   and the pages are painted over the list. The tab order is handled in
+   Menu.tsx with `inert`, which CSS has no equivalent for. */
+.mv2-screen {
+    grid-area: 1 / 1;
+
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 195ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@starting-style {
-    .mv2:not(.is-root)[open] {
-        scale: 1;
-    }
+.mv2-screen.is-on {
+    opacity: 1;
+    pointer-events: auto;
+
+    transition-duration: 225ms;
 }
 
-/* Same reason: the body's little fall into place is for the menu opening,
-   not for a page that is already in position. */
-.mv2:not(.is-root)[open] .mv2-body {
+/* The body's little fall into place is for the menu opening, not for a page
+   that is already in position. */
+.mv2-screen:not(.is-root) .mv2-body {
     animation: none;
 }
 
-/* ::backdrop is the dialog's own layer - no overlay div, and it always sits
-   directly beneath this dialog in the top layer whatever else is on screen.
+/* ::backdrop is the dialog's own layer - no overlay div, and it sits
+   directly beneath the panel in the top layer.
    Barely there: the glass is the thing that separates the menu from the
    game, and dimming the whole scene would take the light out of it. */
 .mv2::backdrop {
@@ -206,28 +224,6 @@
         opacity 195ms cubic-bezier(0.4, 0, 0.2, 1),
         display 195ms allow-discrete,
         overlay 195ms allow-discrete;
-}
-
-/* A section page opens on top of the root menu, which is still open behind
-   it with a backdrop of its own. A second scrim on top of that one would
-   darken the scene every time someone opened a page. */
-.mv2:not(.is-root)::backdrop {
-    background: transparent;
-}
-
-/* And the root menu itself stands aside while a page is up. It has to stay
-   open - it is what closing the page returns to - but the panel is
-   translucent, so left showing, the two lists would read through each
-   other. :has() again: the only thing that knows a page is open is the
-   page's own [open] attribute. */
-body:has(.mv2:not(.is-root)[open]) .mv2.is-root {
-    opacity: 0;
-
-    /* Invisible, so it has no business blurring anything. Left on, the
-       panel under the pointer had two stacked backdrop-filter layers to
-       recomposite on every hover - which is the kind of thing that shows up
-       as flicker on a real GPU and never in a software-rendered capture. */
-    backdrop-filter: none;
 }
 
 .mv2[open]::backdrop {
@@ -272,14 +268,14 @@ body:has(.mv2:not(.is-root)[open]) .mv2.is-root {
 
 /* Back and close, both drawn bare. They used to be bordered, filled 36px
    boxes, which made the heaviest thing on a page of three sentences its
-   header - two chrome buttons framing a title, over prose. The 36px hit
+   header - two chrome buttons framing a title, over prose. The 54px hit
    area stays; only the box is gone.
 
-   Close sits back from Back on purpose. It is the second way out of a page
-   - Escape and a click outside already close one - and it is kept for
-   touch, where there is no Escape key and closing the menu from a page
-   would otherwise take two taps. Back is the one being offered; Close is
-   the one being allowed. */
+   Close sits back from Back on purpose. It is not the only way out of the
+   menu from a page - Escape and a tap outside both leave from whatever
+   depth you are at - but those are the two you have to know about, and this
+   is the one you can see. Back is the one being offered; Close is the one
+   being allowed. */
 .mv2-round {
     flex: none;
     display: flex;
@@ -311,13 +307,13 @@ body:has(.mv2:not(.is-root)[open]) .mv2.is-root {
 /* Fills whatever the header leaves, so a short page ends in empty space
    instead of a shorter panel. min-height because a flex item will not
    shrink below its content without it, and the scrollbar is only there for
-   a screen too short for the panel's own 440px.
+   a screen too short for the panel's own 660px.
 
    A page starts at the top and leaves its slack at the foot. Centring it
-   was tried and is wrong: the pages run from 212px to 306px inside the same
-   370px box, so centring turns that difference into a gap between the title
-   and the first line of the page - 100px of it on Credits, which reads as
-   the text having come loose from its own heading. Empty glass below the
+   was tried and is wrong: the pages run from 208px to 558px inside the same
+   558px box, so centring turns that difference into a gap between the title
+   and the first line of the page - 175px of it on About, which reads as the
+   text having come loose from its own heading. Empty glass below the
    last line reads as room. The root screen centres its list because it has
    a wordmark above and a footer below to centre between; a page has a
    header and nothing else. */
@@ -328,8 +324,8 @@ body:has(.mv2:not(.is-root)[open]) .mv2.is-root {
     padding: 36px 0 36px 0;
 }
 
-/* On [open] rather than on .mv2-body itself. The dialogs are in the markup
-   from the first paint, display: none until they are opened - an animation
+/* On [open] rather than on .mv2-body itself. The dialog is in the markup
+   from the first paint, display: none until it is opened - an animation
    declared unconditionally would run once, while nothing was on screen, and
    never again. Applying it when the attribute flips starts it fresh on
    every open. */
@@ -440,7 +436,7 @@ body:has(.mv2:not(.is-root)[open]) .mv2.is-root {
    overflows in both directions, and the half that goes off the top of a box
    cannot be scrolled back to - so on a panel too short for its own list,
    this falls back to starting at the top. */
-.mv2.is-root .mv2-body {
+.mv2-screen.is-root .mv2-body {
     display: flex;
     flex-direction: column;
     justify-content: safe center;
@@ -853,8 +849,13 @@ body:has(.mv2:not(.is-root)[open]) .mv2.is-root {
     color: #ffffff;
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
     cursor: pointer;
+
+    /* How long the button stays gone after the menu closes - see the rule
+       below, which is where it is set to nothing on the way in. */
+    --mv2-return: 200ms;
     transition:
-        opacity 200ms ease,
+        opacity 200ms ease var(--mv2-return),
+        visibility 0s 200ms,
         background 200ms ease,
         border-color 150ms ease;
 }
@@ -865,10 +866,24 @@ body:has(.mv2:not(.is-root)[open]) .mv2.is-root {
 
 /* Out of the way while a menu is on screen. :has() reads the dialog's own
    [open] attribute, which the browser sets - nothing has to tell the button
-   what the menu is doing. */
+   what the menu is doing.
+
+   visibility rather than pointer-events, and on a delay in both directions.
+   A tap outside the panel is a light dismiss, which closes the menu on
+   pointerup - and iOS then sends the click, which hit-tests again against a
+   DOM where the menu is already shut and this button is already back. A tap
+   on the corner it sits in closed the menu and reopened it in one gesture.
+   Held back 200ms, the button is not there for that click to land on.
+
+   The same 200ms going the other way is what lets the fade out be seen at
+   all: hidden on the frame the menu opens, the button would vanish rather
+   than fade. So visibility keeps its delay in both directions and only the
+   opacity's is dropped here, which is what --mv2-return is for. */
 body:has(.mv2[open]) .mv2-toggle {
+    --mv2-return: 0s;
+
     opacity: 0;
-    pointer-events: none;
+    visibility: hidden;
 }
 
 /* -------------------------------------------------------- other preferences */
@@ -926,8 +941,16 @@ body:has(.mv2[open]) .mv2-toggle {
     .mv2,
     .mv2[open],
     .mv2::backdrop,
-    .mv2[open]::backdrop {
+    .mv2[open]::backdrop,
+    .mv2-screen,
+    .mv2-screen.is-on {
         transition-duration: 1ms;
+    }
+
+    /* The screens cross-fade and stay put; the panel is the only thing with
+       a scale to take off it. */
+    .mv2,
+    .mv2[open] {
         scale: 1;
     }
 
