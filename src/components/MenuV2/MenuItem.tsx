@@ -5,13 +5,15 @@ import { ChevronIcon } from './icons';
 // One row of the root list, and a plain invoker button: `command` and
 // `commandfor` name a dialog and what to do to it, and the browser does it.
 // `chevron` marks the rows that open a page, as opposed to Resume, which
-// closes the menu.
+// closes the menu, and `primary` marks the one row that is the reason most
+// people opened the menu at all.
 export function MenuItem({
     icon,
     label,
     command,
     commandfor,
     chevron,
+    primary,
     autofocus,
 }: {
     icon: ReactNode;
@@ -19,13 +21,14 @@ export function MenuItem({
     command: 'show-modal' | 'close';
     commandfor: string;
     chevron?: boolean;
+    primary?: boolean;
     autofocus?: '';
 }) {
     return (
         <li>
             <button
                 type="button"
-                className="mv2-item"
+                className={primary ? 'mv2-item is-primary' : 'mv2-item'}
                 command={command}
                 commandfor={commandfor}
                 autofocus={autofocus}

@@ -3,13 +3,26 @@
    The blur is deliberately shallow. Enough of one to take the detail out
    of whatever is behind the text - a tint alone left the grass legible
    through it and the words hard to pick out - but well short of the frosted
-   pane that reads as a phone's control panel. Corners are barely rounded
-   and the row highlight runs the full width of the panel, which keeps the
-   rest of it off that shelf too.
+   pane that reads as a phone's control panel. What the blur cannot do is
+   guarantee the words are readable over a sky, so it is paired with a
+   brightness() that can. Corners are barely rounded and the row highlight
+   runs the full width of the panel, which keeps the rest of it off that
+   shelf too.
 
    Everything here is in whole pixels on purpose: the panel is a fixed piece
    of furniture rather than something that reflows with the text size, so
-   there is one number per measurement and no arithmetic to follow. */
+   there is one number per measurement and no arithmetic to follow.
+
+   Space comes from one scale - 4, 8, 16, 24, 32 - and nothing else, with a
+   job for each step: 4 between keycaps, 8 holding a label to its own list,
+   16 between things inside a group, 24 for the gutter and every distance
+   to an edge, 32 for a section break. It replaced 6, 10, 12, 14, 18, 22
+   and 26, which between them said nothing about what belonged to what.
+
+   Two numbers off the scale are sizes rather than space, and both are
+   derived: the header's 18px padding is the 36px gutter less the air a
+   bare 18px glyph carries inside a 54px hit area, and the 108px term
+   column is three 32px keycaps with two 6px gaps between them. */
 
 /* Self-hosted next to the other three families in public/fonts. One
    variable file covers the whole weight range; swap is fine here because
@@ -33,25 +46,28 @@
 /* The two colours the panel and its button are painted in.
 
    The tint is warm and dark rather than black - the game is a field at
-   golden hour, and a neutral near-black panel sat on top of it like a hole
-   - and thin enough that the grass is still readable through it as grass.
-   The blur below is shallow for the same reason: enough to settle what is
-   behind the text, not enough to erase the scene.
+   golden hour, and a neutral near-black panel sat on top of it like a hole.
+   It is thin enough that the grass is still readable through it as grass,
+   but no thinner: the tint alone cannot promise a contrast ratio, because
+   what is behind it is a moving camera. The brightness() on the panel's
+   backdrop-filter is what makes that promise - see .mv2 below.
 
-   The edge is nearly invisible at rest. A bright hairline around a
-   translucent rounded panel is the thing that reads as glassmorphism, so it
-   only comes up under the pointer. Focus is left out of it deliberately:
-   focus already has a ring of its own, and lighting the edge as well would
-   put two indicators on one control. */
+   The edge is nearly invisible, and stays that way: a bright hairline
+   around a translucent rounded panel is the thing that reads as
+   glassmorphism. Focus is left out of it deliberately - focus has a ring of
+   its own, and lighting the edge as well would put two indicators on one
+   control. */
 .mv2,
 .mv2-toggle {
-    --mv2-panel: rgba(58, 50, 42, 0.34);
-    --mv2-edge: rgba(255, 255, 255, 0.06);
+    --mv2-panel: rgba(58, 50, 42, 0.5);
+    --mv2-edge: rgba(255, 255, 255, 0.08);
 }
 
-/* Hover only. Not :focus-within on the panel either - a modal dialog holds
-   focus the whole time it is open, so the edge would simply always be lit. */
-.mv2:hover,
+/* The button, and only the button. The panel used to light its edge on
+   hover too, but a pointer parks wherever it likes over a 340px panel, so
+   the border kept changing for a reason the eye could not connect to
+   anything. The toggle is a control and has to look pressable; the panel is
+   furniture. */
 .mv2-toggle:hover {
     --mv2-edge: rgba(255, 255, 255, 0.24);
 }
@@ -63,10 +79,10 @@
        max-width in em on a modal dialog, so it takes an explicit max-width
        of the same number of pixels to stop the panel narrowing on a small
        one. */
-    width: 340px;
+    width: 510px;
 
     /* The clamp is MUI's: its dialog paper carries margin: 32px and
-       max-height: calc(100% - 64px), so a dialog never runs off the screen
+       max-height: calc(100% - 96px), so a dialog never runs off the screen
        it is centred in. On anything roomier than the panel these do nothing
        and the size is the fixed one below; on a phone in landscape, or a
        window dragged small, the panel gives way at the edges rather than
@@ -74,27 +90,38 @@
        modal dialog's containing block - not against any layout of ours.
        They also override the UA's own max-width and max-height, which are
        in em and would narrow the panel wherever the root font is large. */
-    max-width: min(340px, calc(100% - 64px));
-    max-height: calc(100% - 64px);
+    max-width: min(510px, calc(100% - 96px));
+    max-height: calc(100% - 96px);
 
-    /* And one height, whatever page is showing. 400px clears the tallest
-       page - Controls, which needs 424 for its header and content - so
-       every other one keeps the difference as empty space at the foot of
-       the panel rather than shrinking to fit.
+    /* And one height, whatever page is showing, so nothing resizes on the
+       way between screens. 440px clears the tallest page - Controls - and
+       the root screen, which has the fewest rows, spends the difference on
+       a wordmark, a footer and air around the list rather than leaving it
+       pooled at the bottom as empty glass.
        The UA's max-height, also in em, still clamps this on a screen too
        short to hold it; the body scrolls in that case. */
-    height: 440px;
+    height: 660px;
     padding: 0;
     border: 1px solid var(--mv2-edge);
-    border-radius: 8px;
+    border-radius: 12px;
 
     background: var(--mv2-panel);
-    backdrop-filter: blur(6px);
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+    /* brightness() is what makes the panel trustworthy. Blur takes the
+       detail out of whatever is behind the text but leaves its brightness
+       alone, so over the pale sky the tint composited to around #adaba3 and
+       white type sat at roughly 2:1 against it - readable only thanks to
+       the text-shadow. Pulling the backdrop down to 70% first puts a floor
+       under the contrast wherever the camera happens to be pointing, and
+       the pinch of desaturation stops the grass reading as green through
+       the words. The tint and this number were picked together by measuring
+       the worst case - a row label and a paragraph over the brightest sky
+       in the scene, which used to sit at roughly 2:1. */
+    backdrop-filter: blur(9px) brightness(0.7) saturate(0.94);
+    box-shadow: 0 27px 60px rgba(0, 0, 0, 0.28);
 
     color: #ffffff;
     font-family: 'Outfit', 'Segoe UI', sans-serif;
-    font-size: 15px;
+    font-size: 17px;
     /* Carries to every label and paragraph below, so white type holds up
        wherever the panel happens to be sitting. */
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
@@ -217,61 +244,66 @@ body:has(.mv2:not(.is-root)[open]) .mv2.is-root {
 
 /* ------------------------------------------------------------------ header */
 
+/* 14px of padding, not 22, because the buttons either side lost their
+   boxes: a bare 18px glyph centred in a 54px hit area carries 18px of air
+   of its own, and at the full gutter the chevron would sit 54px in while
+   the text below it started at 36. The gutter is what has to line up, so
+   the number here is the gutter minus that air. */
 .mv2-head {
     flex: none;
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 22px 22px 10px 22px;
+    gap: 12px;
+    padding: 36px 18px 12px 18px;
 }
 
+/* Top of the ramp on a page: 20px title, 13px caps subtitle, 15px body.
+   The subtitle used to be 15px too, which left a section heading the same
+   size as the sentences under it and smaller than a row on the screen
+   before - caps and weight carrying a hierarchy that the sizes contradicted. */
 .mv2-title {
     flex: 1;
     margin: 0;
     text-align: center;
-    font-size: 19px;
+    font-size: 23px;
     font-weight: 500;
-    letter-spacing: 0.6px;
+    letter-spacing: 0.4px;
 }
 
-/* Back and close. The empty one on the root page is a spacer, so the title
-   stays in the middle of the panel whether or not there is a back button. */
+/* Back and close, both drawn bare. They used to be bordered, filled 36px
+   boxes, which made the heaviest thing on a page of three sentences its
+   header - two chrome buttons framing a title, over prose. The 36px hit
+   area stays; only the box is gone.
+
+   Close sits back from Back on purpose. It is the second way out of a page
+   - Escape and a click outside already close one - and it is kept for
+   touch, where there is no Escape key and closing the menu from a page
+   would otherwise take two taps. Back is the one being offered; Close is
+   the one being allowed. */
 .mv2-round {
     flex: none;
     display: flex;
     align-items: center;
     justify-content: center;
 
-    width: 36px;
-    height: 36px;
+    width: 54px;
+    height: 54px;
     padding: 0;
-    border: 1px solid var(--mv2-edge);
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.12);
-
-    color: #ffffff;
-    cursor: pointer;
-
-    /* One declaration, both properties. There were two `transition` lines
-       here and the second won, so the border had no transition at all and
-       snapped between its two colours while the fill faded. */
-    transition:
-        background 150ms ease,
-        border-color 150ms ease;
-}
-
-/* border-color directly rather than through --mv2-edge: a custom property
-   animates discretely, so routing the hover through the variable made the
-   edge snap on in a single frame while the fill eased in behind it - one
-   control changing in two different ways as the pointer crossed it. */
-.mv2-round:hover {
-    border-color: rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.22);
-}
-
-.mv2-round.is-empty {
-    border-color: transparent;
+    border: none;
+    border-radius: 12px;
     background: none;
+
+    color: rgba(255, 255, 255, 0.85);
+    cursor: pointer;
+    transition: color 150ms ease;
+}
+
+.mv2-round.is-quiet {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.mv2-round:hover {
+    color: #ffffff;
 }
 
 /* -------------------------------------------------------------------- body */
@@ -279,12 +311,21 @@ body:has(.mv2:not(.is-root)[open]) .mv2.is-root {
 /* Fills whatever the header leaves, so a short page ends in empty space
    instead of a shorter panel. min-height because a flex item will not
    shrink below its content without it, and the scrollbar is only there for
-   a screen too short for the panel's own 400px. */
+   a screen too short for the panel's own 440px.
+
+   A page starts at the top and leaves its slack at the foot. Centring it
+   was tried and is wrong: the pages run from 212px to 306px inside the same
+   370px box, so centring turns that difference into a gap between the title
+   and the first line of the page - 100px of it on Credits, which reads as
+   the text having come loose from its own heading. Empty glass below the
+   last line reads as room. The root screen centres its list because it has
+   a wordmark above and a footer below to centre between; a page has a
+   header and nothing else. */
 .mv2-body {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
-    padding: 20px 0 24px 0;
+    padding: 36px 0 36px 0;
 }
 
 /* On [open] rather than on .mv2-body itself. The dialogs are in the markup
@@ -304,7 +345,7 @@ body:has(.mv2:not(.is-root)[open]) .mv2.is-root {
 @keyframes mv2-fade-in {
     from {
         opacity: 0;
-        translate: 0 -6px;
+        translate: 0 -12px;
     }
 }
 
@@ -312,7 +353,99 @@ body:has(.mv2:not(.is-root)[open]) .mv2.is-root {
     margin-bottom: 0;
 }
 
+/* --------------------------------------------------- wordmark and footer */
+
+/* The root screen had no header at all, on the grounds that a title reading
+   "Menu" says nothing the list does not. That was right about "Menu" and
+   wrong about the panel: four rows filled 245px of a 440px box and the rest
+   was empty glass, which reads as a list that got cut off rather than as
+   space. The name of the game is not a label for the list - it is the one
+   thing the pause screen never said - and with a sign-off at the foot the
+   panel is bookended instead of trailing away. */
+/* The title is a picture now - lettering and a bicycle drawn as one
+   lockup - so the block holds one thing and the h2 below does the rest.
+
+   36 over 6 rather than the 24 over 12 it started with. Measured, the old
+   pair was already 28px above the drawing against 19 below, so on paper it
+   was the wrong way round - but the numbers are measuring the wrong edges.
+   What ends the drawing at the top is the tip of a handlebar, and what
+   ends it at the bottom is the descender of the y in Sunday, hanging below
+   a baseline that is where the eye actually puts the edge. Type is set to
+   its baseline and this lockup is no different. */
+.mv2-brand {
+    flex: none;
+    padding: 36px 36px 6px 36px;
+}
+
+/* The h2 still says "Sunday ride". The words are what the dialog is
+   announced by - aria-labelledby in Menu.tsx points at this heading - and
+   they are drawn over rather than deleted: text-indent walks them out of
+   the box and overflow hides them, which leaves them in the accessible
+   name and out of the picture. font-size: 0 would do it too and is the
+   one version of this trick some screen readers skip.
+
+   Height alone sets the size. The background is `contain` in a box the
+   full width of the panel, so 132px of height gives 284px of lockup - the
+   image's own 1447x673 proportion decides the width, and there is one
+   number here instead of two that have to agree.
+
+   Height is the number that matters because height is what the root
+   screen is short of: four 90px rows and a footer inside a panel a laptop
+   clamps to about 617px leave the title block a little under 190 with its
+   padding. 132 keeps 19px of air under the list rather than spending the
+   last of it.
+
+   The file is cropped to the drawing: 1447x673 out of the png's 1983x793,
+   which is the artwork's real extent plus 8px of margin on every side. The
+   margin is the point - a box sized exactly to the drawing shears the
+   edges off it, which is how the first bicycle lost the bottom of both
+   wheels. */
+.mv2-wordmark {
+    margin: 0;
+    height: 132px;
+
+    background: url('/images/menuTitleV4.webp') no-repeat center / contain;
+    /* Same shadow the panel puts under its type, shaped by the image's own
+       alpha. White line work on glass needs it: what ends up behind the
+       panel is a sky about as often as it is grass. */
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.55));
+
+    text-indent: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/* The rule is inset from the panel's edges rather than run to them: it
+   separates the footer from the list, and a line touching both sides would
+   read as another edge of the panel. */
+.mv2-foot {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin: 0 36px;
+    padding: 24px 0 24px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.62);
+}
+
 /* --------------------------------------------------------------- root list */
+
+/* The list sits in the middle of what the wordmark and the footer leave
+   rather than stacking from the top, so a screen with four rows on it is
+   composed instead of top-heavy. `safe` matters: centred flex content
+   overflows in both directions, and the half that goes off the top of a box
+   cannot be scrolled back to - so on a panel too short for its own list,
+   this falls back to starting at the top. */
+.mv2.is-root .mv2-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: safe center;
+    padding: 0;
+}
 
 .mv2-nav {
     display: flex;
@@ -331,59 +464,80 @@ body:has(.mv2:not(.is-root)[open]) .mv2.is-root {
 .mv2-item {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 24px;
 
     flex: 1;
-    height: 60px;
-    padding: 0 24px;
+    height: 90px;
+    padding: 0 36px;
     border: none;
     border-radius: 0;
     background: none;
 
-    /* Held just off white at rest, so hovering has somewhere to go. The
-       icon inherits it and brightens along with the words. */
-    color: rgba(255, 255, 255, 0.82);
+    /* Full white, not held back a little. Rest used to sit at 0.82 so that
+       hovering had somewhere to go, but the band does that job now, and the
+       10% was coming straight off the contrast ratio in the one place it
+       could not be spared - a label over the sky. */
+    color: #ffffff;
     font: inherit;
-    font-size: 20px;
+    font-size: 23px;
     text-shadow: inherit;
     text-align: left;
     cursor: pointer;
-    transition: color 150ms ease;
+    transition:
+        background 150ms ease,
+        color 150ms ease;
 }
 
-/* The row itself stays out of it - no band of colour across the panel, just
-   the words coming forward. */
+/* The whole row lights, icon and chevron included. It used to be the label
+   alone growing 5%, which made the words wobble and re-rasterise while the
+   two things either side of them stayed put - a 340px row responding in the
+   middle only, so it never read as one target. */
 .mv2-item:hover,
 .mv2-item:focus-visible {
-    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* Resume is the default action and used to be told apart from the rows
+   below it by the absence of a chevron, which reads as "row with no page"
+   rather than "the thing you came here to do". It carries the band at rest
+   now, and hovering takes it one step further up the same scale. */
+.mv2-item.is-primary {
+    background: rgba(255, 255, 255, 0.12);
+    font-weight: 500;
+}
+
+.mv2-item.is-primary:hover,
+.mv2-item.is-primary:focus-visible {
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .mv2-label {
     flex: 1;
-
-    /* Grown from the left, so the label does not drift away from its icon.
-       A scale is paint, not layout: nothing around it moves. */
-    transform-origin: left center;
-    transition: scale 150ms ease;
-}
-
-.mv2-item:hover .mv2-label,
-.mv2-item:focus-visible .mv2-label {
-    scale: 1.05;
 }
 
 /* The icons are drawn at 20px; beside a 20px label they want a shade more,
    and the row is the only place they are asked to grow. */
 .mv2-item > svg:first-child {
     flex: none;
-    width: 22px;
-    height: 22px;
+    width: 25px;
+    height: 25px;
 }
 
 /* The chevron is decoration next to a word that already says the same
-   thing, so it sits back from the label. */
+   thing, so it sits back from the label. It leans a couple of pixels
+   further along on hover - the one bit of movement left in the row, and it
+   moves in the direction the row is about to take you. */
 .mv2-item > svg:last-child {
     opacity: 0.55;
+    transition:
+        translate 150ms ease,
+        opacity 150ms ease;
+}
+
+.mv2-item:hover > svg:last-child,
+.mv2-item:focus-visible > svg:last-child {
+    translate: 6px 0;
+    opacity: 0.8;
 }
 
 /* ------------------------------------------------------------------- focus */
@@ -392,14 +546,14 @@ body:has(.mv2:not(.is-root)[open]) .mv2.is-root {
 .mv2-round:focus-visible,
 .mv2-link:focus-visible,
 .mv2-toggle:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.85);
-    outline-offset: 2px;
+    outline: 3px solid rgba(255, 255, 255, 0.85);
+    outline-offset: 3px;
 }
 
 /* A row runs the full width of the panel, so a ring drawn outside it would
    sit on the panel's own border. Drawn inside instead. */
 .mv2-item:focus-visible {
-    outline-offset: -3px;
+    outline-offset: -6px;
 }
 
 /* The button sits on the game rather than on the panel, so a white ring
@@ -407,6 +561,8 @@ body:has(.mv2:not(.is-root)[open]) .mv2.is-root {
    in both directions; the second shadow is the button's own, restated
    because one box-shadow replaces another. */
 .mv2-toggle:focus-visible {
+    outline-width: 2px;
+    outline-offset: 2px;
     box-shadow:
         0 0 0 4px rgba(0, 0, 0, 0.55),
         0 10px 24px rgba(0, 0, 0, 0.25);
@@ -414,43 +570,98 @@ body:has(.mv2:not(.is-root)[open]) .mv2.is-root {
 
 /* --------------------------------------------------------------- page text */
 
+/* 24px line-height rather than 22: the Shift keycap is set inline in one of
+   these paragraphs, and a cap taller than the line box pushes that line
+   apart from its neighbour. */
 .mv2-text {
-    margin: 0 0 12px 0;
-    padding: 0 24px;
-    font-size: 15px;
-    line-height: 22px;
-    color: rgba(255, 255, 255, 0.92);
+    margin: 0 0 24px 0;
+    padding: 0 36px;
+    font-size: 17px;
+    line-height: 28px;
+    color: rgba(255, 255, 255, 0.96);
 }
 
+/* The one line on any page that is a footnote to the page it is on. It is
+   the only text here allowed under the contrast the rest holds to, and it
+   is short, ordinary prose - anything a reader actually needs is above it. */
 .mv2-text.is-dim {
-    color: rgba(255, 255, 255, 0.72);
+    color: rgba(255, 255, 255, 0.8);
 }
 
+/* A line that introduces the list beneath it. Half a step of weight, so it
+   is not another subtitle, and half the margin, so it belongs to the list
+   it names rather than floating between that list and the one before. */
+.mv2-text.is-lead {
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+
+/* Coming off the back of a list, it needs the full step to break from it -
+   24 above against 8 below, the same 3:1 the sections on Controls are held
+   apart by.
+
+   24 and not 16, because these two margins meet in a block: a page of
+   prose is not the flex column that a page of control lists is, so the
+   pair collapses to the larger of the two rather than adding up, and an 8
+   here disappeared into the list's own 16 without moving anything. */
+.mv2-list + .mv2-text.is-lead {
+    margin-top: 36px;
+}
+
+/* Same collapse, same reasoning: a section heading with a page above it
+   takes the 32 that separates one section from the next on Controls, and
+   keeps the 8 that holds it to its own content. */
+.mv2-text + .mv2-subtitle {
+    margin-top: 48px;
+}
+
+/* Tight to the list it introduces, and the list carries the space that
+   separates one section from the next. A label 10px above its own content
+   and 16px below the last section belonged to neither.
+
+   The rule is the section break. Space alone was not reading it - two
+   groups 26px apart in a 340px panel look like one group with an odd gap -
+   and a divider drawn on its own between the sections would have separated
+   them while leaving the labels floating as loose words, which is two
+   elements solving one problem each. Running the line out of the label
+   makes it one: the word gets an anchor, the section gets an edge, and the
+   line belongs unambiguously to what is under it rather than sitting
+   between two things claiming neither.
+
+   Same hairline as the root screen's footer, and stopped at the same 24px
+   gutter as everything else on the page. */
 .mv2-subtitle {
-    margin: 14px 0 10px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin: 0 36px 12px 36px;
     font-size: 15px;
     font-weight: 600;
-    letter-spacing: 1px;
+    letter-spacing: 1.4px;
     text-transform: uppercase;
-    color: #ffffff;
+    color: rgba(255, 255, 255, 0.85);
 }
 
-.mv2-subtitle:first-child {
-    margin-top: 0;
+.mv2-subtitle::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.12);
 }
 
 .mv2-list {
-    margin: 0 0 12px 0;
-    padding: 0 24px 0 42px;
-    font-size: 15px;
-    line-height: 24px;
-    color: rgba(255, 255, 255, 0.92);
+    margin: 0 0 24px 0;
+    padding: 0 36px 0 60px;
+    font-size: 17px;
+    line-height: 28px;
+    color: rgba(255, 255, 255, 0.96);
 }
 
 .mv2-link {
     color: #ffffff;
     text-decoration: underline;
-    text-underline-offset: 2px;
+    text-underline-offset: 3px;
     text-decoration-color: rgba(255, 255, 255, 0.55);
 }
 
@@ -460,14 +671,93 @@ body:has(.mv2:not(.is-root)[open]) .mv2.is-root {
 
 /* ---------------------------------------------------------------- diagrams */
 
+/* A control and what it does, in two columns.
+
+   Controls used to be a stack of six blocks - label, picture, sentence,
+   label, picture, sentence - separated by 10, 14, 16, 10 and 14 pixels. Six
+   gaps within six pixels of each other is no grouping at all: the space
+   holding a diagram to its own caption was wider than the space introducing
+   it, and about the same as the space between the two sections. And a 96px
+   cluster at the gutter left two thirds of the panel empty beside it while
+   its caption sat underneath.
+
+   A description list says what the page actually is - here is a key, here
+   is what it does - and the browser announces it as term and definition. It
+   also puts the caption in the space the diagram was wasting.
+
+   108px is not a round number, it is the cluster: three 32px caps and two
+   6px gaps. The other two terms line up along the track it sets. */
+.mv2-spec {
+    display: grid;
+    grid-template-columns: 108px 1fr;
+    column-gap: 24px;
+    row-gap: 24px;
+    align-items: center;
+
+    margin: 0 0 48px 0;
+    padding: 0 36px;
+}
+
+.mv2-spec:last-child {
+    margin-bottom: 0;
+}
+
+/* A page built out of these fills the panel instead of stopping short of
+   it. :has() rather than a flag on the section, because the thing that
+   decides is what the page is made of: control lists stretch, prose does
+   not - a paragraph pulled taller is just a paragraph with a gap under it.
+
+   The stretch goes into the rows, not into the gaps. Distributing slack
+   between blocks would have pushed a label away from the list it
+   introduces and opened 77px between the two Desktop rows; taller rows
+   leave every relationship on the page exactly where it was and read like
+   the root menu's list, which is the other list in this panel.
+
+   --rows is how many pairs the list holds. With a flex-basis of 0, a grow
+   factor of one per row makes a row in Mobile exactly as tall as a row in
+   Desktop - which is the point of putting them in one column. min-content
+   is the floor: on a screen too short for the panel the rows stop
+   shrinking and the body scrolls, rather than the keycaps overlapping. */
+.mv2-body:has(.mv2-spec) {
+    display: flex;
+    flex-direction: column;
+}
+
+.mv2-body:has(.mv2-spec) .mv2-spec {
+    flex: var(--rows, 1) 1 0;
+    grid-auto-rows: minmax(min-content, 1fr);
+    row-gap: 0;
+}
+
+.mv2-body:has(.mv2-spec) .mv2-subtitle {
+    flex: none;
+}
+
+/* Flush to the gutter, not centred in the track. Centred, the three terms
+   had three different left edges - the cluster fills 96px exactly so it
+   started at the gutter, Shift started 27px in and the stick 20px - and the
+   section labels above them started somewhere else again. The trailing gap
+   on the short terms is the price of one straight edge running down the
+   left of the page, labels included. */
+.mv2-spec dt {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.mv2-spec dd {
+    margin: 0;
+    font-size: 17px;
+    line-height: 28px;
+    color: rgba(255, 255, 255, 0.96);
+}
+
 /* Three columns wide and two rows tall, with up centred over the bottom
-   row - the shape the keys actually sit in on the keyboard. */
+   row - the shape the keys actually sit in on the keyboard. No margins of
+   its own: it is a term in the list above, and the list does the spacing. */
 .mv2-cluster {
     display: grid;
-    grid-template-columns: 34px 34px 34px;
+    grid-template-columns: 32px 32px 32px;
     gap: 6px;
-    justify-content: center;
-    margin-bottom: 12px;
 }
 
 .mv2-cluster > :nth-child(1) {
@@ -487,30 +777,32 @@ body:has(.mv2:not(.is-root)[open]) .mv2.is-root {
 }
 
 /* A keycap in the same glass as the panel, one step brighter so it reads as
-   sitting on top of it. */
+   sitting on top of it. One size, everywhere: the cluster used to draw
+   34px caps while Shift, three lines below it, was 26px - the same object
+   in two sizes on one page. */
 .mv2-key {
     display: inline-flex;
     align-items: center;
     justify-content: center;
 
-    height: 26px;
-    min-width: 26px;
+    height: 32px;
+    min-width: 32px;
     border: 1px solid rgba(255, 255, 255, 0.22);
-    border-radius: 4px;
+    border-radius: 6px;
     background: rgba(255, 255, 255, 0.14);
 
     font-family: inherit;
-    font-size: 13px;
+    font-size: 15px;
     color: #ffffff;
 }
 
 .mv2-cluster .mv2-key {
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
 }
 
 .mv2-key.is-wide {
-    padding: 0 8px;
+    padding: 0 12px;
 }
 
 /* One arrow is drawn, pointing left; the other three are that one turned. */
@@ -530,16 +822,14 @@ body:has(.mv2:not(.is-root)[open]) .mv2.is-root {
     rotate: -90deg;
 }
 
-.mv2-diagram {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 12px;
-    color: rgba(255, 255, 255, 0.9);
-}
-
 /* ------------------------------------------------------------------ toggle */
 
-/* The same glass as the panel, at button size. */
+/* The same glass as the panel, at button size - and at its original size.
+   It is not part of the panel: it sits on the game, is the only thing on
+   screen while the menu is shut, and was the right size against the scene
+   before the panel grew. Everything here that is about the button rather
+   than about the glass is left where it was: the box, the corner, the
+   shadow it casts, the blur behind it, and the focus ring. */
 .mv2-toggle {
     position: fixed;
     top: 24px;
@@ -557,7 +847,7 @@ body:has(.mv2:not(.is-root)[open]) .mv2.is-root {
     border-radius: 8px;
 
     background: var(--mv2-panel);
-    backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px) brightness(0.7) saturate(0.94);
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
 
     color: #ffffff;
@@ -614,6 +904,17 @@ body:has(.mv2[open]) .mv2-toggle {
     .mv2-subtitle {
         color: #ffffff;
     }
+
+    /* Both hairlines - the section rules and the one over the root footer.
+       At 0.12 they are a hint, which is the whole idea until someone has
+       asked for the opposite. */
+    .mv2-subtitle::after {
+        background: rgba(255, 255, 255, 0.6);
+    }
+
+    .mv2-foot {
+        border-top-color: rgba(255, 255, 255, 0.6);
+    }
 }
 
 /* ------------------------------------------------------------------ motion */
@@ -632,5 +933,12 @@ body:has(.mv2[open]) .mv2-toggle {
 
     .mv2[open] .mv2-body {
         animation: none;
+    }
+
+    /* The chevron's lean is the only movement left in a row. The band and
+       the ring stay - they are a change of colour, not of position. */
+    .mv2-item:hover > svg:last-child,
+    .mv2-item:focus-visible > svg:last-child {
+        translate: 0;
     }
 }

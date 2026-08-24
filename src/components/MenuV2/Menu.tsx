@@ -1,6 +1,12 @@
 import type { KeyboardEvent, MouseEvent } from 'react';
 
-import { ChevronIcon, CloseIcon, HamburgerIcon, PlayIcon } from './icons';
+import {
+    ChevronIcon,
+    CloseIcon,
+    HamburgerIcon,
+    PlayIcon,
+    SunIcon,
+} from './icons';
 import { MenuItem } from './MenuItem';
 import { SECTIONS } from './sections';
 import './Menu.css';
@@ -119,18 +125,28 @@ export function Menu() {
                 <HamburgerIcon />
             </button>
 
-            {/* No header on the root screen: a title reading "Menu" over a
-                list that opens with "Resume" says nothing the list does not,
-                and the rows are the whole design. With no heading to point
-                at, the name goes in aria-label instead - and with no close
-                button, Resume, Escape and a click outside are the ways out. */}
+            {/* The root screen is the game's name, the list, and a line to
+                close it on. Not a title reading "Menu" - that would say
+                nothing the list does not - but the one thing a pause screen
+                is otherwise the last to mention, and a pair of ends for the
+                list to sit between. There is still no close button up here:
+                Resume, Escape and a click outside are the ways out. */}
             <dialog
                 id={MENU}
                 className="mv2 is-root"
                 closedby="any"
-                aria-label="Menu"
+                aria-labelledby={`${MENU}-wordmark`}
                 onKeyDown={handleKeyDown}
             >
+                <header className="mv2-brand">
+                    {/* h2, not h1: the dialog is a piece of the page rather
+                        than the page itself, and this is the name it is
+                        announced by - hence the id in aria-labelledby. */}
+                    <h2 id={`${MENU}-wordmark`} className="mv2-wordmark">
+                        Sunday ride
+                    </h2>
+                </header>
+
                 <div className="mv2-body">
                     <ul className="mv2-nav">
                         <MenuItem
@@ -138,6 +154,7 @@ export function Menu() {
                             label="Resume"
                             command="close"
                             commandfor={MENU}
+                            primary
                             autofocus=""
                         />
 
@@ -153,6 +170,14 @@ export function Menu() {
                         ))}
                     </ul>
                 </div>
+
+                {/* Decoration, and honest about it: the sun is aria-hidden
+                    by default like every icon without a label, and the line
+                    is the sign-off the game would give you if it talked. */}
+                <footer className="mv2-foot">
+                    <span>Enjoy the ride.</span>
+                    <SunIcon />
+                </footer>
             </dialog>
 
             {/* Each page opens on top of the root menu and covers it exactly,
@@ -196,7 +221,7 @@ export function Menu() {
 
                         <button
                             type="button"
-                            className="mv2-round"
+                            className="mv2-round is-quiet"
                             onClick={closeAll}
                             aria-label="Close menu"
                         >

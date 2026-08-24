@@ -4,7 +4,12 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Sunday ride</title>
-        <link rel="icon" type="image/webp" href="/favicon.webp" sizes="256x256" />
+        <link
+            rel="icon"
+            type="image/webp"
+            href="/favicon.webp"
+            sizes="256x256"
+        />
 
         <!-- Fetched at page load rather than when the menu first opens: the paper
          is ruled on a fixed line height, so a late font swap would reflow the
@@ -15,6 +20,24 @@
             as="font"
             type="font/ttf"
             crossorigin
+        />
+
+        <!-- The menu's title, for the same reason and a stronger one: it is a
+         CSS background on a dialog, and a dialog is display: none until it is
+         opened, so nothing in its subtree is fetched until then. Left to
+         itself the browser starts downloading this the moment someone clicks
+         Menu and the title appears after the panel it belongs to.
+
+         Low priority on purpose. It is 131KB of picture that nobody is
+         looking at yet, and the scene it is queued behind is the thing being
+         waited on - this only has to arrive before the first click, not
+         before the first frame. -->
+        <link
+            rel="preload"
+            href="/images/menuTitleV4.webp"
+            as="image"
+            type="image/webp"
+            fetchpriority="low"
         />
     </head>
     <body>
