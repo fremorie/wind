@@ -104,14 +104,8 @@ export const SECTIONS: Section[] = [
 
                 <h3 className="mv2-subtitle">3D models</h3>
 
-                <p className="mv2-text is-lead">Made by me:</p>
-                <ul className="mv2-list">
-                    <li>Bicycle</li>
-                    <li>Wind turbines</li>
-                </ul>
-
                 <p className="mv2-text is-lead">
-                    By{' '}
+                    This project uses the following models by{' '}
                     <ExternalLink href="https://poly.pizza/u/Quaternius">
                         Quaternius
                     </ExternalLink>
