@@ -7,4 +7,7 @@ export const mapleCanopyMaterial = createCanopyMaterial(
     '#96702a',
     './textures/foliage/maple.png',
 );
-export const mapleBarkMaterial = createBarkMaterial('#4f3920');
+export const mapleBarkMaterial = createBarkMaterial('#725f3e', {
+    metalness: 0.1,
+    roughness: 0.415,
+});

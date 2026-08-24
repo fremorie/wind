@@ -7,4 +7,7 @@ export const oakCanopyMaterial = createCanopyMaterial(
     '#9c882f',
     './textures/foliage/oak.png',
 );
-export const oakBarkMaterial = createBarkMaterial('#493a29');
+export const oakBarkMaterial = createBarkMaterial('#90774d', {
+    metalness: 0.1,
+    roughness: 0.415,
+});

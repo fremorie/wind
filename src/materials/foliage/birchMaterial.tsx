@@ -2,7 +2,7 @@ import { createBarkMaterial, createCanopyMaterial } from './foliageMaterials';
 
 // Bark colours are BirchFlat.glb's own White.001 and Black.001, converted from
 // glTF's linear values to sRGB. The canopy is tinted by hand, not by the model.
-const BARK_FINISH = { metalness: 0.4, roughness: 0.415 };
+const BARK_FINISH = { metalness: 0.1, roughness: 0.415 };
 
 export const birchCanopyMaterial = createCanopyMaterial(
     '#719149',
