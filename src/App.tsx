@@ -5,7 +5,7 @@ import { Leva } from 'leva';
 
 import { Experience } from './Experience/Experience';
 import { Joystick } from './components/Joystick';
-import { MenuV2 } from './components/MenuV2';
+import { Menu } from './components/Menu';
 import { useDebug } from './hooks/useDebug';
 import './App.css';
 
@@ -45,7 +45,7 @@ function App() {
             </Canvas>
 
             <Joystick />
-            <MenuV2 />
+            <Menu />
         </KeyboardControls>
     );
 }

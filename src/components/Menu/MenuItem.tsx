@@ -1,30 +1,44 @@
-// One row of the root list. The drawing is painted in Menu.css, which masks
-// the file so it takes the ink colour; `icon` picks which one, by file name
-// in public/images/icons without the extension.
-//
-// The .menu-item class is also what Menu's arrow-key handler queries the
-// list for, so it is load-bearing in two places rather than one.
+import type { ReactNode } from 'react';
+
+import { ChevronIcon } from './icons';
+
+// One row of the root list, and a plain invoker button: `command` and
+// `commandfor` name a dialog and what to do to it, and the browser does it.
+// `chevron` marks the rows that open a page, as opposed to Resume, which
+// closes the menu, and `primary` marks the one row that is the reason most
+// people opened the menu at all.
 export function MenuItem({
     icon,
     label,
-    onClick,
-    autoFocus,
+    command,
+    commandfor,
+    chevron,
+    primary,
+    autofocus,
 }: {
-    icon: string;
+    icon: ReactNode;
     label: string;
-    onClick: () => void;
-    autoFocus?: boolean;
+    command: 'show-modal' | 'close';
+    commandfor: string;
+    chevron?: boolean;
+    primary?: boolean;
+    autofocus?: '';
 }) {
     return (
         <li>
             <button
                 type="button"
-                className="menu-item"
-                onClick={onClick}
-                autoFocus={autoFocus}
+                className={primary ? 'mv2-item is-primary' : 'mv2-item'}
+                command={command}
+                commandfor={commandfor}
+                autofocus={autofocus}
+                // The rows that open a page say so, the way the hamburger
+                // does. Resume closes the menu and has nothing to announce.
+                aria-haspopup={command === 'show-modal' ? 'dialog' : undefined}
             >
-                <span className="menu-icon" data-icon={icon} />
-                <span className="menu-label">{label}</span>
+                {icon}
+                <span className="mv2-label">{label}</span>
+                {chevron && <ChevronIcon direction="right" />}
             </button>
         </li>
     );

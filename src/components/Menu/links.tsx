@@ -11,7 +11,7 @@ export function ExternalLink({
     children: ReactNode;
 }) {
     return (
-        <a className="menu-link" href={href} target="_blank" rel="noreferrer">
+        <a className="mv2-link" href={href} target="_blank" rel="noreferrer">
             {children}
         </a>
     );
@@ -20,8 +20,7 @@ export function ExternalLink({
 const POLY_PIZZA = 'https://poly.pizza';
 
 // Every borrowed model is a poly.pizza /m/ page, so the credits list only
-// ever varies by the id and the name. The attribution each one is taken from
-// lives in the README.md next to the .glb under public/models.
+// ever varies by the id and the name.
 export function PolyLink({
     id,
     children,

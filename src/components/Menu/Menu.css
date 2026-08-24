@@ -1,746 +1,944 @@
-/* Self-hosted rather than fetched from Google: the sheet's line grid is tied
-   to this font's metrics, so a swap after first paint would drop every line
-   of text off its rule. One variable file covers the whole 400-700 range,
-   and font-display: block would rather hold the text back for a moment than
-   paint it in a fallback whose metrics are wrong. */
+/* A translucent panel, centred, in Outfit.
+
+   The blur is deliberately shallow. Enough of one to take the detail out
+   of whatever is behind the text - a tint alone left the grass legible
+   through it and the words hard to pick out - but well short of the frosted
+   pane that reads as a phone's control panel. What the blur cannot do is
+   guarantee the words are readable over a sky, so it is paired with a
+   brightness() that can. Corners are barely rounded and the row highlight
+   runs the full width of the panel, which keeps the rest of it off that
+   shelf too.
+
+   Everything here is in whole pixels on purpose: the panel is a fixed piece
+   of furniture rather than something that reflows with the text size, so
+   there is one number per measurement and no arithmetic to follow.
+
+   Space comes from one scale - 4, 8, 16, 24, 32 - and nothing else, with a
+   job for each step: 4 between keycaps, 8 holding a label to its own list,
+   16 between things inside a group, 24 for the gutter and every distance
+   to an edge, 32 for a section break. It replaced 6, 10, 12, 14, 18, 22
+   and 26, which between them said nothing about what belonged to what.
+
+   Two numbers off the scale are sizes rather than space, and both are
+   derived: the header's 18px padding is the 36px gutter less the air a
+   bare 18px glyph carries inside a 54px hit area, and the 108px term
+   column is three 32px keycaps with two 6px gaps between them. */
+
+/* Self-hosted next to the other three families in public/fonts. One
+   variable file covers the whole weight range; swap is fine here because
+   nothing on the panel is measured against the font's metrics. */
 @font-face {
-    font-family: 'Playpen Sans';
-    src: url('/fonts/Playpen_Sans/PlaypenSans-VariableFont_wght.ttf')
-        format('truetype');
-    font-weight: 100 800;
-    font-display: block;
+    font-family: 'Outfit';
+    src: url('/fonts/Outfit/Outfit-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-display: swap;
 }
 
-/* A photographed sheet of exercise-book paper, shown as a centred modal.
+/* Border-box everywhere below, so a width is the width you see on screen
+   and the numbers in this file add up without the borders being counted
+   twice. */
+.mv2,
+.mv2 *,
+.mv2-toggle {
+    box-sizing: border-box;
+}
 
-   The paper - tear, punch holes, rules, red margin, the drawing along the
-   bottom - is all in images/torn_page.webp. Nothing here draws paper; this
-   file only has to land the text on rules that are already printed in the
-   photograph, which makes the image's own geometry the source of truth for
-   every measurement below. */
+/* The two colours the panel and its button are painted in.
 
-.menu {
-    /* Geometry of torn_page.webp, measured in the image's own pixels. Every
-       length on the sheet is derived from these as a fraction, so nothing
-       has to be re-tuned if the photo is re-exported at another resolution.
+   The tint is warm and dark rather than black - the game is a field at
+   golden hour, and a neutral near-black panel sat on top of it like a hole.
+   It is thin enough that the grass is still readable through it as grass,
+   but no thinner: the tint alone cannot promise a contrast ratio, because
+   what is behind it is a moving camera. The brightness() on the panel's
+   backdrop-filter is what makes that promise - see .mv2 below.
 
-         --img-rule   spacing and --img-first the topmost rule, both from a
-                      least-squares fit over all 18 printed rules rather
-                      than off any single one: the photographed rules wobble
-                      by up to 3px, and picking one gap would accumulate
-                      that error down the page
-         --img-text-l right of the tear and its punch holes
-         --img-text-r where the writing stops, short of the red rule
-         --img-margin-x the red margin rule itself
-         --img-edge-r the photographed sheet's right edge; the strip beyond
-                      it is the transparent border baked into the file */
-    --img-w: 1122;
-    --img-h: 1402;
-    --img-rule: 61.1589;
-    --img-first: 173;
-    --img-text-l: 160;
-    --img-text-r: 936;
-    --img-margin-x: 962;
-    --img-edge-r: 1074;
+   The edge is nearly invisible, and stays that way: a bright hairline
+   around a translucent rounded panel is the thing that reads as
+   glassmorphism. Focus is left out of it deliberately - focus has a ring of
+   its own, and lighting the edge as well would put two indicators on one
+   control. */
+.mv2,
+.mv2-toggle {
+    --mv2-panel: rgba(58, 50, 42, 0.5);
+    --mv2-edge: rgba(255, 255, 255, 0.08);
+}
 
-    /* Design space. The sheet is authored at the size where one printed rule
-       is exactly --rule tall, and the whole thing is then scaled to fit.
-       Paper does not reflow, so neither do we - the line count is identical
-       everywhere. */
-    --rule: 28px; /* == body line-height. Keep these two in lockstep. */
-    --paper-h: calc(var(--rule) * var(--img-h) / var(--img-rule));
-    --paper-w: calc(var(--paper-h) * var(--img-w) / var(--img-h));
-    --first-rule: calc(var(--paper-h) * var(--img-first) / var(--img-h));
+/* The button, and only the button. The panel used to light its edge on
+   hover too, but a pointer parks wherever it likes over a 340px panel, so
+   the border kept changing for a reason the eye could not connect to
+   anything. The toggle is a control and has to look pressable; the panel is
+   furniture. */
+.mv2-toggle:hover {
+    --mv2-edge: rgba(255, 255, 255, 0.24);
+}
 
-    /* The gap between the bottom of a line box and the baseline sitting in
-       it - descender space, essentially - measured for Playpen Sans at 19px
-       in a --rule tall box. Lining a line box's bottom edge up with a
-       printed rule would leave the writing floating this far above it, so
-       every line is pushed down by the same amount.
+/* ------------------------------------------------------------------ dialog */
 
-       All three nudges below are measured, not guessed: a zero-height inline
-       block appended to a line takes its baseline from its own bottom edge,
-       so its box top is exactly where that line's baseline is. Comparing
-       that against --first-rule + n * --rule gives the error per line
-       directly. They are also locked together - this one shifts the whole
-       page, so moving it means moving the other two the same amount the
-       other way. Re-measure all three if the font or its size changes. */
-    --baseline-nudge: 6px;
+.mv2 {
+    /* One width, every page, every screen. The UA stylesheet puts a
+       max-width in em on a modal dialog, so it takes an explicit max-width
+       of the same number of pixels to stop the panel narrowing on a small
+       one. */
+    width: 510px;
 
-    /* The same idea for the list, which is set larger than the body text and
-       so sits differently in its line box. Negative here, which is why the
-       list shifts itself with `top` rather than padding: the page as a whole
-       is already pushed down by --baseline-nudge, and 30px type needs a
-       little of that back. Measured, not guessed. */
-    --list-nudge: -4px;
+    /* The clamp is MUI's: its dialog paper carries margin: 32px and
+       max-height: calc(100% - 96px), so a dialog never runs off the screen
+       it is centred in. On anything roomier than the panel these do nothing
+       and the size is the fixed one below; on a phone in landscape, or a
+       window dragged small, the panel gives way at the edges rather than
+       hanging off them. Percentages here resolve against the viewport - a
+       modal dialog's containing block - not against any layout of ours.
+       They also override the UA's own max-width and max-height, which are
+       in em and would narrow the panel wherever the root font is large. */
+    max-width: min(510px, calc(100% - 96px));
+    max-height: calc(100% - 96px);
 
-    /* --ink-soft is the same pen thinned out, so notes and secondary
-       controls read as quieter without introducing a second colour. */
-    --ink: #34609c;
-    --ink-soft: color-mix(in srgb, var(--ink) 62%, transparent);
-    --margin-red: #e08a84;
-
-    /* Ratio of available space to design size. usePaperScale measures the
-       sheet and overwrites this on .menu-sheet; the 1 here is what shows if
-       that never runs, which leaves the sheet at its design size rather than
-       at some guess.
-
-       It is not computed here because CSS cannot divide one length by
-       another. The workaround for that is tan(atan2(a, b)), which this used
-       to be, and which WebKit evaluates to a negative number - scale(-n)
-       being a 180deg rotation, the whole menu came up upside down on iOS. */
-    --paper-scale: 1;
-
-    /* The UA stylesheet fights every one of these: a dialog ships with a
-       border, padding, a white background and a max-width of
-       calc(100% - 6px). Strip them and let the sheet inside own the looks.
-
-       The dialog is stretched over the whole viewport and centres the sheet
-       inside itself, rather than being sheet-sized and centred by margin:
-       auto. The sheet is scaled with a transform, which leaves its layout
-       size alone, so on a narrow screen a sheet-sized dialog is wider than
-       the viewport - and auto margins do not centre a box that does not fit.
-       In the inline axis the rule is to zero the start margin and let the
-       box hang off the end instead, which pushed the whole sheet to one
-       side on a phone. The block axis has no such rule, which is why it only
-       ever looked off horizontally. */
-    inset: 0;
-    width: auto;
-    height: auto;
-    margin: 0;
+    /* And one height, whatever page is showing, so nothing resizes on the
+       way between screens. 440px clears the tallest page - Controls - and
+       the root screen, which has the fewest rows, spends the difference on
+       a wordmark, a footer and air around the list rather than leaving it
+       pooled at the bottom as empty glass.
+       The UA's max-height, also in em, still clamps this on a screen too
+       short to hold it; the body scrolls in that case. */
+    height: 660px;
     padding: 0;
+    border: 1px solid var(--mv2-edge);
+    border-radius: 12px;
 
-    /* Only `display` waits for the closing transition, and it is the only
-       one of these that has to go on [open]. Leaving the alignment there too
-       drops it the instant the menu is dismissed, while the dialog is still
-       display: flex for another fifth of a second - long enough to watch the
-       sheet snap into the corner before it fades. */
-    align-items: center;
-    justify-content: center;
-    border: none;
-    background: none;
-    max-width: none;
-    max-height: none;
-    overflow: visible;
+    background: var(--mv2-panel);
+    /* brightness() is what makes the panel trustworthy. Blur takes the
+       detail out of whatever is behind the text but leaves its brightness
+       alone, so over the pale sky the tint composited to around #adaba3 and
+       white type sat at roughly 2:1 against it - readable only thanks to
+       the text-shadow. Pulling the backdrop down to 70% first puts a floor
+       under the contrast wherever the camera happens to be pointing, and
+       the pinch of desaturation stops the grass reading as green through
+       the words. The tint and this number were picked together by measuring
+       the worst case - a row label and a paragraph over the brightest sky
+       in the scene, which used to sit at roughly 2:1. */
+    backdrop-filter: blur(9px) brightness(0.7) saturate(0.94);
+    box-shadow: 0 27px 60px rgba(0, 0, 0, 0.28);
+
+    color: #ffffff;
+    font-family: 'Outfit', 'Segoe UI', sans-serif;
+    font-size: 17px;
+    /* Carries to every label and paragraph below, so white type holds up
+       wherever the panel happens to be sitting. */
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
+
+    /* Column so the header keeps its height and the body takes the rest -
+       see .mv2-body. The panel itself never scrolls: it is a fixed box. */
+    flex-direction: column;
+    overflow: hidden;
 
     /* display and overlay are discrete properties, so they normally flip on
        the first frame - allow-discrete holds them until the fade finishes,
-       which is the only reason the closing animation is ever seen.
-
-       `scale` rather than `transform`, because the sheet inside owns
-       `transform` for its fit-to-viewport scale and its tilt; keeping the
-       two on separate properties means neither has to know about the other. */
+       which is the only reason the closing animation is ever seen. */
     opacity: 0;
     scale: 0.96;
+
+    /* Durations and curve from MUI's theme: 225ms coming in, 195ms going
+       out, on cubic-bezier(0.4, 0, 0.2, 1). Asymmetric on purpose - a panel
+       arriving wants to settle, one leaving should get out of the way. This
+       rule is the closing state, so it carries the shorter of the two; the
+       open state below overrides the duration. */
     transition:
-        opacity 220ms ease,
-        scale 220ms ease,
-        display 220ms allow-discrete,
-        overlay 220ms allow-discrete;
+        opacity 195ms cubic-bezier(0.4, 0, 0.2, 1),
+        scale 195ms cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 150ms ease,
+        display 195ms allow-discrete,
+        overlay 195ms allow-discrete;
 }
 
-/* display goes on the open state alone: an author `display` on .menu itself
+/* display goes on the open state alone: an author `display` on .mv2 itself
    would beat the UA's `dialog:not([open]) { display: none }` and leave the
-   sheet on screen with the menu shut. */
-.menu[open] {
+   panel on screen with the menu shut. */
+.mv2[open] {
     display: flex;
 
     opacity: 1;
     scale: 1;
+
+    transition-duration: 225ms;
 }
 
 /* The open styles already apply on the frame the dialog enters the top
    layer, so without a starting style there is nothing to transition *from*
-   and the sheet just appears. */
+   and the panel just appears. */
 @starting-style {
-    .menu[open] {
+    .mv2[open] {
         opacity: 0;
         scale: 0.96;
     }
 }
 
-/* ---------------------------------------------------------------- backdrop */
-
-/* ::backdrop is the dialog's own layer - no overlay div, and it always sits
-   directly beneath this dialog in the top layer whatever else is on screen. */
-.menu::backdrop {
-    background: rgba(24, 28, 40, 0.4);
-
-    opacity: 0;
-    transition:
-        opacity 220ms ease,
-        display 220ms allow-discrete,
-        overlay 220ms allow-discrete;
-}
-
-.menu[open]::backdrop {
-    opacity: 1;
+/* The scale belongs to the menu arriving over the game. A page is not an
+   arrival: it is the same panel in the same place with different words in
+   it, and anything that moves or grows reads as a glitch rather than as a
+   transition. Pages cross-fade with the root instead - one out at 195ms,
+   the other in at 225ms, overlapping. */
+.mv2:not(.is-root),
+.mv2:not(.is-root)[open] {
+    scale: 1;
 }
 
 @starting-style {
-    .menu[open]::backdrop {
+    .mv2:not(.is-root)[open] {
+        scale: 1;
+    }
+}
+
+/* Same reason: the body's little fall into place is for the menu opening,
+   not for a page that is already in position. */
+.mv2:not(.is-root)[open] .mv2-body {
+    animation: none;
+}
+
+/* ::backdrop is the dialog's own layer - no overlay div, and it always sits
+   directly beneath this dialog in the top layer whatever else is on screen.
+   Barely there: the glass is the thing that separates the menu from the
+   game, and dimming the whole scene would take the light out of it. */
+.mv2::backdrop {
+    background: rgba(10, 12, 18, 0.1);
+
+    opacity: 0;
+    transition:
+        opacity 195ms cubic-bezier(0.4, 0, 0.2, 1),
+        display 195ms allow-discrete,
+        overlay 195ms allow-discrete;
+}
+
+/* A section page opens on top of the root menu, which is still open behind
+   it with a backdrop of its own. A second scrim on top of that one would
+   darken the scene every time someone opened a page. */
+.mv2:not(.is-root)::backdrop {
+    background: transparent;
+}
+
+/* And the root menu itself stands aside while a page is up. It has to stay
+   open - it is what closing the page returns to - but the panel is
+   translucent, so left showing, the two lists would read through each
+   other. :has() again: the only thing that knows a page is open is the
+   page's own [open] attribute. */
+body:has(.mv2:not(.is-root)[open]) .mv2.is-root {
+    opacity: 0;
+
+    /* Invisible, so it has no business blurring anything. Left on, the
+       panel under the pointer had two stacked backdrop-filter layers to
+       recomposite on every hover - which is the kind of thing that shows up
+       as flicker on a real GPU and never in a software-rendered capture. */
+    backdrop-filter: none;
+}
+
+.mv2[open]::backdrop {
+    opacity: 1;
+
+    transition-duration: 225ms;
+}
+
+@starting-style {
+    .mv2[open]::backdrop {
         opacity: 0;
     }
 }
 
-/* ------------------------------------------------------------------- sheet */
+/* ------------------------------------------------------------------ header */
 
-/* Only here to carry the fit-to-viewport scale: the dialog above it owns the
-   open/close animation, and putting both on one element would mean one of
-   them having to know the other's current value. */
-.menu-sheet {
-    transform: scale(var(--paper-scale));
-    transform-origin: center;
-}
-
-/* ------------------------------------------------------------------- paper */
-
-.menu-paper {
-    position: relative;
-
-    width: var(--paper-w);
-    height: var(--paper-h);
-    box-sizing: border-box;
-
-    /* The writing area is lifted straight off the photograph: each side is
-       the fraction of the image that lies outside the column the rules are
-       meant to be written in, so the words stay clear of the tear on the
-       left and stop at the red margin on the right however the sheet is
-       scaled.
-
-       padding-top drops the first line so its baseline lands on the topmost
-       printed rule. --baseline-nudge is unchanged - it compensates for where
-       the font sits inside its line box, which has nothing to do with where
-       the rule is. */
-    padding: calc(var(--first-rule) - var(--rule) + var(--baseline-nudge))
-        calc(var(--paper-w) * (var(--img-w) - var(--img-text-r)) / var(--img-w))
-        0 calc(var(--paper-w) * var(--img-text-l) / var(--img-w));
-
-    background: url('/images/torn_page.webp') no-repeat center / 100% 100%;
-
-    /* drop-shadow is filtered through the alpha channel, so the shadow comes
-       out torn-edged as well. box-shadow would trace a crisp rectangle round
-       a sheet that has not got a straight edge anywhere on it. */
-    filter: drop-shadow(3px 6px 12px rgba(40, 40, 60, 0.35));
-
-    font-family: 'Playpen Sans', 'Comic Sans MS', cursive;
-    font-size: 19px;
-    line-height: var(--rule);
-    color: var(--ink);
-}
-
-.menu-close {
-    position: absolute;
-    /* Centred in the margin strip between the red rule and the sheet's
-       edge, and sitting on the first printed rule. Anchoring the box and
-       then shifting it by half its own size puts its centre there whatever
-       the padding is - and the padding is generous, since the cross itself
-       is nowhere near a thumb-sized target.
-
-       It used to be pinned above the first rule, which on this sheet is up
-       in the torn corner: the cross ended up half off the rounded edge.
-
-       Lifted half a rule off that centre line. A quarter would have been the
-       optical match - the cross is the only mark here that is not text, and
-       a centred box puts half the glyph below the rule that Back sits its
-       baseline on - but this is a deliberate overshoot past that: the cross
-       clears the line entirely and sits in the blank strip above it rather
-       than on the writing line. Written in rules rather than pixels so it
-       keeps up if --rule ever moves.
-
-       Three quarters of a rule up, which is most of the budget: a full rule
-       is the old position that put the cross half off the rounded edge, and
-       there is about a quarter of a rule left between here and there. */
-    top: calc(var(--first-rule) - var(--rule) * 0.75);
-    right: calc(
-        var(--paper-w) *
-            (var(--img-w) - (var(--img-margin-x) + var(--img-edge-r)) / 2) /
-            var(--img-w)
-    );
-    translate: 50% -50%;
-
-    border: none;
-    background: none;
-    padding: 10px;
-
-    font-family: 'Playpen Sans', cursive;
-    font-size: 24px;
-    line-height: 1;
-    color: var(--ink-soft);
-    cursor: pointer;
-}
-
-.menu-close:hover {
-    color: var(--margin-red);
-}
-
-/* -------------------------------------------------------------- root list */
-
-/* The root page is centred on the sheet, unlike the pages of writing behind
-   it: the title over the middle of the paper, and the list as one centred
-   block rather than five separately centred lines, so the icons still stack
-   into a column. */
-.menu-section.is-root .menu-title {
-    text-align: center;
-
-    /* Underlined the way you would on ruled paper: a second stroke just
-       under the printed rule the word is sitting on, in the same pen. */
-    text-decoration: underline;
-    text-decoration-thickness: 3px;
-    text-underline-offset: 6px;
-
-    /* Two whole extra rules of air under the heading. Whole, so the list
-       below still starts on a printed line - the margin has to stay a
-       multiple of --rule, less the nudge that pushed the title down in the
-       first place. */
-    margin-bottom: calc(var(--rule) * 3 - var(--title-nudge));
-}
-
-.menu-section.is-root .menu-nav {
-    width: fit-content;
-    margin-inline: auto;
-}
-
-/* One rule per item with a blank rule between them, which is how anyone
-   writing a list on ruled paper would space it out. Keeping each item's line
-   box exactly --rule tall is also what keeps the writing on the lines: the
-   baseline sits at a fixed offset inside the box, so any other height would
-   need its own nudge. */
-.menu-nav {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.menu-nav li {
-    margin-bottom: var(--rule);
-}
-
-.menu-item {
-    /* Block, but only as wide as the words: the focus underline is drawn on
-       the text itself and would otherwise run off across the page. An
-       inline-block would do the same, at the cost of the line box's
-       descender space stacking up under every item and walking the whole
-       list off the rules. */
+/* 14px of padding, not 22, because the buttons either side lost their
+   boxes: a bare 18px glyph centred in a 54px hit area carries 18px of air
+   of its own, and at the full gutter the chevron would sit 54px in while
+   the text below it started at 36. The gutter is what has to line up, so
+   the number here is the gutter minus that air. */
+.mv2-head {
+    flex: none;
     display: flex;
     align-items: center;
-    gap: 10px;
-    width: fit-content;
-    padding: 0;
-
-    /* Relative, so the item can be nudged either way onto its rule without
-       the offset counting towards the two rules each item takes up. */
-    position: relative;
-    top: var(--list-nudge);
-
-    border: none;
-    background: none;
-    text-align: left;
-
-    font-family: 'Playpen Sans', cursive;
-    font-size: 30px;
-    line-height: var(--rule);
-    color: var(--ink);
-    text-decoration: none;
-    cursor: pointer;
-
-    transition: translate 140ms ease;
+    gap: 12px;
+    padding: 36px 18px 12px 18px;
 }
 
-.menu-item:hover,
-.menu-item:focus-visible {
-    translate: 4px 0;
-}
-
-/* The default focus ring is a hard-edged rectangle in the middle of a
-   photograph of paper. Underlining in the same red as the margin rule is the
-   same information drawn in a pen the page already uses - and it is not
-   colour on its own, since focus also moves the item across the page.
-
-   On the list it goes on the label rather than the item: the item is a flex
-   container, and text-decoration set on one does not reach its children. */
-.menu-item:focus-visible,
-.menu-back:focus-visible,
-.menu-close:focus-visible {
-    outline: none;
-}
-
-.menu-item:focus-visible .menu-label,
-.menu-back:focus-visible,
-.menu-close:focus-visible {
-    text-decoration: underline;
-    text-decoration-color: var(--margin-red);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 4px;
-}
-
-/* The icons are monochrome drawings whose edges live in the alpha channel,
-   so rather than painting the file, the file is used as a mask and the ink
-   colour is painted through it. Exactly the same blue as the words next to
-   it, and it follows --ink if that ever changes again.
-
-   Each drawing sits in the middle of a transparent 384x512 canvas, so the
-   box has to be a good deal taller than the drawing to bring it up to the
-   size of the words. The negative margins stop that box from stretching the
-   item past its single rule: block for the height, inline start to pull the
-   drawing's left edge back onto the text column. */
-.menu-icon {
-    --icon-h: 56px;
-
-    flex: none;
-    height: var(--icon-h);
-    width: calc(var(--icon-h) * 384 / 512);
-    margin: calc((var(--rule) - var(--icon-h)) / 2) 0
-        calc((var(--rule) - var(--icon-h)) / 2) -7px;
-
-    background-color: var(--ink);
-    mask: var(--icon) center / contain no-repeat;
-}
-
-/* Kept here rather than in the markup so the paths go through the bundler
-   and pick up the /wind/ base along with every other asset URL. */
-.menu-icon[data-icon='bicycle'] {
-    --icon: url('/images/icons/bicycle.webp');
-}
-.menu-icon[data-icon='help'] {
-    --icon: url('/images/icons/help.webp');
-}
-.menu-icon[data-icon='star'] {
-    --icon: url('/images/icons/star.webp');
-}
-.menu-icon[data-icon='info'] {
-    --icon: url('/images/icons/info.webp');
-}
-.menu-icon[data-icon='github'] {
-    --icon: url('/images/icons/github.webp');
-}
-
-/* ------------------------------------------------------------------- back */
-
-.menu-back {
-    display: block;
-    padding: 0;
+/* Top of the ramp on a page: 20px title, 13px caps subtitle, 15px body.
+   The subtitle used to be 15px too, which left a section heading the same
+   size as the sentences under it and smaller than a row on the screen
+   before - caps and weight carrying a hierarchy that the sizes contradicted. */
+.mv2-title {
+    flex: 1;
     margin: 0;
+    text-align: center;
+    font-size: 23px;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+}
 
+/* Back and close, both drawn bare. They used to be bordered, filled 36px
+   boxes, which made the heaviest thing on a page of three sentences its
+   header - two chrome buttons framing a title, over prose. The 36px hit
+   area stays; only the box is gone.
+
+   Close sits back from Back on purpose. It is the second way out of a page
+   - Escape and a click outside already close one - and it is kept for
+   touch, where there is no Escape key and closing the menu from a page
+   would otherwise take two taps. Back is the one being offered; Close is
+   the one being allowed. */
+.mv2-round {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 54px;
+    height: 54px;
+    padding: 0;
     border: none;
+    border-radius: 12px;
     background: none;
 
-    font: inherit;
-    line-height: var(--rule);
-    color: var(--ink-soft);
+    color: rgba(255, 255, 255, 0.85);
     cursor: pointer;
+    transition: color 150ms ease;
 }
 
-/* One drawing, turned. Left is the way it is drawn, so it needs no rule of
-   its own; the other three are quarter turns of it, which come out even only
-   because the box it is drawn in is square. */
-.menu-arrow[data-direction='up'] {
-    rotate: 90deg;
+.mv2-round.is-quiet {
+    color: rgba(255, 255, 255, 0.55);
 }
 
-.menu-arrow[data-direction='right'] {
-    rotate: 180deg;
+.mv2-round:hover {
+    color: #ffffff;
 }
 
-.menu-arrow[data-direction='down'] {
-    rotate: -90deg;
+/* -------------------------------------------------------------------- body */
+
+/* Fills whatever the header leaves, so a short page ends in empty space
+   instead of a shorter panel. min-height because a flex item will not
+   shrink below its content without it, and the scrollbar is only there for
+   a screen too short for the panel's own 440px.
+
+   A page starts at the top and leaves its slack at the foot. Centring it
+   was tried and is wrong: the pages run from 212px to 306px inside the same
+   370px box, so centring turns that difference into a gap between the title
+   and the first line of the page - 100px of it on Credits, which reads as
+   the text having come loose from its own heading. Empty glass below the
+   last line reads as room. The root screen centres its list because it has
+   a wordmark above and a footer below to centre between; a page has a
+   header and nothing else. */
+.mv2-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 36px 0 36px 0;
 }
 
-/* Sized in ex - the font's own x-height - and left sitting on the baseline,
-   which puts the arrow in exactly the band the lowercase letters occupy. It
-   lines up with the "ack" next to it by construction rather than by a tuned
-   offset, and it keeps up on its own if the type size ever changes.
-
-   1ex is well under the line box's ascent, so this cannot grow the line and
-   push the writing off its printed rule. */
-.menu-back .menu-arrow {
-    height: 1ex;
-    width: auto;
-    margin-inline-end: 0.4em;
-    vertical-align: baseline;
+/* On [open] rather than on .mv2-body itself. The dialogs are in the markup
+   from the first paint, display: none until they are opened - an animation
+   declared unconditionally would run once, while nothing was on screen, and
+   never again. Applying it when the attribute flips starts it fresh on
+   every open. */
+.mv2[open] .mv2-body {
+    animation: mv2-fade-in 180ms ease both;
 }
 
-.menu-back:hover {
-    color: var(--ink);
-}
-
-/* ----------------------------------------------------------------- section */
-
-.menu-section {
-    animation: menu-section-in 200ms ease both;
-}
-
-@keyframes menu-section-in {
+/* The sign is load-bearing. Translated *down*, the body's box hangs 6px
+   past the bottom of the panel for the length of the animation, which is
+   scrollable overflow - the panel grew a scrollbar every time it opened and
+   lost it again 180ms later. Overflow above the top edge is unreachable and
+   never counts as scrollable, so falling into place costs nothing. */
+@keyframes mv2-fade-in {
     from {
         opacity: 0;
-        translate: 6px 0;
+        translate: 0 -12px;
     }
 }
 
-/* Exactly two rules tall so everything below it stays on the lines.
-
-   At 38px the title sits high in that box and hangs between the two rules
-   rather than on the lower one; --title-nudge drops it, and
-   the same amount comes off the space underneath so the body text below is
-   still on the grid. */
-.menu-title {
-    --title-nudge: 7px;
-
-    padding-top: var(--title-nudge);
-    margin: 0 0 calc(var(--rule) - var(--title-nudge));
-
-    font-family: 'Playpen Sans', cursive;
-    font-weight: 500;
-    font-size: 38px;
-    line-height: calc(var(--rule) * 2);
-    color: var(--ink);
-}
-
-.menu-section p {
-    margin: 0 0 var(--rule);
-}
-
-.menu-section p:last-child {
+.mv2-body > :last-child {
     margin-bottom: 0;
 }
 
-.menu-list {
+/* --------------------------------------------------- wordmark and footer */
+
+/* The root screen had no header at all, on the grounds that a title reading
+   "Menu" says nothing the list does not. That was right about "Menu" and
+   wrong about the panel: four rows filled 245px of a 440px box and the rest
+   was empty glass, which reads as a list that got cut off rather than as
+   space. The name of the game is not a label for the list - it is the one
+   thing the pause screen never said - and with a sign-off at the foot the
+   panel is bookended instead of trailing away. */
+/* The title is a picture now - lettering and a bicycle drawn as one
+   lockup - so the block holds one thing and the h2 below does the rest.
+
+   36 over 6 rather than the 24 over 12 it started with. Measured, the old
+   pair was already 28px above the drawing against 19 below, so on paper it
+   was the wrong way round - but the numbers are measuring the wrong edges.
+   What ends the drawing at the top is the tip of a handlebar, and what
+   ends it at the bottom is the descender of the y in Sunday, hanging below
+   a baseline that is where the eye actually puts the edge. Type is set to
+   its baseline and this lockup is no different. */
+.mv2-brand {
+    flex: none;
+    padding: 36px 36px 6px 36px;
+}
+
+/* The h2 still says "Sunday ride". The words are what the dialog is
+   announced by - aria-labelledby in Menu.tsx points at this heading - and
+   they are drawn over rather than deleted: text-indent walks them out of
+   the box and overflow hides them, which leaves them in the accessible
+   name and out of the picture. font-size: 0 would do it too and is the
+   one version of this trick some screen readers skip.
+
+   Height alone sets the size. The background is `contain` in a box the
+   full width of the panel, so 132px of height gives 284px of lockup - the
+   image's own 1447x673 proportion decides the width, and there is one
+   number here instead of two that have to agree.
+
+   Height is the number that matters because height is what the root
+   screen is short of: four 90px rows and a footer inside a panel a laptop
+   clamps to about 617px leave the title block a little under 190 with its
+   padding. 132 keeps 19px of air under the list rather than spending the
+   last of it.
+
+   The file is cropped to the drawing: 1447x673 out of the png's 1983x793,
+   which is the artwork's real extent plus 8px of margin on every side. The
+   margin is the point - a box sized exactly to the drawing shears the
+   edges off it, which is how the first bicycle lost the bottom of both
+   wheels. */
+.mv2-wordmark {
+    margin: 0;
+    height: 132px;
+
+    background: url('/images/menuTitleV4.webp') no-repeat center / contain;
+    /* Same shadow the panel puts under its type, shaped by the image's own
+       alpha. White line work on glass needs it: what ends up behind the
+       panel is a sky about as often as it is grass. */
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.55));
+
+    text-indent: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/* The rule is inset from the panel's edges rather than run to them: it
+   separates the footer from the list, and a line touching both sides would
+   read as another edge of the panel. */
+.mv2-foot {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin: 0 36px;
+    padding: 24px 0 24px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.62);
+}
+
+/* --------------------------------------------------------------- root list */
+
+/* The list sits in the middle of what the wordmark and the footer leave
+   rather than stacking from the top, so a screen with four rows on it is
+   composed instead of top-heavy. `safe` matters: centred flex content
+   overflows in both directions, and the half that goes off the top of a box
+   cannot be scrolled back to - so on a panel too short for its own list,
+   this falls back to starting at the top. */
+.mv2.is-root .mv2-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: safe center;
+    padding: 0;
+}
+
+.mv2-nav {
+    display: flex;
+    flex-direction: column;
     margin: 0;
     padding: 0;
     list-style: none;
 }
 
-.menu-list li::before {
-    content: '— ';
-    color: var(--ink-soft);
-}
-
-.menu-note {
-    color: var(--ink-soft);
-}
-
-.menu-link {
-    color: var(--ink);
-    text-decoration-color: var(--margin-red);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 3px;
-}
-
-/* ---------------------------------------------------------------- controls */
-
-/* Each half of the Controls page opens with a drawing rather than a list, so
-   it sits in the middle of the page rather than against the margin. No
-   margin: the drawing is a whole number of rules tall and the caption is
-   written on the rule directly under it, the way it would be on paper. The
-   blank rule between the two halves comes from the first caption's own
-   margin instead. */
-.menu-diagram {
+/* The row is the flex line and the button is what stretches across it, so
+   no item has to be told how wide the panel is. */
+.mv2-nav li {
     display: flex;
-    justify-content: center;
 }
 
-/* The two halves of Controls, marked by size and weight. Underlining them
-   the way the root heading is underlined would draw a second line 4px under
-   one that is already printed on the page.
+.mv2-item {
+    display: flex;
+    align-items: center;
+    gap: 24px;
 
-   Bigger type sits lower in a line box of a fixed height, so like the list
-   this needs a nudge back up onto its rule - measured, not guessed, by the
-   method in the --baseline-nudge comment: the baseline of 26px type lands
-   2px below the baseline of the 19px body text. Re-measure if either size
-   moves. The nudge is `top` rather than a margin so it cannot change how
-   many rules the heading takes up. */
-.menu-subtitle {
-    --subtitle-nudge: -2px;
+    flex: 1;
+    height: 90px;
+    padding: 0 36px;
+    border: none;
+    border-radius: 0;
+    background: none;
 
-    position: relative;
-    top: var(--subtitle-nudge);
-    margin: 0;
+    /* Full white, not held back a little. Rest used to sit at 0.82 so that
+       hovering had somewhere to go, but the band does that job now, and the
+       10% was coming straight off the contrast ratio in the one place it
+       could not be spared - a label over the sky. */
+    color: #ffffff;
+    font: inherit;
+    font-size: 23px;
+    text-shadow: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition:
+        background 150ms ease,
+        color 150ms ease;
+}
 
-    font-size: 26px;
+/* The whole row lights, icon and chevron included. It used to be the label
+   alone growing 5%, which made the words wobble and re-rasterise while the
+   two things either side of them stayed put - a 340px row responding in the
+   middle only, so it never read as one target. */
+.mv2-item:hover,
+.mv2-item:focus-visible {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* Resume is the default action and used to be told apart from the rows
+   below it by the absence of a chevron, which reads as "row with no page"
+   rather than "the thing you came here to do". It carries the band at rest
+   now, and hovering takes it one step further up the same scale. */
+.mv2-item.is-primary {
+    background: rgba(255, 255, 255, 0.12);
     font-weight: 500;
-    line-height: var(--rule);
 }
 
-/* Up over left, down, right. --cluster-rules is how many ruled lines the
-   whole thing stands on, and the key size is worked back from it: keeping
-   the cluster to a whole number of rules is what keeps everything underneath
-   on the printed lines, so resize it by changing that number rather than the
-   keys. */
-.menu-cluster {
-    --cluster-rules: 3;
-    --key-gap: 6px;
-    --key: calc((var(--rule) * var(--cluster-rules) - var(--key-gap)) / 2);
+.mv2-item.is-primary:hover,
+.mv2-item.is-primary:focus-visible {
+    background: rgba(255, 255, 255, 0.2);
+}
 
+.mv2-label {
+    flex: 1;
+}
+
+/* The icons are drawn at 20px; beside a 20px label they want a shade more,
+   and the row is the only place they are asked to grow. */
+.mv2-item > svg:first-child {
+    flex: none;
+    width: 25px;
+    height: 25px;
+}
+
+/* The chevron is decoration next to a word that already says the same
+   thing, so it sits back from the label. It leans a couple of pixels
+   further along on hover - the one bit of movement left in the row, and it
+   moves in the direction the row is about to take you. */
+.mv2-item > svg:last-child {
+    opacity: 0.55;
+    transition:
+        translate 150ms ease,
+        opacity 150ms ease;
+}
+
+.mv2-item:hover > svg:last-child,
+.mv2-item:focus-visible > svg:last-child {
+    translate: 6px 0;
+    opacity: 0.8;
+}
+
+/* ------------------------------------------------------------------- focus */
+
+.mv2-item:focus-visible,
+.mv2-round:focus-visible,
+.mv2-link:focus-visible,
+.mv2-toggle:focus-visible {
+    outline: 3px solid rgba(255, 255, 255, 0.85);
+    outline-offset: 3px;
+}
+
+/* A row runs the full width of the panel, so a ring drawn outside it would
+   sit on the panel's own border. Drawn inside instead. */
+.mv2-item:focus-visible {
+    outline-offset: -6px;
+}
+
+/* The button sits on the game rather than on the panel, so a white ring
+   alone disappears against a bright sky. The halo is what makes it a ring
+   in both directions; the second shadow is the button's own, restated
+   because one box-shadow replaces another. */
+.mv2-toggle:focus-visible {
+    outline-width: 2px;
+    outline-offset: 2px;
+    box-shadow:
+        0 0 0 4px rgba(0, 0, 0, 0.55),
+        0 10px 24px rgba(0, 0, 0, 0.25);
+}
+
+/* --------------------------------------------------------------- page text */
+
+/* 24px line-height rather than 22: the Shift keycap is set inline in one of
+   these paragraphs, and a cap taller than the line box pushes that line
+   apart from its neighbour. */
+.mv2-text {
+    margin: 0 0 24px 0;
+    padding: 0 36px;
+    font-size: 17px;
+    line-height: 28px;
+    color: rgba(255, 255, 255, 0.96);
+}
+
+/* The one line on any page that is a footnote to the page it is on. It is
+   the only text here allowed under the contrast the rest holds to, and it
+   is short, ordinary prose - anything a reader actually needs is above it. */
+.mv2-text.is-dim {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* A line that introduces the list beneath it. Half a step of weight, so it
+   is not another subtitle, and half the margin, so it belongs to the list
+   it names rather than floating between that list and the one before. */
+.mv2-text.is-lead {
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+
+/* Coming off the back of a list, it needs the full step to break from it -
+   24 above against 8 below, the same 3:1 the sections on Controls are held
+   apart by.
+
+   24 and not 16, because these two margins meet in a block: a page of
+   prose is not the flex column that a page of control lists is, so the
+   pair collapses to the larger of the two rather than adding up, and an 8
+   here disappeared into the list's own 16 without moving anything. */
+.mv2-list + .mv2-text.is-lead {
+    margin-top: 36px;
+}
+
+/* Same collapse, same reasoning: a section heading with a page above it
+   takes the 32 that separates one section from the next on Controls, and
+   keeps the 8 that holds it to its own content. */
+.mv2-text + .mv2-subtitle {
+    margin-top: 48px;
+}
+
+/* Tight to the list it introduces, and the list carries the space that
+   separates one section from the next. A label 10px above its own content
+   and 16px below the last section belonged to neither.
+
+   The rule is the section break. Space alone was not reading it - two
+   groups 26px apart in a 340px panel look like one group with an odd gap -
+   and a divider drawn on its own between the sections would have separated
+   them while leaving the labels floating as loose words, which is two
+   elements solving one problem each. Running the line out of the label
+   makes it one: the word gets an anchor, the section gets an edge, and the
+   line belongs unambiguously to what is under it rather than sitting
+   between two things claiming neither.
+
+   Same hairline as the root screen's footer, and stopped at the same 24px
+   gutter as everything else on the page. */
+.mv2-subtitle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin: 0 36px 12px 36px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.mv2-subtitle::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.mv2-list {
+    margin: 0 0 24px 0;
+    padding: 0 36px 0 60px;
+    font-size: 17px;
+    line-height: 28px;
+    color: rgba(255, 255, 255, 0.96);
+}
+
+.mv2-link {
+    color: #ffffff;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: rgba(255, 255, 255, 0.55);
+}
+
+.mv2-link:hover {
+    text-decoration-color: #ffffff;
+}
+
+/* ---------------------------------------------------------------- diagrams */
+
+/* A control and what it does, in two columns.
+
+   Controls used to be a stack of six blocks - label, picture, sentence,
+   label, picture, sentence - separated by 10, 14, 16, 10 and 14 pixels. Six
+   gaps within six pixels of each other is no grouping at all: the space
+   holding a diagram to its own caption was wider than the space introducing
+   it, and about the same as the space between the two sections. And a 96px
+   cluster at the gutter left two thirds of the panel empty beside it while
+   its caption sat underneath.
+
+   A description list says what the page actually is - here is a key, here
+   is what it does - and the browser announces it as term and definition. It
+   also puts the caption in the space the diagram was wasting.
+
+   108px is not a round number, it is the cluster: three 32px caps and two
+   6px gaps. The other two terms line up along the track it sets. */
+.mv2-spec {
     display: grid;
-    grid-template-columns: repeat(3, var(--key));
-    grid-auto-rows: var(--key);
-    gap: var(--key-gap);
+    grid-template-columns: 108px 1fr;
+    column-gap: 24px;
+    row-gap: 24px;
+    align-items: center;
 
-    /* Named cells rather than one key nudged into the middle of the top row:
-       auto-placement carries on from wherever the last item landed, so
-       moving W to the second column pushes A up alongside it. */
-    grid-template-areas:
-        '.    up   .    '
-        'left down right';
+    margin: 0 0 48px 0;
+    padding: 0 36px;
 }
 
-.menu-cluster > :nth-child(1) {
-    grid-area: up;
-}
-.menu-cluster > :nth-child(2) {
-    grid-area: left;
-}
-.menu-cluster > :nth-child(3) {
-    grid-area: down;
-}
-.menu-cluster > :nth-child(4) {
-    grid-area: right;
+.mv2-spec:last-child {
+    margin-bottom: 0;
 }
 
-/* Same trick as the cluster: the height is a whole number of ruled lines,
-   and the drawing scales to it. The viewBox is square, so one length does
-   for both axes and the shape cannot end up stretched. */
-.menu-joystick {
-    --joystick-rules: 3;
+/* A page built out of these fills the panel instead of stopping short of
+   it. :has() rather than a flag on the section, because the thing that
+   decides is what the page is made of: control lists stretch, prose does
+   not - a paragraph pulled taller is just a paragraph with a gap under it.
 
-    width: calc(var(--rule) * var(--joystick-rules));
-    height: calc(var(--rule) * var(--joystick-rules));
+   The stretch goes into the rows, not into the gaps. Distributing slack
+   between blocks would have pushed a label away from the list it
+   introduces and opened 77px between the two Desktop rows; taller rows
+   leave every relationship on the page exactly where it was and read like
+   the root menu's list, which is the other list in this panel.
+
+   --rows is how many pairs the list holds. With a flex-basis of 0, a grow
+   factor of one per row makes a row in Mobile exactly as tall as a row in
+   Desktop - which is the point of putting them in one column. min-content
+   is the floor: on a screen too short for the panel the rows stop
+   shrinking and the body scrolls, rather than the keycaps overlapping. */
+.mv2-body:has(.mv2-spec) {
+    display: flex;
+    flex-direction: column;
 }
 
-/* Caption to the diagram above it rather than a paragraph in its own right,
-   so it is centred under the keys the way the heading is over them. */
-.menu-caption {
-    text-align: center;
+.mv2-body:has(.mv2-spec) .mv2-spec {
+    flex: var(--rows, 1) 1 0;
+    grid-auto-rows: minmax(min-content, 1fr);
+    row-gap: 0;
 }
 
-/* The classic irregular-radius trick: four wildly different corner radii
-   read as a box someone drew by hand rather than a rendered rectangle. */
-.menu-key {
-    display: inline-grid;
-    place-items: center;
+.mv2-body:has(.mv2-spec) .mv2-subtitle {
+    flex: none;
+}
 
-    padding: 0 9px;
-    border: 2px solid var(--ink);
-    border-radius: 255px 12px 225px 15px / 15px 225px 15px 255px;
+/* Flush to the gutter, not centred in the track. Centred, the three terms
+   had three different left edges - the cluster fills 96px exactly so it
+   started at the gutter, Shift started 27px in and the stick 20px - and the
+   section labels above them started somewhere else again. The trailing gap
+   on the short terms is the price of one straight edge running down the
+   left of the page, labels included. */
+.mv2-spec dt {
+    display: flex;
+    justify-content: flex-start;
+}
 
-    /* Small for a reason: an inline box is as tall as the font's em box plus
-       its padding and border, and this font's em box is half again as tall
-       as the monospace one a kbd falls back to. At the body size Shift would
-       be taller than the gap between two rules and would run into the row
-       above. */
+.mv2-spec dd {
+    margin: 0;
+    font-size: 17px;
+    line-height: 28px;
+    color: rgba(255, 255, 255, 0.96);
+}
+
+/* Three columns wide and two rows tall, with up centred over the bottom
+   row - the shape the keys actually sit in on the keyboard. No margins of
+   its own: it is a term in the list above, and the list does the spacing. */
+.mv2-cluster {
+    display: grid;
+    grid-template-columns: 32px 32px 32px;
+    gap: 6px;
+}
+
+.mv2-cluster > :nth-child(1) {
+    grid-area: 1 / 2;
+}
+
+.mv2-cluster > :nth-child(2) {
+    grid-area: 2 / 1;
+}
+
+.mv2-cluster > :nth-child(3) {
+    grid-area: 2 / 2;
+}
+
+.mv2-cluster > :nth-child(4) {
+    grid-area: 2 / 3;
+}
+
+/* A keycap in the same glass as the panel, one step brighter so it reads as
+   sitting on top of it. One size, everywhere: the cluster used to draw
+   34px caps while Shift, three lines below it, was 26px - the same object
+   in two sizes on one page. */
+.mv2-key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 32px;
+    min-width: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.14);
+
     font-family: inherit;
-    font-size: 13px;
-    line-height: 1;
-    white-space: nowrap;
+    font-size: 15px;
+    color: #ffffff;
 }
 
-/* In a cluster the grid gives the key its size, so the padding that keeps
-   the inline Shift from hugging its letters would only make it overflow. */
-.menu-cluster .menu-key {
-    padding: 0;
-    font-size: 22px;
+.mv2-cluster .mv2-key {
+    width: 32px;
+    height: 32px;
 }
 
-/* Nothing in these keys is text any more, but the size still hangs off the
-   font-size above: it stays the one knob for how big a key's contents are,
-   and Shift next door is still lettering. Centring is the key's own
-   place-items, so it is geometry now rather than a fallback font's idea of
-   where the middle of a line is. */
-.menu-cluster .menu-arrow {
-    width: 0.9em;
-    height: 0.9em;
+.mv2-key.is-wide {
+    padding: 0 12px;
+}
+
+/* One arrow is drawn, pointing left; the other three are that one turned. */
+.mv2-arrow {
+    display: flex;
+}
+
+.mv2-arrow[data-direction='up'] {
+    rotate: 90deg;
+}
+
+.mv2-arrow[data-direction='right'] {
+    rotate: 180deg;
+}
+
+.mv2-arrow[data-direction='down'] {
+    rotate: -90deg;
 }
 
 /* ------------------------------------------------------------------ toggle */
 
-/* A scrap torn off the same page with three lines scribbled on it, in place
-   of the word Menu.
-
-   images/menu.webp is mostly transparent padding with the scrap sitting in
-   the middle of it, so the button is sized to the scrap alone and the image
-   is blown up by the ratio between the two and centred. That crops the
-   padding out of the way without touching the file - and the numbers are the
-   scrap's measured bounding box, 336x299 inside a 768x512 canvas. */
-.menu-toggle {
-    --scrap-w: 78px;
-
+/* The same glass as the panel, at button size - and at its original size.
+   It is not part of the panel: it sits on the game, is the only thing on
+   screen while the menu is shut, and was the right size against the scene
+   before the panel grew. Everything here that is about the button rather
+   than about the glass is left where it was: the box, the corner, the
+   shadow it casts, the blur behind it, and the focus ring. */
+.mv2-toggle {
     position: fixed;
-    bottom: 24px;
+    top: 24px;
     left: 24px;
     z-index: 199;
 
-    width: var(--scrap-w);
-    height: calc(var(--scrap-w) * 299 / 336);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 48px;
+    height: 48px;
     padding: 0;
-    border: none;
+    border: 1px solid var(--mv2-edge);
+    border-radius: 8px;
 
-    background: url('/images/menu.webp') no-repeat center /
-        calc(var(--scrap-w) * 768 / 336) auto;
+    background: var(--mv2-panel);
+    backdrop-filter: blur(6px) brightness(0.7) saturate(0.94);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
 
-    /* Filtered through the image's alpha, so the shadow is scrap-shaped. */
-    filter: drop-shadow(2px 3px 6px rgba(40, 40, 60, 0.4));
+    color: #ffffff;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
     cursor: pointer;
-
     transition:
         opacity 200ms ease,
-        scale 200ms ease,
-        translate 200ms ease;
+        background 200ms ease,
+        border-color 150ms ease;
 }
 
-.menu-toggle:hover {
-    scale: 1.05;
-    translate: 2px -2px;
+.mv2-toggle:hover {
+    background: rgba(84, 74, 64, 0.55);
 }
 
-/* Closing the dialog hands focus back to this button, so the first arrow key
-   pressed afterwards flips it to :focus-visible and the browser draws its
-   default ring: a hard rectangle around a picture of a torn scrap, which is
-   the one shape this button has not got. Focus lifts it the way hovering
-   does and puts a halo round it instead - drop-shadow is filtered through
-   the image's alpha, so the halo follows the tear rather than boxing it. */
-.menu-toggle:focus-visible {
-    outline: none;
-    scale: 1.05;
-    translate: 2px -2px;
-
-    /* #e08a84 is --margin-red, which marks focus inside the menu as well.
-       The variable lives on .menu, and this button is outside it. */
-    filter: drop-shadow(2px 3px 6px rgba(40, 40, 60, 0.4))
-        drop-shadow(0 0 2px #e08a84) drop-shadow(0 0 4px #e08a84);
-}
-
-.menu-toggle.is-hidden {
+/* Out of the way while a menu is on screen. :has() reads the dialog's own
+   [open] attribute, which the browser sets - nothing has to tell the button
+   what the menu is doing. */
+body:has(.mv2[open]) .mv2-toggle {
     opacity: 0;
     pointer-events: none;
+}
+
+/* -------------------------------------------------------- other preferences */
+
+/* Transparency is a preference, not a given: a scene moving behind the text
+   makes it unreadable for some people. Both the tint and the blur go. */
+@media (prefers-reduced-transparency: reduce) {
+    .mv2,
+    .mv2-toggle {
+        --mv2-panel: rgb(42, 37, 32);
+    }
+
+    .mv2,
+    .mv2-toggle {
+        backdrop-filter: none;
+    }
+}
+
+/* Contrast the same. The dimmed page text goes back to full white and the
+   panel's hairline border becomes an edge you can actually see. */
+@media (prefers-contrast: more) {
+    .mv2,
+    .mv2-toggle {
+        --mv2-panel: rgb(28, 25, 21);
+
+        border-color: #ffffff;
+        backdrop-filter: none;
+    }
+
+    .mv2-text,
+    .mv2-text.is-dim,
+    .mv2-list,
+    .mv2-subtitle {
+        color: #ffffff;
+    }
+
+    /* Both hairlines - the section rules and the one over the root footer.
+       At 0.12 they are a hint, which is the whole idea until someone has
+       asked for the opposite. */
+    .mv2-subtitle::after {
+        background: rgba(255, 255, 255, 0.6);
+    }
+
+    .mv2-foot {
+        border-top-color: rgba(255, 255, 255, 0.6);
+    }
 }
 
 /* ------------------------------------------------------------------ motion */
 
 @media (prefers-reduced-motion: reduce) {
-    .menu,
-    .menu[open] {
+    /* Every state that sets a duration has to be listed, open ones
+       included: .mv2[open] and .mv2[open]::backdrop each override the
+       closed-state duration, and would outrank a shorter list here. */
+    .mv2,
+    .mv2[open],
+    .mv2::backdrop,
+    .mv2[open]::backdrop {
+        transition-duration: 1ms;
         scale: 1;
     }
 
-    @starting-style {
-        .menu[open] {
-            scale: 1;
-        }
-    }
-
-    .menu,
-    .menu::backdrop {
-        transition:
-            opacity 120ms ease,
-            display 120ms allow-discrete,
-            overlay 120ms allow-discrete;
-    }
-
-    .menu-section {
+    .mv2[open] .mv2-body {
         animation: none;
     }
 
-    .menu-item {
-        transition: none;
+    /* The chevron's lean is the only movement left in a row. The band and
+       the ring stay - they are a change of colour, not of position. */
+    .mv2-item:hover > svg:last-child,
+    .mv2-item:focus-visible > svg:last-child {
+        translate: 0;
     }
 }
