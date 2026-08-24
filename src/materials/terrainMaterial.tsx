@@ -21,7 +21,7 @@ export const terrainUniforms = {
     uNoiseColor: new THREE.Uniform(new THREE.Color('#836c04')),
 
     uGrassTipColor: new THREE.Uniform(new THREE.Color('#a38e68')),
-    uGrassBaseColor: new THREE.Uniform(new THREE.Color('#1a2e03')),
+    uGrassBaseColor: new THREE.Uniform(new THREE.Color('#405823')),
 
     uPlayerPosition: new THREE.Uniform(new THREE.Vector2()),
 

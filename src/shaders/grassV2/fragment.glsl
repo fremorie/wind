@@ -27,14 +27,14 @@ void main() {
     );
 
     // Hemi
-    vec3 c1 = vec3(1.0, 1.0, 0.75);
-    vec3 c2 = vec3(0.05, 0.05, 0.25);
+    vec3 c1 = vec3(0.9, 0.68, 0.27);
+    vec3 c2 = vec3(0.25, 0.34, 0.13);
 
     vec3 ambientLighting = hemiLight(normal, c2, c1);
 
     // Directional light
     vec3 lightDir = normalize(vec3(-1.0, 0.5, 1.0));
-    vec3 lightColor = vec3(1.0);
+    vec3 lightColor = vec3(0.9, 0.68, 0.27);
     vec3 diffuseLighting = lambertLight(normal, viewDir, lightDir, lightColor);
 
     // Specular
