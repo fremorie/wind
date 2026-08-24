@@ -1,0 +1,462 @@
+/* A soft-glass panel, centred, in the system UI font.
+
+   Soft glass rather than a dark sheet: the pane is barely tinted and the
+   blur behind it is heavy, so the scene reads through it as a wash of its
+   own colour rather than being hidden behind a slab. What keeps white text
+   legible over a bright sky is not a dark fill but the shadow under the
+   type and the white lift of the pane itself.
+
+   Everything here is in whole pixels on purpose: the panel is a fixed piece
+   of furniture rather than something that reflows with the text size, so
+   there is one number per measurement and no arithmetic to follow. */
+
+/* Border-box everywhere below, so a width is the width you see on screen
+   and the numbers in this file add up without the borders being counted
+   twice. */
+.mv2,
+.mv2 *,
+.mv2-toggle {
+    box-sizing: border-box;
+}
+
+/* ------------------------------------------------------------------ dialog */
+
+.mv2 {
+    /* One width, every page, every screen. The UA stylesheet puts a
+       max-width in em on a modal dialog, so it takes an explicit max-width
+       of the same number of pixels to stop the panel narrowing on a small
+       one. */
+    width: 340px;
+    max-width: 340px;
+
+    /* And one height, whatever page is showing. 400px clears the tallest
+       page - Controls, at 380 - so every other one keeps the difference as
+       empty space at the foot of the panel rather than shrinking to fit.
+       The UA's max-height, also in em, still clamps this on a screen too
+       short to hold it; the body scrolls in that case. */
+    height: 400px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 26px;
+
+    /* The glass, in three parts: a white pane lit from the top, the blur
+       that frosts whatever is behind it, and a hairline of brighter white
+       inside the top edge, which is what reads as thickness. */
+    background: linear-gradient(
+        rgba(255, 255, 255, 0.16),
+        rgba(255, 255, 255, 0.07)
+    );
+    backdrop-filter: blur(40px) saturate(120%) brightness(0.95);
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+
+    color: #ffffff;
+    font-family:
+        system-ui,
+        -apple-system,
+        'Segoe UI',
+        Roboto,
+        sans-serif;
+    font-size: 15px;
+    /* Carries to every label and paragraph below, so white type holds up
+       wherever the panel happens to be sitting. */
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+
+    /* Column so the header keeps its height and the body takes the rest -
+       see .mv2-body. The panel itself never scrolls: it is a fixed box. */
+    flex-direction: column;
+    overflow: hidden;
+
+    /* display and overlay are discrete properties, so they normally flip on
+       the first frame - allow-discrete holds them until the fade finishes,
+       which is the only reason the closing animation is ever seen. */
+    opacity: 0;
+    scale: 0.96;
+    transition:
+        opacity 200ms ease,
+        scale 200ms ease,
+        display 200ms allow-discrete,
+        overlay 200ms allow-discrete;
+}
+
+/* display goes on the open state alone: an author `display` on .mv2 itself
+   would beat the UA's `dialog:not([open]) { display: none }` and leave the
+   panel on screen with the menu shut. */
+.mv2[open] {
+    display: flex;
+
+    opacity: 1;
+    scale: 1;
+}
+
+/* The open styles already apply on the frame the dialog enters the top
+   layer, so without a starting style there is nothing to transition *from*
+   and the panel just appears. */
+@starting-style {
+    .mv2[open] {
+        opacity: 0;
+        scale: 0.96;
+    }
+}
+
+/* ::backdrop is the dialog's own layer - no overlay div, and it always sits
+   directly beneath this dialog in the top layer whatever else is on screen.
+   Barely there: the glass is the thing that separates the menu from the
+   game, and dimming the whole scene would take the light out of it. */
+.mv2::backdrop {
+    background: rgba(10, 12, 18, 0.1);
+
+    opacity: 0;
+    transition:
+        opacity 200ms ease,
+        display 200ms allow-discrete,
+        overlay 200ms allow-discrete;
+}
+
+.mv2[open]::backdrop {
+    opacity: 1;
+}
+
+@starting-style {
+    .mv2[open]::backdrop {
+        opacity: 0;
+    }
+}
+
+/* ------------------------------------------------------------------ header */
+
+.mv2-head {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 18px 18px 8px 18px;
+}
+
+.mv2-title {
+    flex: 1;
+    margin: 0;
+    text-align: center;
+    font-size: 19px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+}
+
+/* Back and close. The empty one on the root page is a spacer, so the title
+   stays in the middle of the panel whether or not there is a back button. */
+.mv2-round {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.12);
+
+    color: #ffffff;
+    cursor: pointer;
+    transition: background 150ms ease;
+}
+
+.mv2-round:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.mv2-round.is-empty {
+    border-color: transparent;
+    background: none;
+}
+
+/* -------------------------------------------------------------------- body */
+
+/* Fills whatever the header leaves, so a short page ends in empty space
+   instead of a shorter panel. min-height because a flex item will not
+   shrink below its content without it, and the scrollbar is only there for
+   a screen too short for the panel's own 400px. */
+.mv2-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 8px 16px 20px 16px;
+
+    animation: mv2-fade-in 180ms ease both;
+}
+
+/* The sign is load-bearing. Translated *down*, the body's box hangs 6px
+   past the bottom of the panel for the length of the animation, which is
+   scrollable overflow - the panel grew a scrollbar every time it opened and
+   lost it again 180ms later. Overflow above the top edge is unreachable and
+   never counts as scrollable, so falling into place costs nothing. */
+@keyframes mv2-fade-in {
+    from {
+        opacity: 0;
+        translate: 0 -6px;
+    }
+}
+
+.mv2-body > :last-child {
+    margin-bottom: 0;
+}
+
+/* --------------------------------------------------------------- root list */
+
+.mv2-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* The row is the flex line and the button is what stretches across it, so
+   no item has to be told how wide the panel is. */
+.mv2-nav li {
+    display: flex;
+}
+
+.mv2-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    flex: 1;
+    height: 60px;
+    padding: 0 14px;
+    border: none;
+    border-radius: 16px;
+    background: none;
+
+    color: #ffffff;
+    font: inherit;
+    font-size: 20px;
+    text-shadow: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background 150ms ease;
+}
+
+.mv2-item:hover {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.mv2-label {
+    flex: 1;
+}
+
+/* The icons are drawn at 20px; beside a 20px label they want a shade more,
+   and the row is the only place they are asked to grow. */
+.mv2-item > svg:first-child {
+    flex: none;
+    width: 22px;
+    height: 22px;
+}
+
+/* The chevron is decoration next to a word that already says the same
+   thing, so it sits back from the label. */
+.mv2-item > svg:last-child {
+    opacity: 0.55;
+}
+
+/* ------------------------------------------------------------------- focus */
+
+.mv2-item:focus-visible,
+.mv2-round:focus-visible,
+.mv2-link:focus-visible,
+.mv2-toggle:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.85);
+    outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------- page text */
+
+.mv2-text {
+    margin: 0 0 10px 0;
+    padding: 0 4px;
+    font-size: 15px;
+    line-height: 22px;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.mv2-text.is-dim {
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.mv2-subtitle {
+    margin: 10px 0 8px 4px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.mv2-subtitle:first-child {
+    margin-top: 0;
+}
+
+.mv2-list {
+    margin: 0 0 10px 0;
+    padding: 0 4px 0 20px;
+    font-size: 15px;
+    line-height: 24px;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.mv2-link {
+    color: #ffffff;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-color: rgba(255, 255, 255, 0.55);
+}
+
+.mv2-link:hover {
+    text-decoration-color: #ffffff;
+}
+
+/* ---------------------------------------------------------------- diagrams */
+
+/* Three columns wide and two rows tall, with up centred over the bottom
+   row - the shape the keys actually sit in on the keyboard. */
+.mv2-cluster {
+    display: grid;
+    grid-template-columns: 34px 34px 34px;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.mv2-cluster > :nth-child(1) {
+    grid-area: 1 / 2;
+}
+
+.mv2-cluster > :nth-child(2) {
+    grid-area: 2 / 1;
+}
+
+.mv2-cluster > :nth-child(3) {
+    grid-area: 2 / 2;
+}
+
+.mv2-cluster > :nth-child(4) {
+    grid-area: 2 / 3;
+}
+
+/* A keycap in the same glass as the panel, one step brighter so it reads as
+   sitting on top of it. */
+.mv2-key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 26px;
+    min-width: 26px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.16);
+
+    font-family: inherit;
+    font-size: 13px;
+    color: #ffffff;
+}
+
+.mv2-cluster .mv2-key {
+    width: 34px;
+    height: 34px;
+}
+
+.mv2-key.is-wide {
+    padding: 0 8px;
+}
+
+/* One arrow is drawn, pointing left; the other three are that one turned. */
+.mv2-arrow {
+    display: flex;
+}
+
+.mv2-arrow[data-direction='up'] {
+    rotate: 90deg;
+}
+
+.mv2-arrow[data-direction='right'] {
+    rotate: 180deg;
+}
+
+.mv2-arrow[data-direction='down'] {
+    rotate: -90deg;
+}
+
+.mv2-diagram {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* ------------------------------------------------------------------ toggle */
+
+/* The same glass as the panel, at button size. */
+.mv2-toggle {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 199;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 16px;
+
+    background: linear-gradient(
+        rgba(255, 255, 255, 0.16),
+        rgba(255, 255, 255, 0.07)
+    );
+    backdrop-filter: blur(24px) saturate(120%) brightness(0.95);
+    box-shadow:
+        0 10px 24px rgba(0, 0, 0, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+
+    color: #ffffff;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+    cursor: pointer;
+    transition:
+        opacity 200ms ease,
+        background 200ms ease;
+}
+
+.mv2-toggle:hover {
+    background: linear-gradient(
+        rgba(255, 255, 255, 0.28),
+        rgba(255, 255, 255, 0.18)
+    );
+}
+
+.mv2-toggle.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ------------------------------------------------------------------ motion */
+
+@media (prefers-reduced-motion: reduce) {
+    .mv2,
+    .mv2[open],
+    .mv2::backdrop {
+        transition-duration: 1ms;
+        scale: 1;
+    }
+
+    .mv2-body {
+        animation: none;
+    }
+}
