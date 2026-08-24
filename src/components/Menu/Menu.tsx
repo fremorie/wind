@@ -55,9 +55,11 @@ export function Menu() {
                     inert={page !== null}
                 >
                     <header className="mv2-brand">
-                        <h2 id={`${MENU}-wordmark`} className="mv2-wordmark">
-                            Sunday ride
-                        </h2>
+                        <img
+                            src="./images/menuTitleV4.webp"
+                            height="132px"
+                            className=".mv2-wordmark"
+                        />
                     </header>
 
                     <div className="mv2-body">
