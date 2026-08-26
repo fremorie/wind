@@ -16,9 +16,9 @@ export default create<GameState>()(
         const center = ((GRID_SIZE_Z - 1) * CHUNK_SIZE) / 2;
         return {
             playerPosition: new THREE.Vector3(
-                SIDE_ROAD_X - CHUNK_SIZE * 2,
+                SIDE_ROAD_X - CHUNK_SIZE * 10,
                 0,
-                center + 10,
+                center + 20,
             ),
             joystick: new THREE.Vector2(0, 0),
         };

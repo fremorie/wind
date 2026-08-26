@@ -63,7 +63,7 @@ export const WORLD_SETTINGS = {
     uRiverWaviness: 0.06,
     uRiverFalloff: RIVER_WIDTH,
     uRiverPeriod: GRID_TOTAL_WIDTH * 2.5,
-    uRiverCenterZ: GRID_TOTAL_WIDTH / 2 + 50,
+    uRiverCenterZ: 40,
     uRiverAngle: 0.6,
     uRiverDepth: -8,
     uRiverSurfaceLevel: -3,
