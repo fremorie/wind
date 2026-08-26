@@ -9,6 +9,7 @@ import { Player } from '../components/Player';
 import { OrbitControls } from '@react-three/drei';
 import { GrassFieldV2 } from '../components/GrassV2';
 import { LakeTrees } from '../components/LakeTrees';
+import { RiverSurface } from '../components/riverSurface';
 
 export function Experience() {
     const debug = useDebug();
@@ -22,6 +23,8 @@ export function Experience() {
             <Player />
 
             <Terrain />
+
+            <RiverSurface />
 
             <GrassFieldV2 />
             <WaterSurface />

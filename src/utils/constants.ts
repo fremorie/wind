@@ -33,7 +33,7 @@ export const SIDE_ROAD_X = 400;
 const ROAD_WIDTH = 12;
 
 // River
-const RIVER_WIDTH = 12;
+const RIVER_WIDTH = 20;
 
 /**
  * The only copy of the world's shape, read by both terrains: the CPU one in
@@ -65,8 +65,8 @@ export const WORLD_SETTINGS = {
     uRiverPeriod: GRID_TOTAL_WIDTH * 2.5,
     uRiverCenterZ: GRID_TOTAL_WIDTH / 2 + 50,
     uRiverAngle: 0.6,
-    uRiverDepth: -4,
-    uRiverSurfaceLevel: 0,
+    uRiverDepth: -8,
+    uRiverSurfaceLevel: -3,
 
     // Lake
     uLakeRadius: 70,

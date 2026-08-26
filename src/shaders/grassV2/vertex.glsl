@@ -32,6 +32,7 @@ varying vec3 vWorldPosition;
 varying float vDistanceToPlayer;
 varying float vRoadMask;
 varying float vLakeMask;
+varying float vRiverMask;
 
 #include "../includes/utils.glsl"
 #include "../includes/hash.glsl"
@@ -167,7 +168,7 @@ void main() {
     float roadMask = getRoadMask(grassBladeWorldPos.xz);
 
     // River
-    float riverMask = getSubmergedRiverMask((modelMatrix * vec4(grassOffset, 1.0)).xyz) + 0.5;
+    float riverMask = getSubmergedRiverMask((modelMatrix * vec4(grassOffset, 1.0)).xyz);
 
     // Lake
     float distanceToLake = length(grassBladeWorldPos.xz - vec2(uLakeCenterX, uLakeCenterZ));
@@ -234,7 +235,7 @@ void main() {
     gl_Position = projectionMatrix * mvPosition;
     // Hide microscopic grass blades at the edge of the road, around the lake and the farm.
     gl_Position.w = (
-        (roadMask + lakeCull + riverMask) > 0.55 ||
+        (roadMask + lakeCull + riverMask * 5.0) > 0.55 ||
         tileGrassHeight <= 0.0
     ) ? 0.0 : gl_Position.w;
 
@@ -252,4 +253,5 @@ void main() {
     vDistanceToPlayer = distanceToPlayer;
     vRoadMask = roadMask;
     vLakeMask = lakeCull;
+    vRiverMask = riverMask;
 }

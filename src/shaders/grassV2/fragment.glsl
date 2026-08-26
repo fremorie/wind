@@ -9,6 +9,7 @@ varying vec3 vWorldPosition;
 varying float vDistanceToPlayer;
 varying float vRoadMask;
 varying float vLakeMask;
+varying float vRiverMask;
 
 #include "../includes/utils.glsl"
 #include "../includes/lights.glsl"
@@ -53,6 +54,9 @@ void main() {
 
     // Lighter grass around the lake
     color = mix(color, uRoadSideColor, vLakeMask);
+
+    // Lighter grass near the river
+    color = mix(color, uRoadSideColor, vRiverMask);
 
     // Lighter grass on the horizon
     float distanceMix = smoothstep(-5.0, 100.0, vDistanceToPlayer);
