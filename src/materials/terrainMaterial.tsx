@@ -37,8 +37,8 @@ export const terrainUniforms = {
     uColorWaterDeep: new THREE.Uniform(new THREE.Color('#417c80')),
 
     // River
-    uColorRiverShallow: new THREE.Uniform(new THREE.Color('#8dc4d1')),
-    uColorRiverDeep: new THREE.Uniform(new THREE.Color('#417c80')),
+    uColorRiverShallow: new THREE.Uniform(new THREE.Color('#316224')),
+    uColorRiverDeep: new THREE.Uniform(new THREE.Color('#236265')),
 };
 
 export const terrainMaterial = new CustomShaderMaterial({

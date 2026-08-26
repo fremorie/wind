@@ -5,7 +5,7 @@ uniform vec3 uFresnelColor;
 varying vec3 vWorldPosition;
 varying vec3 vWorldNormal;
 
-const float opacityNear = 0.0;
+const float opacityNear = 0.2;
 const float opacityFar = 0.99;
 
 void main() {

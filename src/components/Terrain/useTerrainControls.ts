@@ -21,6 +21,8 @@ export function useTerrainControls() {
         uGrassBaseColor,
         uGrassTipColor,
         uNoiseColor,
+        uColorRiverShallow,
+        uColorRiverDeep,
     } = useControls('Terrain', {
         Colors: folder({
             uColorGrass: { value: hex(terrainUniforms.uColorGrass.value) },
@@ -30,6 +32,12 @@ export function useTerrainControls() {
             },
             uColorWaterDeep: {
                 value: hex(terrainUniforms.uColorWaterDeep.value),
+            },
+            uColorRiverShallow: {
+                value: hex(terrainUniforms.uColorRiverShallow.value),
+            },
+            uColorRiverDeep: {
+                value: hex(terrainUniforms.uColorRiverDeep.value),
             },
             uGrassTipColor: {
                 value: hex(terrainUniforms.uGrassTipColor.value),
@@ -48,6 +56,8 @@ export function useTerrainControls() {
         terrainUniforms.uColorGrass.value.set(uColorGrass);
         terrainUniforms.uColorWaterShallow.value.set(uColorWaterShallow);
         terrainUniforms.uColorWaterDeep.value.set(uColorWaterDeep);
+        terrainUniforms.uColorRiverShallow.value.set(uColorRiverShallow);
+        terrainUniforms.uColorRiverDeep.value.set(uColorRiverDeep);
 
         terrainUniforms.uGrassTipColor.value.set(uGrassTipColor);
         terrainUniforms.uGrassBaseColor.value.set(uGrassBaseColor);
@@ -61,5 +71,7 @@ export function useTerrainControls() {
         uGrassBaseColor,
         uGrassTipColor,
         uNoiseColor,
+        uColorRiverShallow,
+        uColorRiverDeep,
     ]);
 }
