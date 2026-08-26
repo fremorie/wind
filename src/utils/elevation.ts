@@ -10,6 +10,14 @@ import {
     uPositionFrequency,
     uRoadAmplitude,
     uRoadFalloff,
+    uRiverAmplitude,
+    uRiverAngle,
+    uRiverCenterZ,
+    uRiverDepth,
+    uRiverFalloff,
+    uRiverPeriod,
+    uRiverWaviness,
+    uRiverWidth,
     uRoadPeriod,
     uRoadWaviness,
     uRoadWidth,
@@ -93,6 +101,27 @@ function getRoadElevation(x: number): number {
     return getBaseElevation(x, roadCenterZ(x)) * roadFlatness;
 }
 
+function riverCenterZ(x: number): number {
+    return uRiverCenterZ + uRiverAmplitude * Math.sin(x * uRiverWaviness);
+}
+
+function getRiverMask(x: number, z: number): number {
+    const c = Math.cos(uRiverAngle);
+    const s = Math.sin(uRiverAngle);
+    const px = c * x + s * z;
+    const pz = -s * x + c * z;
+
+    const distanceToRiver = Math.abs(
+        mod(pz - riverCenterZ(px) + uRiverPeriod / 2, uRiverPeriod) -
+            uRiverPeriod / 2,
+    );
+
+    return (
+        1 -
+        smoothstep(uRiverWidth - uRiverFalloff, uRiverWidth, distanceToRiver)
+    );
+}
+
 function getLakeDepth(x: number, z: number): number {
     const dist = Math.hypot(
         x - terrainUniforms.uLakeCenterX.value,
@@ -102,13 +131,17 @@ function getLakeDepth(x: number, z: number): number {
 }
 
 export function getElevation(x: number, z: number): number {
-    const elevation = mix(
+    let elevation = mix(
         getBaseElevation(x, z),
         getRoadElevation(x),
         getRoadMask(x, z),
     );
 
-    return elevation - getLakeDepth(x, z);
+    elevation -= getLakeDepth(x, z);
+
+    // uRiverDepth is an absolute level, so this flattens the riverbed
+    // regardless of the noise and lake underneath it.
+    return mix(elevation, uRiverDepth, getRiverMask(x, z));
 }
 
 export function curveOffset(

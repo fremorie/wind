@@ -6,6 +6,12 @@ import {
     LAKE_CENTER,
     uCurvature,
     uLakeSurfaceLevel,
+    uRiverAmplitude,
+    uRiverAngle,
+    uRiverCenterZ,
+    uRiverDepth,
+    uRiverWaviness,
+    uRiverWidth,
     uSideRoadX,
     uStrength,
 } from './constants';
@@ -26,6 +32,21 @@ const [lakeCenterX, lakeCenterZ] = LAKE_CENTER;
 
 // Mirrors terrainUniforms.uRoadCenter.z, the main road's centreline.
 const ROAD_CENTER_Z = GRID_TOTAL_WIDTH / 2;
+
+// Independent transcription of the river band, so scans can steer clear of it.
+// uRiverPeriod is far larger than any region scanned here, so the wrap the
+// implementation does is not needed.
+function distanceToRiver(x: number, z: number): number {
+    const c = Math.cos(uRiverAngle);
+    const s = Math.sin(uRiverAngle);
+    const alongStream = c * x + s * z;
+    const acrossStream = -s * x + c * z;
+    const centre =
+        uRiverCenterZ +
+        uRiverAmplitude * Math.sin(alongStream * uRiverWaviness);
+
+    return Math.abs(acrossStream - centre);
+}
 
 describe('curveOffset', () => {
     // Not a golden: this is the definition, asserted independently.
@@ -66,9 +87,11 @@ describe('getElevation', () => {
         expect(Math.abs(wellOutside)).toBeLessThanOrEqual(MAX_BASE_ELEVATION);
     });
 
-    it('stays within the base elevation bound away from lake and road', () => {
+    it('stays within the base elevation bound away from lake, road and river', () => {
         for (let x = -200; x <= 200; x += 25) {
             for (let z = -200; z <= 200; z += 25) {
+                if (distanceToRiver(x, z) < uRiverWidth) continue;
+
                 expect(Math.abs(getElevation(x, z))).toBeLessThanOrEqual(
                     MAX_BASE_ELEVATION,
                 );
@@ -94,11 +117,44 @@ describe('getElevation', () => {
         expect(spread(uSideRoadX)).toBeLessThan(spread(uSideRoadX - 40) / 2);
     });
 
+    // The river runs at an angle, so its points are easiest to name in river
+    // space (along-stream, across-stream) and rotate back into the world.
+    const riverPoint = (alongStream: number, acrossStream: number) => {
+        const c = Math.cos(uRiverAngle);
+        const s = Math.sin(uRiverAngle);
+        const centre =
+            uRiverCenterZ +
+            uRiverAmplitude * Math.sin(alongStream * uRiverWaviness);
+        const pz = centre + acrossStream;
+
+        return [c * alongStream - s * pz, s * alongStream + c * pz] as const;
+    };
+
+    it('flattens the riverbed to exactly uRiverDepth on the centreline', () => {
+        for (const alongStream of [-200, 0, 137, 500]) {
+            const [x, z] = riverPoint(alongStream, 0);
+
+            expect(getElevation(x, z)).toBeCloseTo(uRiverDepth, 10);
+        }
+    });
+
+    // uRiverFalloff === uRiverWidth, so the mask reaches 0 at the full width.
+    it('leaves terrain beyond the river bank untouched', () => {
+        for (const alongStream of [-200, 0, 137, 500]) {
+            const [x, z] = riverPoint(alongStream, uRiverWidth + 5);
+
+            // Clear of the lake and both roads, so this is open noise terrain.
+            expect(Math.abs(getElevation(x, z))).toBeLessThanOrEqual(
+                MAX_BASE_ELEVATION,
+            );
+        }
+    });
+
     // Characterisation values, recorded from this implementation. They detect
     // drift in the port; they do not prove it matches the GLSL.
     it.each([
-        [140, 140, -0.10540970630189606], // on the main road
-        [140, 152, 0.14876046872525944], // just off the main road
+        [140, 140, -7.961917182343949], // main road, in the river
+        [140, 152, -5.125108607449775], // just off the road, river edge
         [400, 60, -0.05840997075868071], // on the side road
         [430, 60, -0.8244391481087165], // just off the side road
         [840, 140, -19.972753068655347], // lake centre
