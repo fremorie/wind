@@ -3,15 +3,16 @@ import { useRef } from 'react';
 import * as THREE from 'three';
 
 import { riverSurfaceGeometry } from './geometry';
+import { useRiverSurfaceControls } from './useRiverSurfaceControls';
 import useGame from '../../store/useGame';
-import { RiverSurfaceMaterial } from '../../materials/riverSurfaceMaterial';
+import { riverSurfaceMaterial } from '../../materials/riverSurfaceMaterial';
 import { WORLD_SETTINGS } from '../../utils/constants';
-
-const material = new RiverSurfaceMaterial({ transparent: true });
 
 export function RiverSurface() {
     const riverSurfaceRef = useRef<THREE.Mesh>(null);
     const playerPosition = useGame((state) => state.playerPosition);
+
+    useRiverSurfaceControls();
 
     useFrame(() => {
         if (!riverSurfaceRef.current) {
@@ -29,7 +30,7 @@ export function RiverSurface() {
         <mesh
             ref={riverSurfaceRef}
             geometry={riverSurfaceGeometry}
-            material={material}
+            material={riverSurfaceMaterial}
         />
     );
 }
