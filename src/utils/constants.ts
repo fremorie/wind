@@ -32,6 +32,9 @@ export const TREES_V2_COUNT = 20;
 export const SIDE_ROAD_X = 400;
 const ROAD_WIDTH = 12;
 
+// River
+const RIVER_WIDTH = 12;
+
 /**
  * The only copy of the world's shape, read by both terrains: the CPU one in
  * utils/elevation.ts and the GPU one in shaders/includes/elevation.glsl.
@@ -53,6 +56,17 @@ export const WORLD_SETTINGS = {
 
     // Side road
     uSideRoadX: SIDE_ROAD_X,
+
+    // River
+    uRiverWidth: RIVER_WIDTH,
+    uRiverAmplitude: 3.46,
+    uRiverWaviness: 0.06,
+    uRiverFalloff: RIVER_WIDTH,
+    uRiverPeriod: GRID_TOTAL_WIDTH * 2.5,
+    uRiverCenterZ: GRID_TOTAL_WIDTH / 2 + 50,
+    uRiverAngle: 0.6,
+    uRiverDepth: -4,
+    uRiverSurfaceLevel: 0,
 
     // Lake
     uLakeRadius: 70,

@@ -5,6 +5,7 @@ uniform float uLakeCenterZ;
 
 varying vec3 vPosition;
 varying float vRoadMask;
+varying float vRiverMask;
 
 #include "../includes/curveWorld.glsl"
 #include "../includes/elevation.glsl"
@@ -33,10 +34,14 @@ void main() {
     vec3 toB = normalize(positionB - csm_Position);
     csm_Normal = cross(toA, toB);
 
+    // River
+    float riverMask = getRiverMask(worldUV);
+
     // Varyings
     vPosition = csm_Position;
     vPosition.xz = worldUV;
     vRoadMask = roadMask;
+    vRiverMask = riverMask;
 
     // Curve world
     csm_Position = curveWorld(csm_Position, worldUV, uPlayerPosition, uCurvature);

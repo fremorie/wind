@@ -41,6 +41,31 @@ float getRoadMask(vec2 position) {
     return clamp(roadMask + getSideRoadMask(position), 0.0, 1.0);
 }
 
+float riverCenterZ(float x) {
+    return uRiverCenterZ + uRiverAmplitude * sin(x * uRiverWaviness);
+}
+
+float getRiverMask(vec2 position) {
+    float c = cos(uRiverAngle);
+    float s = sin(uRiverAngle);
+    vec2 p = vec2(c * position.x + s * position.y, -s * position.x + c * position.y);
+
+    float distanceToRiver = abs(
+        mod(p.y - riverCenterZ(p.x) + uRiverPeriod / 2.0, uRiverPeriod)
+        - uRiverPeriod / 2.0
+    );
+    float riverMask = 1.0 - smoothstep(uRiverWidth - uRiverFalloff, uRiverWidth, distanceToRiver);
+
+    return riverMask;
+}
+
+float getSubmergedRiverMask(vec3 position) {
+    float riverMask = getRiverMask(position.xz);
+    float submergedRiver = smoothstep(uRiverSurfaceLevel, uRiverSurfaceLevel - 0.5, position.y);
+
+    return riverMask * submergedRiver;
+}
+
 float getLakeDepth(vec2 position) {
     vec2 lakeCenter = vec2(uLakeCenterX, uLakeCenterZ);
     float dist = length(position - lakeCenter);
@@ -63,9 +88,13 @@ float getFinalElevation(vec2 position) {
         getRoadMask(position)
     );
 
+    // Lake
     float lakeDepth = getLakeDepth(position);
-
     elevation -= lakeDepth;
+
+    // River
+    float riverMask = getRiverMask(position);
+    elevation = mix(elevation, uRiverDepth, riverMask);
 
     return elevation;
 }

@@ -35,6 +35,10 @@ void main() {
     float roadMask = getRoadMask(groundXZ);
     csm_Position.xyz *= (1.0 - step(0.5, roadMask));
 
+    // No trees in the river
+    float riverMask = getRiverMask(groundXZ) + 0.4;
+    csm_Position.xyz *= (1.0 - step(0.5, riverMask));
+
     csm_Position.xyz *= instanceGrowth(uTime);
 
     // Final position

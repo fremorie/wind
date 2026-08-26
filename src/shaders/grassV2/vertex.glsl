@@ -166,6 +166,9 @@ void main() {
     // Road
     float roadMask = getRoadMask(grassBladeWorldPos.xz);
 
+    // River
+    float riverMask = getSubmergedRiverMask((modelMatrix * vec4(grassOffset, 1.0)).xyz) + 0.5;
+
     // Lake
     float distanceToLake = length(grassBladeWorldPos.xz - vec2(uLakeCenterX, uLakeCenterZ));
     float grassLine = uLakeRadius + uBeachWidth;
@@ -203,6 +206,8 @@ void main() {
         * (1.0 - roadMask)
         // No grass in the lake
         * (1.0 - lakeCull)
+        // No grass in the river
+        * (1.0 - riverMask)
         + grassOffset;
     vec3 grassLocalNormal = grassMat * vec3(0.0, curveRot90 * curveGrad.yz);
 
@@ -229,7 +234,7 @@ void main() {
     gl_Position = projectionMatrix * mvPosition;
     // Hide microscopic grass blades at the edge of the road, around the lake and the farm.
     gl_Position.w = (
-        (roadMask + lakeCull) > 0.55 ||
+        (roadMask + lakeCull + riverMask) > 0.55 ||
         tileGrassHeight <= 0.0
     ) ? 0.0 : gl_Position.w;
 
