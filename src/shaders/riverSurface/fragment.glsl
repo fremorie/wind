@@ -10,8 +10,7 @@ uniform float uLakeCenterZ;
 varying vec3 vWorldPosition;
 varying vec3 vWorldNormal;
 varying float vElevation;
-
-#include "../includes/elevation.glsl"
+varying float vRiverMask;
 
 const float opacityNear = 0.1;
 const float opacityFar = 1.0;
@@ -19,6 +18,8 @@ const float opacityFar = 1.0;
 const vec2 flowDirecation = normalize(vec2(-1.0, -1.0));
 const float flowDistance = 0.3;
 const float cycleSpeed = 0.2; // cycles per second
+
+#include "../includes/elevation.glsl"
 
 void main() {
     vec2 uv = vWorldPosition.xz * 0.1;
@@ -50,9 +51,15 @@ void main() {
     alpha = mix(alpha, opacityFar, alphaMix);
 
     // Shadows & reflections
+    float elevation = getFinalElevation(vWorldPosition.xz);
+    //float riverMask = getRiverMask(vWorldPosition.xz);
+
+    //float reflectionMix = step(0.4, 1.0 - riverMask);
     float sunwardOffset = getRiverOffset(vWorldPosition.xz) * getSunwardRiverBankSign();
     float bankMask = smoothstep(0.0, uRiverWidth * 0.5, sunwardOffset);
-    float elevationMix = step(uRiverSurfaceLevel - 1.2, vElevation + n0 - n1) * bankMask * (1.0 - fresnel);
+
+    float elevationMix = step(uRiverSurfaceLevel - 1.2, elevation + n0 - n1) * bankMask * (1.0 - fresnel);
+
     alpha = mix(alpha, 0.8, elevationMix);
     color = mix(color, vec3(0.2, 0.24, 0.09), elevationMix);
 
