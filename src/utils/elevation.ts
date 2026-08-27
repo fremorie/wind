@@ -131,6 +131,8 @@ function getLakeDepth(x: number, z: number): number {
 }
 
 export function getElevation(x: number, z: number): number {
+    const roadMask = getRoadMask(x, z);
+
     let elevation = mix(
         getBaseElevation(x, z),
         getRoadElevation(x),
@@ -139,9 +141,10 @@ export function getElevation(x: number, z: number): number {
 
     elevation -= getLakeDepth(x, z);
 
-    // uRiverDepth is an absolute level, so this flattens the riverbed
-    // regardless of the noise and lake underneath it.
-    return mix(elevation, uRiverDepth, getRiverMask(x, z));
+    const riverMask = getRiverMask(x, z);
+    const riverMix = mix(0.0, riverMask, 1 - roadMask);
+
+    return mix(elevation, uRiverDepth, riverMix);
 }
 
 export function curveOffset(

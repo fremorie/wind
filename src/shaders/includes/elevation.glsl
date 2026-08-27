@@ -82,10 +82,12 @@ float getRoadElevation(vec2 position) {
 }
 
 float getFinalElevation(vec2 position) {
+    float roadMask = getRoadMask(position);
+
     float elevation = mix(
         getElevation(position),
         getRoadElevation(position),
-        getRoadMask(position)
+        roadMask
     );
 
     // Lake
@@ -94,7 +96,8 @@ float getFinalElevation(vec2 position) {
 
     // River
     float riverMask = getRiverMask(position);
-    elevation = mix(elevation, uRiverDepth, riverMask);
+    float riverMix = mix(0.0, riverMask, 1.0 - roadMask);
+    elevation = mix(elevation, uRiverDepth, riverMix);
 
     return elevation;
 }

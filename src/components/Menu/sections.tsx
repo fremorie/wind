@@ -117,9 +117,6 @@ export const SECTIONS: Section[] = [
                 </p>
                 <ul className="mv2-list">
                     <li>
-                        <PolyLink id="j4KsIuJYnq">Small Bridge</PolyLink>
-                    </li>
-                    <li>
                         <PolyLink id="RieYOsjDj8">Birch tree dead</PolyLink>
                     </li>
                     <li>
