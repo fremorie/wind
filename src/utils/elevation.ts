@@ -57,10 +57,12 @@ function getBaseElevation(x: number, z: number): number {
     return elevation;
 }
 
-function roadCenterZ(x: number): number {
+function roadCenterZ(x: number, z: number): number {
+    const roadAmplitude = uRoadAmplitude * (1 - getRiverMask(x, z));
+
     return (
         terrainUniforms.uRoadCenter.value.z +
-        uRoadAmplitude * Math.sin(x * uRoadWaviness)
+        roadAmplitude * Math.sin(x * uRoadWaviness)
     );
 }
 
@@ -78,7 +80,7 @@ function getSideRoadMask(x: number, z: number) {
 
 function getRoadMask(x: number, z: number): number {
     const distanceToRoad = Math.abs(
-        mod(z - roadCenterZ(x) + uRoadPeriod / 2, uRoadPeriod) -
+        mod(z - roadCenterZ(x, z) + uRoadPeriod / 2, uRoadPeriod) -
             uRoadPeriod / 2,
     );
     let roadMask =
@@ -96,9 +98,9 @@ function getRoadMask(x: number, z: number): number {
     return roadMask;
 }
 
-function getRoadElevation(x: number): number {
+function getRoadElevation(x: number, z: number): number {
     const roadFlatness = 0.1;
-    return getBaseElevation(x, roadCenterZ(x)) * roadFlatness;
+    return getBaseElevation(x, roadCenterZ(x, z)) * roadFlatness;
 }
 
 function riverCenterZ(x: number): number {
@@ -135,8 +137,8 @@ export function getElevation(x: number, z: number): number {
 
     let elevation = mix(
         getBaseElevation(x, z),
-        getRoadElevation(x),
-        getRoadMask(x, z),
+        getRoadElevation(x, z),
+        roadMask,
     );
 
     elevation -= getLakeDepth(x, z);

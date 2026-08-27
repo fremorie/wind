@@ -1,6 +1,6 @@
 import { folder, useControls } from 'leva';
 
-import {WORLD_SETTINGS} from "../utils/constants";
+import { WORLD_SETTINGS } from '../utils/constants';
 
 const axis = (value: number) => ({ value, min: -1, max: 3, step: 0.01 });
 
