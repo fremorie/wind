@@ -21,6 +21,14 @@ import { Bicycle } from '../Bicycle';
 import { waterSurfaceMaterial } from '../../materials/waterSurfaceMaterial';
 import { foliageUniforms } from '../../materials/foliage/foliageMaterials';
 
+const IDLE_KEYS = {
+    forward: false,
+    backward: false,
+    leftward: false,
+    rightward: false,
+    sprint: false,
+};
+
 export function Player() {
     const playerMeshRef = useRef<Mesh>(null);
     const steeringRef = useRef<Mesh>(null);
@@ -34,6 +42,7 @@ export function Player() {
 
     const playerPosition = useGame((state) => state.playerPosition);
     const joystick = useGame((state) => state.joystick);
+    const hasStarted = useGame((state) => state.hasStarted);
     const playerDirection = useRef<THREE.Vector3>(null);
 
     useFrame((state, delta) => {
@@ -51,7 +60,9 @@ export function Player() {
 
         playerMeshRef.current.rotation.order = 'YXZ';
 
-        const { forward, backward, leftward, rightward, sprint } = getKeys();
+        const { forward, backward, leftward, rightward, sprint } = hasStarted
+            ? getKeys()
+            : IDLE_KEYS;
 
         if (!playerDirection.current) {
             playerDirection.current = new THREE.Vector3(0, 0, 0);

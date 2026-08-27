@@ -1,16 +1,34 @@
+import { Suspense, useCallback, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Perf } from 'r3f-perf';
-import { KeyboardControls } from '@react-three/drei';
+import { KeyboardControls, Preload } from '@react-three/drei';
 import { Leva } from 'leva';
 
 import { Experience } from './Experience/Experience';
 import { Joystick } from './components/Joystick';
+import { LoadingOverlay, SceneReady, StartScreen } from './components/Intro';
 import { Menu } from './components/Menu';
+import { useCrossfadeLoop } from './hooks/useCrossfadeLoop';
 import { useDebug } from './hooks/useDebug';
+import useGame from './store/useGame';
 import './App.css';
+
+const SOUNDTRACK_URL = './sounds/soundtrack/soundtrack.mp3';
 
 function App() {
     const debug = useDebug();
+
+    const startMusic = useCrossfadeLoop({
+        url: SOUNDTRACK_URL,
+        volume: 0.3,
+        crossfadeDuration: 4,
+    });
+
+    const start = useGame((state) => state.start);
+    const hasStarted = useGame((state) => state.hasStarted);
+
+    const [isSceneReady, setIsSceneReady] = useState(false);
+    const handleSceneReady = useCallback(() => setIsSceneReady(true), []);
 
     return (
         <KeyboardControls
@@ -39,13 +57,32 @@ function App() {
                 }}
                 flat
             >
-                <Experience />
+                <Suspense fallback={null}>
+                    <Experience />
+                    <Preload all />
+
+                    <SceneReady onReady={handleSceneReady} />
+                </Suspense>
 
                 {debug && <Perf position="bottom-left" />}
             </Canvas>
 
-            <Joystick />
-            <Menu />
+            <LoadingOverlay isReady={isSceneReady} />
+
+            <StartScreen
+                isReady={isSceneReady}
+                onStart={(isAudioEnabled) => {
+                    start(isAudioEnabled);
+                    if (isAudioEnabled) startMusic();
+                }}
+            />
+
+            {hasStarted && (
+                <>
+                    <Joystick />
+                    <Menu />
+                </>
+            )}
         </KeyboardControls>
     );
 }

@@ -1,0 +1,63 @@
+.loading {
+    position: fixed;
+    inset: 0;
+    z-index: 201;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    background: ivory;
+
+    color: #6b5747;
+    font-family: 'Outfit', 'Segoe UI', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+
+    pointer-events: none;
+
+    transition:
+        opacity 900ms ease-out,
+        visibility 0s linear 900ms;
+}
+
+.loading.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loading__track {
+    width: 200px;
+    height: 2px;
+    border-radius: 999px;
+
+    background: rgba(107, 87, 71, 0.18);
+    overflow: hidden;
+}
+
+.loading__bar {
+    height: 100%;
+    border-radius: 999px;
+
+    background: #6b5747;
+
+    transition: width 250ms ease-out;
+}
+
+.loading__percent {
+    font-variant-numeric: tabular-nums;
+    opacity: 0.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .loading,
+    .loading__bar {
+        transition-duration: 1ms;
+    }
+
+    .loading {
+        transition-delay: 0s;
+    }
+}
