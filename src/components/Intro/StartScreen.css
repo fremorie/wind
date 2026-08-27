@@ -23,6 +23,7 @@
     flex-direction: column;
     align-items: center;
 
+    max-width: min(460px, calc(100% - 32px));
     padding: 40px 48px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
@@ -40,14 +41,17 @@
 
 .start-screen__title {
     margin: 0;
+}
 
-    font-size: 34px;
-    font-weight: 500;
-    letter-spacing: 0.02em;
+.start-screen__wordmark {
+    display: block;
+    width: 284px;
+    max-width: 100%;
+    height: auto;
 }
 
 .start-screen__subtitle {
-    margin: 8px 0 32px;
+    margin: 6px 0 32px;
 
     opacity: 0.75;
 }
@@ -62,7 +66,7 @@
 .start-screen__button {
     padding: 12px 24px;
     border: 1px solid rgba(255, 255, 255, 0.24);
-    border-radius: 999px;
+    border-radius: 8px;
 
     background: rgba(255, 255, 255, 0.08);
 

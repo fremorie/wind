@@ -35,7 +35,13 @@ export function StartScreen({ isReady, onStart }: StartScreenProps) {
                 aria-labelledby="start-screen-title"
             >
                 <h1 className="start-screen__title" id="start-screen-title">
-                    Sunday ride
+                    <img
+                        className="start-screen__wordmark"
+                        src="./images/menuTitleV4.webp"
+                        width="1447"
+                        height="673"
+                        alt="Sunday ride"
+                    />
                 </h1>
                 <p className="start-screen__subtitle">
                     Best enjoyed with sound.
