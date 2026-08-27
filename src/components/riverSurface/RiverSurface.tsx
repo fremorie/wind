@@ -14,7 +14,7 @@ export function RiverSurface() {
 
     useRiverSurfaceControls();
 
-    useFrame(() => {
+    useFrame((_, delta) => {
         if (!riverSurfaceRef.current) {
             return;
         }
@@ -24,6 +24,8 @@ export function RiverSurface() {
             WORLD_SETTINGS.uRiverSurfaceLevel,
             playerPosition.z,
         );
+
+        riverSurfaceMaterial.uniforms.uTime.value += delta;
     });
 
     return (
