@@ -126,6 +126,26 @@ export const SECTIONS: Section[] = [
                         <PolyLink id="1BkD9JnKrE">Tree</PolyLink>
                     </li>
                 </ul>
+
+                <h3 className="mv2-subtitle">Sound</h3>
+
+                <ul className="mv2-list">
+                    <li>
+                        <ExternalLink href="https://freesound.org/people/savvah/sounds/324271/">
+                            bicycle derailleur hanger
+                        </ExternalLink>{' '}
+                        by{' '}
+                        <ExternalLink href="https://freesound.org/people/savvah/">
+                            savvah
+                        </ExternalLink>
+                        <br />
+                        License:{' '}
+                        <ExternalLink href="https://creativecommons.org/licenses/by/4.0/">
+                            Attribution 4.0
+                        </ExternalLink>
+                    </li>
+                    <li>Music was shamelessly generated with AI.</li>
+                </ul>
             </>
         ),
     },

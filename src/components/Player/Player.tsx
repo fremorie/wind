@@ -18,8 +18,12 @@ import {
     updateWheelSpin,
 } from '../../utils/player';
 import { Bicycle } from '../Bicycle';
+import { useLoopingSound } from '../../hooks/useLoopingSound';
 import { waterSurfaceMaterial } from '../../materials/waterSurfaceMaterial';
 import { foliageUniforms } from '../../materials/foliage/foliageMaterials';
+
+const RIDE_SOUND_URL = './sounds/bicycle/bicycle.flac';
+const RIDE_SOUND_VOLUME = 0.5;
 
 const IDLE_KEYS = {
     forward: false,
@@ -43,6 +47,12 @@ export function Player() {
     const playerPosition = useGame((state) => state.playerPosition);
     const joystick = useGame((state) => state.joystick);
     const hasStarted = useGame((state) => state.hasStarted);
+    const isAudioEnabled = useGame((state) => state.isAudioEnabled);
+
+    const setRideSoundPlaying = useLoopingSound({
+        url: RIDE_SOUND_URL,
+        volume: RIDE_SOUND_VOLUME,
+    });
     const playerDirection = useRef<THREE.Vector3>(null);
 
     useFrame((state, delta) => {
@@ -77,6 +87,10 @@ export function Player() {
                 rightward,
             },
             joystick,
+        );
+
+        setRideSoundPlaying(
+            isAudioEnabled && playerDirection.current.length() > 0,
         );
 
         updatePlayerSpeed(playerDirection, sprint, delta);
