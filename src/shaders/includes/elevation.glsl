@@ -63,6 +63,12 @@ float getRiverMask(vec2 position) {
     return riverMask;
 }
 
+float getSunwardRiverBankSign() {
+    vec2 bandNormal = vec2(-sin(uRiverAngle), cos(uRiverAngle));
+
+    return sign(dot(bandNormal, vec2(uSunX, uSunZ)));
+}
+
 float getSubmergedRiverMask(vec3 position) {
     float riverMask = getRiverMask(position.xz);
     float submergedRiver = smoothstep(uRiverSurfaceLevel, uRiverSurfaceLevel - 0.5, position.y);

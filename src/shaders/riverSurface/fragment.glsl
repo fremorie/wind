@@ -55,7 +55,10 @@ void main() {
     //float riverMask = getRiverMask(vWorldPosition.xz);
 
     //float reflectionMix = step(0.4, 1.0 - riverMask);
-    float elevationMix = step(uRiverSurfaceLevel - 0.8, elevation + n0 - n1) * (1.0 - fresnel);
+    float sunwardOffset = getRiverOffset(vWorldPosition.xz) * getSunwardRiverBankSign();
+    float bankMask = smoothstep(0.0, uRiverWidth * 0.5, sunwardOffset);
+
+    float elevationMix = step(uRiverSurfaceLevel - 1.2, elevation + n0 - n1) * bankMask * (1.0 - fresnel);
 
     alpha = mix(alpha, 0.8, elevationMix);
     color = mix(color, vec3(0.2, 0.24, 0.09), elevationMix);
