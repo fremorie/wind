@@ -1,1 +1,0 @@
-export { BicycleVehicle } from './BicycleVehicle';

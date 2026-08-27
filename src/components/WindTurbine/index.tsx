@@ -1,1 +1,0 @@
-export { WindTurbine } from './WindTurbine';

@@ -20,9 +20,8 @@ import {
 // shaders/includes/elevation.glsl. These tests pin the CPU side; the GLSL both
 // halves share is checked in shaders/worldSettings.test.ts.
 //
-// The golden values below assume the default terrainUniforms (uRoadCenter,
-// uLakeCenterX/Z). Those are mutable module state, so a change to LAKE_CENTER
-// or the road centre will — correctly — break these.
+// The golden values below assume the road centre and LAKE_CENTER below, so a
+// change to either will — correctly — break these.
 
 // getBaseElevation is noise/2 in [-0.5, 0.5], squared (sign-preserving), then
 // scaled by uStrength. So |base| <= uStrength * 0.5^2.
@@ -30,7 +29,7 @@ const MAX_BASE_ELEVATION = uStrength * 0.25;
 
 const [lakeCenterX, lakeCenterZ] = LAKE_CENTER;
 
-// Mirrors terrainUniforms.uRoadCenter.z, the main road's centreline.
+// Mirrors ROAD_CENTER_Z in elevation.ts, the main road's centreline.
 const ROAD_CENTER_Z = GRID_TOTAL_WIDTH / 2;
 
 // Independent transcription of the river band, so scans can steer clear of it.
@@ -130,8 +129,12 @@ describe('getElevation', () => {
         return [c * alongStream - s * pz, s * alongStream + c * pz] as const;
     };
 
+    // Sampled clear of both roads: where a road crosses the river the road wins
+    // (getElevation scales the river mix by 1 - roadMask), so the bed is only
+    // carved to the full depth away from them. alongStream 500 lands on the
+    // side road, which is why it is not among the samples.
     it('flattens the riverbed to exactly uRiverDepth on the centreline', () => {
-        for (const alongStream of [-200, 0, 137, 500]) {
+        for (const alongStream of [-200, 0, 137, 300]) {
             const [x, z] = riverPoint(alongStream, 0);
 
             expect(getElevation(x, z)).toBeCloseTo(uRiverDepth, 10);
@@ -153,8 +156,8 @@ describe('getElevation', () => {
     // Characterisation values, recorded from this implementation. They detect
     // drift in the port; they do not prove it matches the GLSL.
     it.each([
-        [140, 140, -7.961917182343949], // main road, in the river
-        [140, 152, -5.125108607449775], // just off the road, river edge
+        [140, 140, -0.10708793939739947], // main road, crossing the river
+        [140, 152, -4.377535808652268], // just off the road, river edge
         [400, 60, -0.05840997075868071], // on the side road
         [430, 60, -0.8244391481087165], // just off the side road
         [840, 140, -19.972753068655347], // lake centre

@@ -1,6 +1,6 @@
 # Sunday ride
 
-An endless bike ride across a procedurally generated landscape — grass, trees, a lake, a farm and a wind farm — built with React Three Fiber and custom GLSL shaders.
+An endless bike ride across a procedurally generated landscape — grass, trees, a lake, a river and a wind farm — built with React Three Fiber and custom GLSL shaders.
 
 Live: https://fremorie.github.io/wind/
 
@@ -37,7 +37,7 @@ Debug tools are behind the URL hash: load the page with `#debug` (`src/hooks/use
 **Terrain height is a function, not a mesh.** Elevation comes from simplex noise plus a road carve and a lake basin. It exists twice:
 
 - on the GPU, in `src/shaders/includes/elevation.glsl`, which displaces the vertices actually drawn;
-- on the CPU, in `src/utils/elevation.ts`, which places things that need to sit on the ground — the road sign, the turbines, the camera, and the bike itself, which reads its height and its pitch from it every frame.
+- on the CPU, in `src/utils/elevation.ts`, which places things that need to sit on the ground — the turbines, the camera, and the bike itself, which reads its height and its pitch from it every frame.
 
 The two copies share one set of constants rather than mirroring them by hand. `WORLD_SETTINGS` in `src/utils/constants.ts` is the only copy; `src/shaders/worldSettings.ts` compiles it into `const float` declarations and `src/shaders/index.ts` prepends them to every world shader, which is why materials import shaders from `shaders/index.ts` and not from the `.glsl` files. `src/shaders/worldSettings.test.ts` checks the generated text, because a bad constant only shows up as a black screen at runtime.
 
@@ -54,7 +54,7 @@ The two copies share one set of constants rather than mirroring them by hand. `W
 ```
 src/
   Experience/     scene root, sky and lighting
-  components/     one folder per world entity (Terrain, Grass, Foliage, WindFarm, Farm, Player, Bicycle, Joystick, …)
+  components/     one folder per world entity (Terrain, GrassV2, Foliage, WindFarm, WaterSurface, Player, Bicycle, Joystick, …)
   materials/      CustomShaderMaterial instances, shared as module singletons
   shaders/        GLSL, with reusable chunks in shaders/includes/ (+ the generated world settings)
   utils/          elevation, noise, instancing and placement math (+ tests)
@@ -76,21 +76,16 @@ Pushing to `main` triggers `.github/workflows/deploy.yml`, which builds and publ
 
 Third-party assets keep their own attribution files next to them under `public/`:
 
-**Models** — eight by [Quaternius](https://poly.pizza/u/Quaternius), via [Poly Pizza](https://poly.pizza):
+**Models** — three by [Quaternius](https://poly.pizza/u/Quaternius), via [Poly Pizza](https://poly.pizza):
 
 | Model | Link | Used in |
 | --- | --- | --- |
-| Small Bridge | [j4KsIuJYnq](https://poly.pizza/m/j4KsIuJYnq) | `public/models/bridge/` |
-| Big barn | [q1N3xn2SpC](https://poly.pizza/m/q1N3xn2SpC) | `public/models/farm/` |
-| Chicken Coop | [DM0F8siLam](https://poly.pizza/m/DM0F8siLam) | `public/models/farm/` |
-| Silo | [5GhLrv5Ce3](https://poly.pizza/m/5GhLrv5Ce3) | `public/models/farm/` |
-| Cow | [26zM1outCr](https://poly.pizza/m/26zM1outCr) | `public/models/cow/` |
 | Birch tree dead | [RieYOsjDj8](https://poly.pizza/m/RieYOsjDj8) | `public/models/trees/` |
 | Tree | [b0boebSV1r](https://poly.pizza/m/b0boebSV1r) | `public/models/trees/` |
 | Tree (another) | [1BkD9JnKrE](https://poly.pizza/m/1BkD9JnKrE) | `public/models/trees/` |
 
-Each of those folders keeps its own `README.md` with the same attribution next to the `.glb`. Everything else under `public/` is original work: the bicycle, the road sign and the foliage tree, along with every texture and image.
+That folder keeps its own `README.md` with the same attribution next to the `.glb`. Everything else under `public/` is original work: the bicycle, along with every texture and image.
 
-**Fonts** — Playpen Sans, Edu SA Hand and Rubik Microbe, all under the SIL Open Font License; the licence text is in the `OFL.txt` beside each one under `public/fonts/`.
+**Fonts** — Playpen Sans and Outfit, both under the SIL Open Font License; the licence text is in the `OFL.txt` beside each one under `public/fonts/`.
 
 Code is MIT licensed (see `LICENSE`); asset licenses are as attributed above.

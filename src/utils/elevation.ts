@@ -1,8 +1,9 @@
 import type { Vector3 } from 'three';
 
 import { simplexNoise2d } from './simplexNoise';
-import { terrainUniforms } from '../materials/terrainMaterial';
 import {
+    GRID_TOTAL_WIDTH,
+    LAKE_CENTER,
     uBeachWidth,
     uCurvature,
     uLakeDepth,
@@ -24,6 +25,11 @@ import {
     uSideRoadX,
     uStrength,
 } from './constants';
+
+// The road centre and the lake position are plain world constants; every
+// material builds its uRoadCenter/uLakeCenter* uniforms from these same two.
+const ROAD_CENTER_Z = GRID_TOTAL_WIDTH / 2;
+const [LAKE_CENTER_X, LAKE_CENTER_Z] = LAKE_CENTER;
 
 function clamp(value: number, minVal: number, maxVal: number) {
     if (value < minVal) return minVal;
@@ -60,10 +66,7 @@ function getBaseElevation(x: number, z: number): number {
 function roadCenterZ(x: number, z: number): number {
     const roadAmplitude = uRoadAmplitude * (1 - getRiverMask(x, z));
 
-    return (
-        terrainUniforms.uRoadCenter.value.z +
-        roadAmplitude * Math.sin(x * uRoadWaviness)
-    );
+    return ROAD_CENTER_Z + roadAmplitude * Math.sin(x * uRoadWaviness);
 }
 
 function sideRoadCenterX(z: number): number {
@@ -86,10 +89,7 @@ function getRoadMask(x: number, z: number): number {
     let roadMask =
         1 - smoothstep(uRoadWidth - uRoadFalloff, uRoadWidth, distanceToRoad);
 
-    const distToLake = Math.hypot(
-        x - terrainUniforms.uLakeCenterX.value,
-        z - terrainUniforms.uLakeCenterZ.value,
-    );
+    const distToLake = Math.hypot(x - LAKE_CENTER_X, z - LAKE_CENTER_Z);
     const grassLine = uLakeRadius + uBeachWidth;
     roadMask *= smoothstep(grassLine - 10, grassLine, distToLake);
     roadMask += getSideRoadMask(x, z);
@@ -125,10 +125,7 @@ function getRiverMask(x: number, z: number): number {
 }
 
 function getLakeDepth(x: number, z: number): number {
-    const dist = Math.hypot(
-        x - terrainUniforms.uLakeCenterX.value,
-        z - terrainUniforms.uLakeCenterZ.value,
-    );
+    const dist = Math.hypot(x - LAKE_CENTER_X, z - LAKE_CENTER_Z);
     return uLakeDepth * (1 - smoothstep(0, uLakeRadius, dist));
 }
 

@@ -19,8 +19,6 @@ import {
 } from '../../utils/player';
 import { Bicycle } from '../Bicycle';
 import { waterSurfaceMaterial } from '../../materials/waterSurfaceMaterial';
-import { treeMaterial } from '../../materials/treeMaterial';
-import { bushMaterial } from '../../materials/bushMaterial';
 import { foliageUniforms } from '../../materials/foliage/foliageMaterials';
 
 export function Player() {
@@ -102,16 +100,6 @@ export function Player() {
         );
 
         waterSurfaceMaterial.uniforms.uPlayerPosition.value.set(
-            playerPosition.x,
-            playerPosition.z,
-        );
-
-        treeMaterial.uniforms.uPlayerPosition.value.set(
-            playerPosition.x,
-            playerPosition.z,
-        );
-
-        bushMaterial.uniforms.uPlayerPosition.value.set(
             playerPosition.x,
             playerPosition.z,
         );
