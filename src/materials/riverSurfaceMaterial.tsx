@@ -16,9 +16,10 @@ perlinNoiseTexture.wrapT = THREE.RepeatWrapping;
 
 export const RiverSurfaceMaterial = shaderMaterial(
     {
-        uFresnelStrength: 0.83,
-        uFresnelPower: 6.82,
-        uFresnelColor: new THREE.Color('#fce4e4'),
+        uFresnelStrength: 0.65,
+        uFresnelPower: 3.49,
+        // Color of the sky
+        uFresnelColor: new THREE.Color('#d6c8c7'),
         uPerlinNoiseTexture: perlinNoiseTexture,
         uTime: 0,
     },
