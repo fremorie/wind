@@ -1,7 +1,7 @@
-#include "../includes/curveWorld.glsl"
-
 varying vec3 vWorldPosition;
 varying vec3 vWorldNormal;
+
+#include "../includes/curveWorld.glsl"
 
 void main() {
     vec4 worldPosition = modelMatrix * vec4(position, 1.0);
