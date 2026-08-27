@@ -7,7 +7,7 @@ import { riverSurfaceMaterial } from '../../materials/riverSurfaceMaterial';
 const hex = (color: Color) => `#${color.getHexString()}`;
 
 export function useRiverSurfaceControls() {
-    const { uFresnelColor, uFresnelPower, uFresnelStrength } = useControls(
+    const { uFresnelColor, uFresnelPower, uFresnelStrength, uShadowColor } = useControls(
         'River surface',
         {
             Fresnel: folder({
@@ -26,6 +26,9 @@ export function useRiverSurfaceControls() {
                     max: 5,
                     step: 0.001,
                 },
+                uShadowColor: {
+                    value: hex(riverSurfaceMaterial.uShadowColor),
+                }
             }),
         },
     );
@@ -35,5 +38,6 @@ export function useRiverSurfaceControls() {
         riverSurfaceMaterial.uFresnelStrength = uFresnelStrength;
 
         riverSurfaceMaterial.uFresnelColor.set(uFresnelColor);
-    }, [uFresnelColor, uFresnelPower, uFresnelStrength]);
+        riverSurfaceMaterial.uShadowColor.set(uShadowColor);
+    }, [uFresnelColor, uFresnelPower, uFresnelStrength, uShadowColor]);
 }

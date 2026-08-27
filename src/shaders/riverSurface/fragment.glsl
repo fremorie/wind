@@ -6,6 +6,7 @@ uniform float uTime;
 uniform vec3 uRoadCenter;
 uniform float uLakeCenterX;
 uniform float uLakeCenterZ;
+uniform vec3 uShadowColor;
 
 varying vec3 vWorldPosition;
 varying vec3 vWorldNormal;
@@ -61,7 +62,7 @@ void main() {
     float elevationMix = step(uRiverSurfaceLevel - 1.2, elevation + n0 - n1) * bankMask * (1.0 - fresnel);
 
     alpha = mix(alpha, 0.8, elevationMix);
-    color = mix(color, vec3(0.2, 0.24, 0.09), elevationMix);
+    color = mix(color, uShadowColor, elevationMix);
 
     // Twinkle
     alpha = mix(alpha, 1.0, perlinNoise);

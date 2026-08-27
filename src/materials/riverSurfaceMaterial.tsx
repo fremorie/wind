@@ -23,6 +23,7 @@ export const RiverSurfaceMaterial = shaderMaterial(
         uFresnelColor: new THREE.Color('#d6c8c7'),
         uPerlinNoiseTexture: perlinNoiseTexture,
         uTime: 0,
+        uShadowColor: new THREE.Color('#52653b'),
 
         // Stuff for elevation
         uRoadCenter: new THREE.Vector3(
