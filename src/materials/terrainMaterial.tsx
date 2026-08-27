@@ -37,7 +37,7 @@ export const terrainUniforms = {
     uColorWaterDeep: new THREE.Uniform(new THREE.Color('#417c80')),
 
     // River
-    uColorRiverShallow: new THREE.Uniform(new THREE.Color('#316224')),
+    uColorRiverShallow: new THREE.Uniform(new THREE.Color('#5ca09e')),
     uColorRiverDeep: new THREE.Uniform(new THREE.Color('#236265')),
 };
 

@@ -1,7 +1,13 @@
+uniform vec3 uRoadCenter;
+uniform float uLakeCenterX;
+uniform float uLakeCenterZ;
+
 varying vec3 vWorldPosition;
 varying vec3 vWorldNormal;
+varying float vElevation;
 
 #include "../includes/curveWorld.glsl"
+#include "../includes/elevation.glsl"
 
 void main() {
     vec4 worldPosition = modelMatrix * vec4(position, 1.0);
@@ -17,4 +23,5 @@ void main() {
       vec3(2.0 * uCurvature * position.x, 1.0, 2.0 * uCurvature * position.z)
     );
     vWorldNormal = normalize(mat3(modelMatrix) * curvedNormal);
+    vElevation = getFinalElevation(worldPosition.xz);
 }
