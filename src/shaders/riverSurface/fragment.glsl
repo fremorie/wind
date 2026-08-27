@@ -10,8 +10,6 @@ uniform vec3 uShadowColor;
 
 varying vec3 vWorldPosition;
 varying vec3 vWorldNormal;
-varying float vElevation;
-varying float vRiverMask;
 
 const float opacityNear = 0.1;
 const float opacityFar = 1.0;
@@ -53,14 +51,9 @@ void main() {
 
     // Shadows & reflections
     float elevation = getFinalElevation(vWorldPosition.xz);
-    //float riverMask = getRiverMask(vWorldPosition.xz);
-
-    //float reflectionMix = step(0.4, 1.0 - riverMask);
     float sunwardOffset = getRiverOffset(vWorldPosition.xz) * getSunwardRiverBankSign();
     float bankMask = smoothstep(0.0, uRiverWidth * 0.5, sunwardOffset);
-
     float elevationMix = step(uRiverSurfaceLevel - 1.2, elevation + n0 - n1) * bankMask * (1.0 - fresnel);
-
     alpha = mix(alpha, 0.8, elevationMix);
     color = mix(color, uShadowColor, elevationMix);
 
