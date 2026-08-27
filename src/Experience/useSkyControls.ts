@@ -1,5 +1,7 @@
 import { folder, useControls } from 'leva';
 
+import {WORLD_SETTINGS} from "../utils/constants";
+
 const axis = (value: number) => ({ value, min: -1, max: 3, step: 0.01 });
 
 export function useSkyControls() {
@@ -8,9 +10,9 @@ export function useSkyControls() {
         {
             distance: { value: 5000, min: 1, max: 5000, step: 1 },
             Sun: folder({
-                sunPositionX: axis(1),
+                sunPositionX: axis(WORLD_SETTINGS.uSunX),
                 sunPositionY: axis(0.1),
-                sunPositionZ: axis(-0.6),
+                sunPositionZ: axis(WORLD_SETTINGS.uSunZ),
             }),
             Scattering: folder({
                 turbidity: { value: 0.5, min: 0, max: 20, step: 0.1 },

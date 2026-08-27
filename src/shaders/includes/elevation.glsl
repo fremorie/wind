@@ -45,15 +45,19 @@ float riverCenterZ(float x) {
     return uRiverCenterZ + uRiverAmplitude * sin(x * uRiverWaviness);
 }
 
-float getRiverMask(vec2 position) {
+float getRiverOffset(vec2 position) {
     float c = cos(uRiverAngle);
     float s = sin(uRiverAngle);
     vec2 p = vec2(c * position.x + s * position.y, -s * position.x + c * position.y);
 
-    float distanceToRiver = abs(
-        mod(p.y - riverCenterZ(p.x) + uRiverPeriod / 2.0, uRiverPeriod)
-        - uRiverPeriod / 2.0
-    );
+    return mod(
+        p.y - riverCenterZ(p.x) + uRiverPeriod / 2.0,
+        uRiverPeriod
+    ) - uRiverPeriod / 2.0;
+}
+
+float getRiverMask(vec2 position) {
+    float distanceToRiver = abs(getRiverOffset(position));
     float riverMask = 1.0 - smoothstep(uRiverWidth - uRiverFalloff, uRiverWidth, distanceToRiver);
 
     return riverMask;

@@ -73,6 +73,10 @@ export const WORLD_SETTINGS = {
     uLakeDepth: 20,
     uBeachWidth: 0.25,
     uLakeSurfaceLevel: -2,
+
+    // Sun
+    uSunX: 1,
+    uSunZ: -0.6,
 } as const;
 
 // Unpacked so call sites can import a single value.
