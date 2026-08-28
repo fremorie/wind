@@ -1,4 +1,4 @@
-import { Suspense, useCallback, useState } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Perf } from 'r3f-perf';
 import { KeyboardControls, Preload } from '@react-three/drei';
@@ -14,8 +14,11 @@ import { useDebug } from './hooks/useDebug';
 import useGame from './store/useGame';
 import './App.css';
 
-const SOUNDTRACK_URL = './sounds/soundtrack/soundtrack.mp3';
+const SOUNDTRACK_URL = './sounds/soundtrack/soundtrack2.mp3';
 const BIRDS_URL = './sounds/birds/birds.mp3';
+
+// The birds establish the scene on their own before the music joins in.
+const SOUNDTRACK_DELAY = 10_000;
 
 function App() {
     const debug = useDebug();
@@ -28,8 +31,8 @@ function App() {
 
     const startBirds = useSwellLoop({
         url: BIRDS_URL,
-        volume: 0.35,
-        swellDuration: 20,
+        volume: 0.15,
+        swellDuration: 10,
     });
 
     const start = useGame((state) => state.start);
@@ -37,6 +40,16 @@ function App() {
 
     const [isSceneReady, setIsSceneReady] = useState(false);
     const handleSceneReady = useCallback(() => setIsSceneReady(true), []);
+
+    const soundtrackTimeoutRef = useRef<number | null>(null);
+    useEffect(
+        () => () => {
+            if (soundtrackTimeoutRef.current !== null) {
+                clearTimeout(soundtrackTimeoutRef.current);
+            }
+        },
+        [],
+    );
 
     return (
         <KeyboardControls
@@ -82,8 +95,11 @@ function App() {
                 onStart={(isAudioEnabled) => {
                     start(isAudioEnabled);
                     if (isAudioEnabled) {
-                        startMusic();
                         startBirds();
+                        soundtrackTimeoutRef.current = window.setTimeout(
+                            startMusic,
+                            SOUNDTRACK_DELAY,
+                        );
                     }
                 }}
             />
