@@ -9,11 +9,13 @@ import { Joystick } from './components/Joystick';
 import { LoadingOverlay, SceneReady, StartScreen } from './components/Intro';
 import { Menu } from './components/Menu';
 import { useCrossfadeLoop } from './hooks/useCrossfadeLoop';
+import { useSwellLoop } from './hooks/useSwellLoop';
 import { useDebug } from './hooks/useDebug';
 import useGame from './store/useGame';
 import './App.css';
 
 const SOUNDTRACK_URL = './sounds/soundtrack/soundtrack.mp3';
+const BIRDS_URL = './sounds/birds/birds.mp3';
 
 function App() {
     const debug = useDebug();
@@ -22,6 +24,12 @@ function App() {
         url: SOUNDTRACK_URL,
         volume: 0.3,
         crossfadeDuration: 4,
+    });
+
+    const startBirds = useSwellLoop({
+        url: BIRDS_URL,
+        volume: 0.35,
+        swellDuration: 20,
     });
 
     const start = useGame((state) => state.start);
@@ -73,7 +81,10 @@ function App() {
                 isReady={isSceneReady}
                 onStart={(isAudioEnabled) => {
                     start(isAudioEnabled);
-                    if (isAudioEnabled) startMusic();
+                    if (isAudioEnabled) {
+                        startMusic();
+                        startBirds();
+                    }
                 }}
             />
 

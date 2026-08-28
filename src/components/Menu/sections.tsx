@@ -138,11 +138,32 @@ export const SECTIONS: Section[] = [
                         <ExternalLink href="https://freesound.org/people/savvah/">
                             savvah
                         </ExternalLink>
-                        <br />
-                        License:{' '}
-                        <ExternalLink href="https://creativecommons.org/licenses/by/4.0/">
-                            Attribution 4.0
+                        &nbsp; (modified: trimmed and equalised)
+                        <ul>
+                            <li>
+                                License:&nbsp;
+                                <ExternalLink href="https://creativecommons.org/licenses/by/4.0/">
+                                    Attribution 4.0
+                                </ExternalLink>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <ExternalLink href="https://freesound.org/people/aladar/sounds/511758/">
+                            Early_morning_birds_04
+                        </ExternalLink>{' '}
+                        by{' '}
+                        <ExternalLink href="https://freesound.org/people/aladar/">
+                            aladar
                         </ExternalLink>
+                        <ul>
+                            <li>
+                                License:&nbsp;
+                                <ExternalLink href="https://creativecommons.org/licenses/by/3.0/">
+                                    Attribution 3.0
+                                </ExternalLink>
+                            </li>
+                        </ul>
                     </li>
                     <li>Music was shamelessly generated with AI.</li>
                 </ul>
