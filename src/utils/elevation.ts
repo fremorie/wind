@@ -26,6 +26,7 @@ import {
     uRoadWidth,
     uSideRoadX,
     uStrength,
+    uSideRoadPeriod,
 } from './constants';
 
 // The road centre and the lake position are plain world constants; every
@@ -76,7 +77,10 @@ function sideRoadCenterX(z: number): number {
 }
 
 function getSideRoadMask(x: number, z: number) {
-    const distanceToRoad = Math.abs(x - sideRoadCenterX(z));
+    const distanceToRoad = Math.abs(
+        mod(x - sideRoadCenterX(z) + uSideRoadPeriod / 2, uSideRoadPeriod) -
+            uSideRoadPeriod / 2,
+    );
     const roadMask =
         1 - smoothstep(uRoadWidth - uRoadFalloff, uRoadWidth, distanceToRoad);
 

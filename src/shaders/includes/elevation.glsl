@@ -58,7 +58,10 @@ float sideRoadCenterX(float z) {
 }
 
 float getSideRoadMask(vec2 position) {
-    float distanceToRoad = abs(position.x - sideRoadCenterX(position.y));
+    float distanceToRoad = abs(
+        mod(position.x - sideRoadCenterX(position.y) + uSideRoadPeriod / 2.0, uSideRoadPeriod)
+        - uSideRoadPeriod / 2.0
+    );
     float roadMask = 1.0 - smoothstep(uRoadWidth - uRoadFalloff, uRoadWidth, distanceToRoad);
 
     return roadMask;

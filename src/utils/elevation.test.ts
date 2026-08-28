@@ -12,6 +12,7 @@ import {
     uRiverDepth,
     uRiverWaviness,
     uRiverWidth,
+    uSideRoadPeriod,
     uSideRoadX,
     uStrength,
 } from './constants';
@@ -20,8 +21,8 @@ import {
 // shaders/includes/elevation.glsl. These tests pin the CPU side; the GLSL both
 // halves share is checked in shaders/worldSettings.test.ts.
 //
-// The golden values below assume the road centre and LAKE_CENTER below, so a
-// change to either will — correctly — break these.
+// The golden values below assume the road centre, uSideRoadPeriod and
+// LAKE_CENTER below, so a change to any of them will — correctly — break these.
 
 // getBaseElevation is noise/2 in [-0.5, 0.5], squared (sign-preserving), then
 // scaled by uStrength. So |base| <= uStrength * 0.5^2.
@@ -98,22 +99,40 @@ describe('getElevation', () => {
         }
     });
 
+    // Sampled clear of the main road, which crosses every x at ROAD_CENTER_Z.
+    const zs: number[] = [];
+    for (let z = 0; z <= GRID_TOTAL_WIDTH; z += 10) {
+        if (Math.abs(z - ROAD_CENTER_Z) > 30) zs.push(z);
+    }
+
+    // How much the ground rises and falls down the whole z scan at one x. Near
+    // zero means a road runs along that line.
+    const spread = (x: number) => {
+        const elevations = zs.map((z) => getElevation(x, z));
+        return Math.max(...elevations) - Math.min(...elevations);
+    };
+
     // The side road runs along z at a fixed x, so it is flattened where the
-    // main road is not: a band in x rather than a band in z.
-    it('flattens the terrain along the side road', () => {
-        // Sampled clear of the main road, which crosses every x at ROAD_Z.
-        const zs: number[] = [];
-        for (let z = 0; z <= GRID_TOTAL_WIDTH; z += 10) {
-            if (Math.abs(z - ROAD_CENTER_Z) > 30) zs.push(z);
-        }
+    // main road is not: a band in x rather than a band in z. It repeats every
+    // uSideRoadPeriod, so every copy is flattened, not just the first. Copy -1
+    // sits at negative x, where a fold written with % instead of a floored mod
+    // would pick the wrong band.
+    it.each([-1, 0, 1])(
+        'flattens the terrain along side road copy %s',
+        (copy) => {
+            const x = uSideRoadX + copy * uSideRoadPeriod;
 
-        const spread = (x: number) => {
-            const elevations = zs.map((z) => getElevation(x, z));
-            return Math.max(...elevations) - Math.min(...elevations);
-        };
+            expect(spread(x)).toBeLessThan(spread(x + 40) / 2);
+            expect(spread(x)).toBeLessThan(spread(x - 40) / 2);
+        },
+    );
 
-        expect(spread(uSideRoadX)).toBeLessThan(spread(uSideRoadX + 40) / 2);
-        expect(spread(uSideRoadX)).toBeLessThan(spread(uSideRoadX - 40) / 2);
+    // The road repeats, it does not smear: without this the test above would
+    // pass just as well on a world flattened at every x.
+    it('leaves the ground between two side roads unflattened', () => {
+        const betweenRoads = uSideRoadX + uSideRoadPeriod / 2;
+
+        expect(spread(uSideRoadX)).toBeLessThan(spread(betweenRoads) / 2);
     });
 
     // The river runs at an angle, so its points are easiest to name in river
@@ -160,6 +179,8 @@ describe('getElevation', () => {
         [140, 152, -4.377535808652268], // just off the road, river edge
         [400, 60, -0.05840997075868071], // on the side road
         [430, 60, -0.8244391481087165], // just off the side road
+        [1240, 60, -0.0043577158125625015], // side road, one period east
+        [1270, 60, -3.657725660533107], // just off that side road
         [840, 140, -19.972753068655347], // lake centre
         [840, 205, -0.4568767993281747], // lake edge
         [-37.5, 212.25, 0.770677486454744], // negative x, open terrain

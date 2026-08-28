@@ -56,6 +56,7 @@ export const WORLD_SETTINGS = {
 
     // Side road
     uSideRoadX: SIDE_ROAD_X,
+    uSideRoadPeriod: GRID_TOTAL_WIDTH * 3,
 
     // River
     uRiverWidth: RIVER_WIDTH,
@@ -103,4 +104,5 @@ export const {
     uLakeDepth,
     uBeachWidth,
     uLakeSurfaceLevel,
+    uSideRoadPeriod,
 } = WORLD_SETTINGS;
