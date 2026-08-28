@@ -21,7 +21,7 @@ let currentSteer = 0;
 let currentSpeed = 0;
 
 const WHEELBASE = 4.191 * 0.8; // front axle to rear axle, times the <Bicycle> scale
-let currentYaw = 0;
+let currentYaw = 0.9;
 
 const MAX_STEER = 0.35;
 const STEER_GAIN = 1.5;
