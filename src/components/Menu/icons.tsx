@@ -99,20 +99,29 @@ export function HamburgerIcon() {
     );
 }
 
-// Drawn once pointing left and turned by CSS for the other three, so there
-// is one shape to keep tidy rather than four. The square viewBox is what
-// makes turning it safe - a wider-than-tall box would swap its dimensions on
-// the quarter turns.
+const ARROW_ROTATION = {
+    left: '0deg',
+    up: '90deg',
+    right: '180deg',
+    down: '-90deg',
+} as const;
+
+// Drawn once pointing left and turned for the other three, so there is one
+// shape to keep tidy rather than four. The square viewBox is what makes
+// turning it safe - a wider-than-tall box would swap its dimensions on the
+// quarter turns.
 export function ArrowIcon({
     direction,
     label,
+    size = 18,
 }: {
     direction: 'up' | 'right' | 'down' | 'left';
     label: string;
+    size?: number;
 }) {
     return (
-        <span className="mv2-arrow" data-direction={direction}>
-            <Icon size={18} label={label}>
+        <span style={{ display: 'flex', rotate: ARROW_ROTATION[direction] }}>
+            <Icon size={size} label={label}>
                 <path d="M15 10H5M8.5 6.5 5 10l3.5 3.5" />
             </Icon>
         </span>

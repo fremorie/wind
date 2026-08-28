@@ -5,6 +5,7 @@ import { KeyboardControls, Preload } from '@react-three/drei';
 import { Leva } from 'leva';
 
 import { Experience } from './Experience/Experience';
+import { ControlHints } from './components/ControlHints';
 import { Joystick } from './components/Joystick';
 import { LoadingOverlay, SceneReady, StartScreen } from './components/Intro';
 import { Menu } from './components/Menu';
@@ -26,7 +27,7 @@ function App() {
     const startMusic = useCrossfadeLoop({
         url: SOUNDTRACK_URL,
         volume: 0.3,
-        crossfadeDuration: 4,
+        crossfadeDuration: 8,
     });
 
     const startBirds = useSwellLoop({
@@ -107,6 +108,7 @@ function App() {
             {hasStarted && (
                 <>
                     <Joystick />
+                    <ControlHints />
                     <Menu />
                 </>
             )}

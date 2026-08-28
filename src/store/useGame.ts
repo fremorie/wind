@@ -11,11 +11,15 @@ interface GameState {
     joystick: THREE.Vector2;
     hasStarted: boolean;
     isAudioEnabled: boolean;
+    hasMoved: boolean;
+    hasSprinted: boolean;
     start: (isAudioEnabled: boolean) => void;
+    markMoved: () => void;
+    markSprinted: () => void;
 }
 
 export default create<GameState>()(
-    subscribeWithSelector((set) => {
+    subscribeWithSelector((set, get) => {
         const center = ((GRID_SIZE_Z - 1) * CHUNK_SIZE) / 2;
         return {
             playerPosition: new THREE.Vector3(
@@ -27,8 +31,18 @@ export default create<GameState>()(
 
             hasStarted: false,
             isAudioEnabled: false,
+            hasMoved: false,
+            hasSprinted: false,
             start: (isAudioEnabled: boolean) =>
                 set({ hasStarted: true, isAudioEnabled }),
+            markMoved: () => {
+                if (get().hasMoved) return;
+                set({ hasMoved: true });
+            },
+            markSprinted: () => {
+                if (get().hasSprinted) return;
+                set({ hasSprinted: true });
+            },
         };
     }),
 );

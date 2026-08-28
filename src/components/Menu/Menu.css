@@ -442,22 +442,6 @@
     padding: 0 12px;
 }
 
-.mv2-arrow {
-    display: flex;
-}
-
-.mv2-arrow[data-direction='up'] {
-    rotate: 90deg;
-}
-
-.mv2-arrow[data-direction='right'] {
-    rotate: 180deg;
-}
-
-.mv2-arrow[data-direction='down'] {
-    rotate: -90deg;
-}
-
 .mv2-toggle {
     position: fixed;
     top: 24px;
