@@ -46,8 +46,12 @@ void main() {
         uFresnelPower
     );
     color = mix(color, fresnelColor, fresnel * uFresnelStrength);
-    float alphaMix = smoothstep(0.0, 0.9, fresnel);
+    float alphaMix = smoothstep(0.0, 0.7, fresnel);
     alpha = mix(alpha, opacityFar, alphaMix);
+
+    // Twinkle
+    alpha = mix(alpha, 1.0, perlinNoise);
+    color = mix(color, vec3(10.0), perlinNoise);
 
     // Shadows & reflections
     float elevation = getFinalElevation(vWorldPosition.xz);
@@ -56,10 +60,6 @@ void main() {
     float elevationMix = step(uRiverSurfaceLevel - 1.2, elevation + n0 - n1) * bankMask * (1.0 - fresnel);
     alpha = mix(alpha, 0.8, elevationMix);
     color = mix(color, uShadowColor, elevationMix);
-
-    // Twinkle
-    alpha = mix(alpha, 1.0, perlinNoise);
-    color = mix(color, vec3(10.0), perlinNoise);
 
     // Final color
     gl_FragColor = vec4(color, alpha);
