@@ -59,6 +59,7 @@ void main() {
 
     // Twinkle
     alpha = mix(alpha, 1.0, perlinNoise);
+    color = mix(color, vec3(10.0), perlinNoise);
 
     // Final color
     gl_FragColor = vec4(color, alpha);
