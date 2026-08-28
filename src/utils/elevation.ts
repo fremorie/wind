@@ -8,6 +8,7 @@ import {
     uCurvature,
     uLakeDepth,
     uLakeRadius,
+    uLakeSurfaceLevel,
     uPositionFrequency,
     uRoadAmplitude,
     uRoadFalloff,
@@ -17,6 +18,7 @@ import {
     uRiverDepth,
     uRiverFalloff,
     uRiverPeriod,
+    uRiverSurfaceLevel,
     uRiverWaviness,
     uRiverWidth,
     uRoadPeriod,
@@ -144,6 +146,15 @@ export function getElevation(x: number, z: number): number {
     const riverMix = mix(0.0, riverMask, 1 - roadMask);
 
     return mix(elevation, uRiverDepth, riverMix);
+}
+
+// How deep the water is at (x, z), 0 on dry land. Matches the water shaders.
+export function getWaterDepth(x: number, z: number): number {
+    const distanceToLake = Math.hypot(x - LAKE_CENTER_X, z - LAKE_CENTER_Z);
+    const surfaceLevel =
+        distanceToLake < uLakeRadius ? uLakeSurfaceLevel : uRiverSurfaceLevel;
+
+    return Math.max(0, surfaceLevel - getElevation(x, z));
 }
 
 export function curveOffset(

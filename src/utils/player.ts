@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { type RefObject } from 'react';
 import { type Camera } from '@react-three/fiber';
 
-import { getElevation } from './elevation';
+import { getElevation, getWaterDepth } from './elevation';
 
 const WHEEL_RADIUS = 1.377 * 0.8; // model radius, times the <Bicycle> scale
 let currentSpin = 0;
@@ -29,6 +29,14 @@ const STEER_GAIN = 1.5;
 export const CRANK_GEAR_RATIO = 0.4;
 
 const SPHERE_RADIUS = 1;
+
+// Water collision: how far ahead of the centre the front wheel sits.
+const BODY_RADIUS = 2;
+const SHORE_EPSILON = 0.5;
+
+const playerStep = new THREE.Vector2();
+const probe = new THREE.Vector2();
+const shoreNormal = new THREE.Vector2();
 
 const UP = new THREE.Vector3(0, 1, 0);
 const RIGHT = new THREE.Vector3(1, 0, 0);
@@ -122,6 +130,60 @@ export function updateCamera(
     camera.lookAt(playerPosition);
 }
 
+// Puts `probe` where the front wheel ends up after `step`, in world xz.
+function probeAhead(playerPosition: THREE.Vector3, step: THREE.Vector2) {
+    const length = step.length();
+    const reach = length === 0 ? 0 : BODY_RADIUS / length;
+
+    probe.set(
+        playerPosition.x + step.x * (1 + reach),
+        playerPosition.z + step.y * (1 + reach),
+    );
+}
+
+// Fills `shoreNormal` with the unit vector pointing towards dry land.
+function getShoreNormal(x: number, z: number): boolean {
+    const gradientX =
+        getWaterDepth(x + SHORE_EPSILON, z) -
+        getWaterDepth(x - SHORE_EPSILON, z);
+    const gradientZ =
+        getWaterDepth(x, z + SHORE_EPSILON) -
+        getWaterDepth(x, z - SHORE_EPSILON);
+
+    if (gradientX === 0 && gradientZ === 0) return false;
+
+    shoreNormal.set(-gradientX, -gradientZ).normalize();
+
+    return true;
+}
+
+// Trims `step` so the bike slides along the shoreline instead of entering it.
+function resolveWaterCollision(
+    playerPosition: THREE.Vector3,
+    step: THREE.Vector2,
+) {
+    if (step.lengthSq() === 0) return;
+
+    probeAhead(playerPosition, step);
+    if (getWaterDepth(probe.x, probe.y) === 0) return;
+
+    if (!getShoreNormal(probe.x, probe.y)) {
+        step.set(0, 0);
+        return;
+    }
+
+    const intoWater = step.dot(shoreNormal);
+    // Cancel only the motion pushing into the water; leaving stays free.
+    if (intoWater < 0) {
+        step.addScaledVector(shoreNormal, -intoWater);
+    }
+
+    probeAhead(playerPosition, step);
+    if (getWaterDepth(probe.x, probe.y) > 0) {
+        step.set(0, 0);
+    }
+}
+
 export function updatePlayerPosition(
     playerPosition: THREE.Vector3,
     playerMeshRef: RefObject<THREE.Mesh | null>,
@@ -130,10 +192,15 @@ export function updatePlayerPosition(
     if (!playerMeshRef.current) return;
 
     const yaw = playerMeshRef.current.rotation.y;
-    const speed = currentSpeed;
 
-    playerPosition.x += Math.sin(yaw) * speed * delta;
-    playerPosition.z += Math.cos(yaw) * speed * delta;
+    playerStep
+        .set(Math.sin(yaw), Math.cos(yaw))
+        .multiplyScalar(currentSpeed * delta);
+
+    resolveWaterCollision(playerPosition, playerStep);
+
+    playerPosition.x += playerStep.x;
+    playerPosition.z += playerStep.y;
 
     playerPosition.y =
         getElevation(playerPosition.x, playerPosition.z) + SPHERE_RADIUS;

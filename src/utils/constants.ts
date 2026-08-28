@@ -98,6 +98,7 @@ export const {
     uRiverCenterZ,
     uRiverAngle,
     uRiverDepth,
+    uRiverSurfaceLevel,
     uLakeRadius,
     uLakeDepth,
     uBeachWidth,
