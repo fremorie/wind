@@ -23,7 +23,7 @@ import { waterSurfaceMaterial } from '../../materials/waterSurfaceMaterial';
 import { foliageUniforms } from '../../materials/foliage/foliageMaterials';
 
 const RIDE_SOUND_URL = './sounds/bicycle/bicycle.flac';
-const RIDE_SOUND_VOLUME = 0.5;
+const RIDE_SOUND_VOLUME = 0.2;
 
 const IDLE_KEYS = {
     forward: false,
