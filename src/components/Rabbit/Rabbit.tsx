@@ -31,15 +31,6 @@ export function Rabbit() {
     const playerPosition = useGame((state) => state.playerPosition);
 
     useEffect(() => {
-        scene.traverse((child) => {
-            if ((child as THREE.Mesh).isMesh) {
-                child.castShadow = true;
-                child.receiveShadow = true;
-            }
-        });
-    }, [scene]);
-
-    useEffect(() => {
         const walk = actions[WALK_CLIP];
         if (!walk) return;
 
