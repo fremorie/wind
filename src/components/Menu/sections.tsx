@@ -103,27 +103,50 @@ export const SECTIONS: Section[] = [
                 <p className="mv2-text">Made by Daria Borisiak.</p>
 
                 <h3 className="mv2-subtitle">3D models</h3>
-
-                <p className="mv2-text is-lead">
-                    This project uses the following models by{' '}
-                    <ExternalLink href="https://poly.pizza/u/Quaternius">
-                        Quaternius
-                    </ExternalLink>
-                    , via{' '}
-                    <ExternalLink href="https://poly.pizza">
-                        poly.pizza
-                    </ExternalLink>
-                    :
-                </p>
                 <ul className="mv2-list">
                     <li>
-                        <PolyLink id="RieYOsjDj8">Birch tree dead</PolyLink>
+                        <PolyLink id="RieYOsjDj8">Birch tree dead</PolyLink> by{' '}
+                        <ExternalLink href="https://poly.pizza/u/Quaternius">
+                            Quaternius
+                        </ExternalLink>{' '}
+                        [
+                        <ExternalLink href="https://creativecommons.org/publicdomain/zero/1.0/">
+                            CC0
+                        </ExternalLink>
+                        ]
                     </li>
                     <li>
-                        <PolyLink id="b0boebSV1r">Tree</PolyLink>
+                        <PolyLink id="b0boebSV1r">Tree</PolyLink> by{' '}
+                        <ExternalLink href="https://poly.pizza/u/Quaternius">
+                            Quaternius
+                        </ExternalLink>{' '}
+                        [
+                        <ExternalLink href="https://creativecommons.org/publicdomain/zero/1.0/">
+                            CC0
+                        </ExternalLink>
+                        ]
                     </li>
                     <li>
-                        <PolyLink id="1BkD9JnKrE">Tree</PolyLink>
+                        <PolyLink id="1BkD9JnKrE">Tree</PolyLink> by{' '}
+                        <ExternalLink href="https://poly.pizza/u/Quaternius">
+                            Quaternius
+                        </ExternalLink>{' '}
+                        [
+                        <ExternalLink href="https://creativecommons.org/publicdomain/zero/1.0/">
+                            CC0
+                        </ExternalLink>
+                        ]
+                    </li>
+                    <li>
+                        <PolyLink id="Km89u3twcR">Rabbit</PolyLink> by{' '}
+                        <ExternalLink href="https://poly.pizza/u/Sherkiz">
+                            Sherkiz
+                        </ExternalLink>{' '}
+                        [
+                        <ExternalLink href="https://creativecommons.org/licenses/by/3.0/">
+                            CC-BY
+                        </ExternalLink>
+                        ] via Poly Pizza
                     </li>
                 </ul>
 
@@ -165,7 +188,7 @@ export const SECTIONS: Section[] = [
                             </li>
                         </ul>
                     </li>
-                    <li>Music was shamelessly generated with AI.</li>
+                    <li>Music was shamelessly generated with AI</li>
                 </ul>
             </>
         ),
