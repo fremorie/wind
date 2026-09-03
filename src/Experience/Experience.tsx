@@ -11,6 +11,7 @@ import { GrassFieldV2 } from '../components/GrassV2';
 import { LakeTrees } from '../components/LakeTrees';
 import { RiverSurface } from '../components/riverSurface';
 import { Rabbit } from '../components/Rabbit';
+import { Bridges } from '../components/Bridges';
 
 export function Experience() {
     const debug = useDebug();
@@ -34,6 +35,8 @@ export function Experience() {
             <WindFarm />
             <TreesV2 count={TREES_V2_COUNT} recycle />
             <LakeTrees />
+
+            {debug && <Bridges />}
 
             {debug && <OrbitControls makeDefault />}
         </>
